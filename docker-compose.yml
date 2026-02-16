@@ -1,0 +1,93 @@
+networks:
+  default:
+    driver: bridge
+
+services:
+  qdrant:
+    container_name: qdrant
+    image: qdrant/qdrant:latest
+    restart: unless-stopped
+    ports:
+      - "6333:6333" # REST API + WEB UI /dashboard
+      - "6334:6334" # gRPC API
+    volumes:
+      - ./.data/qdrant:/qdrant/storage
+
+  whisper-nvidia:
+    container_name: whisper-server
+    image: evilfreelancer/whisper-server:latest
+    restart: unless-stopped
+    ports:
+      - "9001:9000" # Rest api
+      - "9002:8080" # API Docs
+    volumes:
+      - ./.data/whisper/models:/app/models
+    environment:
+      WHISPER_MODEL: large-v3-turbo
+      WHISPER_MODEL_QUANTIZATION: q4_0
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  ollama:
+    container_name: ollama
+    image: ollama/ollama:latest
+    restart: unless-stopped
+    ports:
+      - "8884:11434" # Ollama api
+    volumes:
+      - ./.data/ollama:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  audio_transcript_server:
+    container_name: audio-transcript-server
+    restart: unless-stopped
+    build:
+      context: backend
+      dockerfile: Dockerfile
+    depends_on:
+      - whisper-nvidia
+      - ollama
+      - qdrant
+    ports:
+      - "8880:8880" # Rest api
+    volumes:
+      - ./.data/backend/sqlite:/app/sqlite
+      - ./.data/backend/downloaded_audios:/app/downloaded_audios
+    environment:
+      WHISPER_API_URL: "http://whisper-nvidia:9000"
+      OLLAMA_API_URL: "http://ollama:11434"
+      QDRANT_API_HOST: "qdrant"
+      QDRANT_API_PORT_GRPC: "6334"
+      LLM_MODEL: "dolphin-mistral:7b"
+      EMBEDDING_MODEL: "nomic-embed-text"
+      EMBEDDING_MODEL_DIM: "768"
+      LOG_LEVEL: "debug" # debug, info, warning, error
+
+  audio_transcript_frontend:
+    container_name: audio-transcript-frontend
+    restart: unless-stopped
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    depends_on:
+      - audio_transcript_server
+    ports:
+      - "7860:7860"
+    environment:
+      PORT: 7860
+      AUDIO_TRANSCRIPT_SERVER_URL: "http://audio-transcript-server:8880"
+      FRONTEND_SERVER_URL: "http://audio-transcript-frontend:7860"
+      DATA_DIR: "/app/data"
+    volumes:
+      - ./.data/frontend/:/app/data

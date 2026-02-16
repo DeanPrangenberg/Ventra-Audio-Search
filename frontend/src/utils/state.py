@@ -1,0 +1,18 @@
+from typing import Any
+from datetime import datetime, timezone
+
+def to_iso(dt_val) -> str:
+    if dt_val is None or dt_val == "":
+        return ""
+    if isinstance(dt_val, (int, float)):
+        return datetime.fromtimestamp(dt_val, tz=timezone.utc).isoformat().replace("+00:00", "Z")
+    if isinstance(dt_val, str):
+        return dt_val
+
+    return str(dt_val)
+
+def update_meta(value: str, files_state: list[dict[str, Any]], idx: int, field: str):
+    if not files_state or idx < 0 or idx >= len(files_state):
+        return files_state
+    files_state[idx][field] = value
+    return files_state

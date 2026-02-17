@@ -1,13 +1,39 @@
 import base64
+import hashlib
 import logging
 import os
-import uuid
 import shutil
+import time
+
 from mutagen.mp3 import MP3
 from pathlib import Path
 from typing import Any
 import src.config_manager as config_manager
 
+def file_sha256(path: str, chunk_size: int = 1024 * 1024) -> str:
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(chunk_size), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+def cleanup_upload_dir_ttl() -> None:
+    upload_dir = Path(os.environ.get("DATA_DIR", "/app/data")).resolve() / "uploads"
+    ttl_seconds = int(os.environ.get("FILE_CLEAN_UP", 30*60))
+
+    now = time.time()
+    if not upload_dir.exists():
+        return
+
+    for p in upload_dir.glob("*"):
+        if not p.is_file():
+            continue
+        try:
+            age = now - p.stat().st_mtime
+            if age > ttl_seconds:
+                p.unlink()
+        except Exception as e:
+            logging.warning(f"TTL cleanup failed for {p}: {e}")
 
 def persist_and_make_state(paths: list[str] | None) -> list[dict[str, Any]]:
     if not paths:
@@ -23,7 +49,7 @@ def persist_and_make_state(paths: list[str] | None) -> list[dict[str, Any]]:
     for src_path in paths:
         src = Path(src_path)
         ext = src.suffix.lower() or ".mp3"
-        unique_name = f"{uuid.uuid4().hex}{ext}"
+        unique_name = f"{file_sha256(src_path)}{ext}"
 
         dst = upload_dir / unique_name
         shutil.copy2(src, dst)

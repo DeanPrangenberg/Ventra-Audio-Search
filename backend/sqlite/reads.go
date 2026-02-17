@@ -55,7 +55,7 @@ WHERE audiofile_hash = ?;
 }
 
 // Stage-1 prefilter for vector search
-func (s *SQLiteStore) FTS5Candidates(ctx context.Context, userInput string, k int) ([]globalTypes.SegmentElement, error) {
+func (s *SQLiteStore) FTS5Candidates(ctx context.Context, userInput string, k int, category string, startDateISO string, endDateISO string) ([]globalTypes.SegmentElement, error) {
 	if strings.TrimSpace(userInput) == "" {
 		return nil, errors.New("userInput empty")
 	}
@@ -75,12 +75,16 @@ SELECT
   s.transcript,
   bm25(segments_fts) AS score
 FROM segments_fts
-JOIN segments s ON s.rowid = segments_fts.rowid
+JOIN segments s  ON s.rowid = segments_fts.rowid
+JOIN audiofiles a ON a.audiofile_hash = s.audiofile_hash
 WHERE segments_fts MATCH ?
+  AND a.recording_date >= ?
+  AND a.recording_date < ?
+  AND a.category IS ?
 ORDER BY score
 LIMIT ?;`
+	rows, err := s.db.QueryContext(ctx, q, ftsQuery, startDateISO, endDateISO, category, k)
 
-	rows, err := s.db.QueryContext(ctx, q, ftsQuery, k)
 	if err != nil {
 		return nil, err
 	}

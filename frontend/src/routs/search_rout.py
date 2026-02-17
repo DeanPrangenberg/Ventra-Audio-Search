@@ -8,6 +8,8 @@ import src.utils.state as state_utils
 from src.api import api
 from src.api.payloads import import_payload
 
+#TODO: Update this to display and send search not import payloads
+
 def do_backend_request(files_state: list[dict[str, Any]]):
     payload_list: list[import_payload.ImportPayload] = []
 
@@ -28,6 +30,7 @@ def do_backend_request(files_state: list[dict[str, Any]]):
             base64_data=file_utils.file_to_base64_str(file["download_path"]),
             duration_in_sec=file_utils.mp3_duration_seconds(file["download_path"])
         )
+
         payload_list.append(payload)
 
         api.API().import_request(payload_list)

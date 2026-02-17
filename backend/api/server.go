@@ -2,6 +2,7 @@ package api
 
 import (
 	"errors"
+	"go_audio_search_api_server/AudioDataRouter"
 	"go_audio_search_api_server/globalTypes"
 	"log/slog"
 	"net/http"
@@ -10,16 +11,22 @@ import (
 
 type Server struct {
 	port           string
-	routerTaskChan chan globalTypes.AudioDataElement
+	importTaskChan chan globalTypes.AudioDataElement
+	searchTaskChan chan globalTypes.SearchRequest
 	httpServer     *http.Server
 }
 
-func NewRestServer(port string, routerTaskChan chan globalTypes.AudioDataElement) *Server {
-	rs := &Server{port: port, routerTaskChan: routerTaskChan}
+func NewRestServer(port string, router *AudioDataRouter.RoutWorker) *Server {
+	rs := &Server{
+		port:           port,
+		importTaskChan: router.ImportTaskChan,
+		searchTaskChan: router.SearchTaskChan,
+	}
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", rs.handleHealth)
 	mux.HandleFunc("POST /import", rs.handleImport)
+	mux.HandleFunc("POST /search", rs.handleSearch)
 
 	rs.httpServer = &http.Server{
 		Addr:              ":" + rs.port,

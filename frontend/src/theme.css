@@ -1,0 +1,19 @@
+#error-markdown {
+  background-color: #f55 !important;
+  color: white !important;
+}
+
+.status {
+    padding: 8px 10px !important;
+    border-radius: 8px !important;
+}
+
+.status.ok {
+    background: #0f6 !important;
+    color: #052 !important;
+}
+
+.status.err {
+    background: #f55 !important;
+    color: #fff !important;
+}

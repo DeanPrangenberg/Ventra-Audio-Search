@@ -16,7 +16,8 @@ import (
 )
 
 type RoutWorker struct {
-	TaskChan       chan globalTypes.AudioDataElement
+	ImportTaskChan chan globalTypes.AudioDataElement
+	SearchTaskChan chan globalTypes.SearchRequest
 	StopChan       chan bool
 	whisper        *ai.WhisperApi
 	db             *sqlite.SQLiteStore
@@ -42,25 +43,25 @@ func NewRoutWorker(databasePath string, workerAmount uint8) *RoutWorker {
 	}
 
 	worker := RoutWorker{
-		TaskChan:   make(chan globalTypes.AudioDataElement),
-		StopChan:   make(chan bool),
-		whisper:    ai.NewWhisperApi(45.0),
-		db:         db,
-		embeddings: ai.NewEmbeddingsRequestHandler(),
-		qdrant:     client,
+		ImportTaskChan: make(chan globalTypes.AudioDataElement),
+		StopChan:       make(chan bool),
+		whisper:        ai.NewWhisperApi(45.0),
+		db:             db,
+		embeddings:     ai.NewEmbeddingsRequestHandler(),
+		qdrant:         client,
 	}
 
 	for i := uint8(0); i < workerAmount; i++ {
-		go worker.ProcessAudiofileElement()
+		go worker.ProcessChanInputs()
 	}
 
 	return &worker
 }
 
-func (w *RoutWorker) ProcessAudiofileElement() {
+func (w *RoutWorker) ProcessChanInputs() {
 	for {
 		select {
-		case inputElement := <-w.TaskChan:
+		case inputElement := <-w.ImportTaskChan:
 			if inputElement.RetryCounter > 10 {
 				slog.Error("Audio file element has been retried more than 10 times, skipping: " + inputElement.AudiofileHash)
 				continue
@@ -69,11 +70,11 @@ func (w *RoutWorker) ProcessAudiofileElement() {
 			if !inputElement.FileSavedOnDisk {
 				slog.Info("Creating new audio file on disk")
 
-				err := saveAudiofileElementToDisk(inputElement, w.TaskChan)
+				err := saveAudiofileElementToDisk(inputElement, w.ImportTaskChan)
 				if err != nil {
 					slog.Error(err.Error())
 					inputElement.RetryCounter++
-					w.TaskChan <- inputElement
+					w.ImportTaskChan <- inputElement
 					continue
 				}
 
@@ -89,7 +90,7 @@ func (w *RoutWorker) ProcessAudiofileElement() {
 				if err != nil {
 					slog.Error("Error inserting audio file into DB: " + err.Error())
 					inputElement.RetryCounter++
-					w.TaskChan <- inputElement
+					w.ImportTaskChan <- inputElement
 					continue
 				}
 
@@ -99,7 +100,7 @@ func (w *RoutWorker) ProcessAudiofileElement() {
 
 				inputElement.InitInsertedInDB = true
 
-				w.TaskChan <- inputElement
+				w.ImportTaskChan <- inputElement
 
 			} else if !inputElement.FullTranscriptInDB {
 				slog.Info("Creating Transcript for file: " + inputElement.AudiofileHash)
@@ -111,7 +112,7 @@ func (w *RoutWorker) ProcessAudiofileElement() {
 				if err != nil {
 					slog.Error("Error transcribing audio file: " + err.Error())
 					inputElement.RetryCounter++
-					w.TaskChan <- inputElement
+					w.ImportTaskChan <- inputElement
 					continue
 				}
 
@@ -146,7 +147,7 @@ func (w *RoutWorker) ProcessAudiofileElement() {
 				if err != nil {
 					slog.Error("Error updating full transcript in DB: " + err.Error())
 					inputElement.RetryCounter++
-					w.TaskChan <- inputElement
+					w.ImportTaskChan <- inputElement
 					continue
 				}
 
@@ -156,7 +157,7 @@ func (w *RoutWorker) ProcessAudiofileElement() {
 				if err != nil {
 					slog.Error("Error inserting audio segments in DB: " + err.Error())
 					inputElement.RetryCounter++
-					w.TaskChan <- inputElement
+					w.ImportTaskChan <- inputElement
 					continue
 				}
 
@@ -167,7 +168,7 @@ func (w *RoutWorker) ProcessAudiofileElement() {
 				inputElement.FullTranscriptInDB = true
 				inputElement.AllSegmentsInDB = true
 
-				w.TaskChan <- inputElement
+				w.ImportTaskChan <- inputElement
 
 			} else if !inputElement.SegmentsEmbeddingCreated {
 				slog.Info("Creating Embeddings for Segments for file: " + inputElement.AudiofileHash)
@@ -181,7 +182,7 @@ func (w *RoutWorker) ProcessAudiofileElement() {
 					if err != nil {
 						slog.Error("Error creating embeddings for file: " + inputElement.AudiofileHash + err.Error())
 						inputElement.RetryCounter++
-						w.TaskChan <- inputElement
+						w.ImportTaskChan <- inputElement
 						continue
 					}
 					segment.TranscriptEmbedding = embedding
@@ -199,7 +200,7 @@ func (w *RoutWorker) ProcessAudiofileElement() {
 				if err != nil {
 					slog.Error("Error inserting audio segments in Vector-DB: " + err.Error())
 					inputElement.RetryCounter++
-					w.TaskChan <- inputElement
+					w.ImportTaskChan <- inputElement
 					continue
 				}
 
@@ -209,7 +210,7 @@ func (w *RoutWorker) ProcessAudiofileElement() {
 
 				inputElement.SegmentsEmbeddingCreated = true
 
-				w.TaskChan <- inputElement
+				w.ImportTaskChan <- inputElement
 
 			} else if !inputElement.AISummaryInDB {
 				w.llmLock.Lock()
@@ -228,7 +229,7 @@ func (w *RoutWorker) ProcessAudiofileElement() {
 				if err != nil {
 					slog.Error("Error creating summary for file: " + inputElement.AudiofileHash + ", " + err.Error())
 					inputElement.RetryCounter++
-					w.TaskChan <- inputElement
+					w.ImportTaskChan <- inputElement
 					continue
 				}
 
@@ -242,7 +243,7 @@ func (w *RoutWorker) ProcessAudiofileElement() {
 				if err != nil {
 					slog.Error("Error updating summary in DB: " + err.Error())
 					inputElement.RetryCounter++
-					w.TaskChan <- inputElement
+					w.ImportTaskChan <- inputElement
 					continue
 				}
 
@@ -250,7 +251,7 @@ func (w *RoutWorker) ProcessAudiofileElement() {
 
 				inputElement.AISummaryInDB = true
 
-				w.TaskChan <- inputElement
+				w.ImportTaskChan <- inputElement
 
 			} else if !inputElement.AIKeywordsInDB {
 				w.llmLock.Lock()
@@ -269,7 +270,7 @@ func (w *RoutWorker) ProcessAudiofileElement() {
 				if err != nil {
 					slog.Error("Error creating keywords for file: " + inputElement.AudiofileHash + ", " + err.Error())
 					inputElement.RetryCounter++
-					w.TaskChan <- inputElement
+					w.ImportTaskChan <- inputElement
 					continue
 				}
 
@@ -278,7 +279,7 @@ func (w *RoutWorker) ProcessAudiofileElement() {
 				if err != nil {
 					slog.Error("AI returned keywords in unexpected format for file: " + inputElement.AudiofileHash + ", " + err.Error())
 					inputElement.RetryCounter++
-					w.TaskChan <- inputElement
+					w.ImportTaskChan <- inputElement
 					continue
 				}
 
@@ -296,7 +297,7 @@ func (w *RoutWorker) ProcessAudiofileElement() {
 				if err != nil {
 					slog.Error("Error updating Keywords in DB: " + err.Error())
 					inputElement.RetryCounter++
-					w.TaskChan <- inputElement
+					w.ImportTaskChan <- inputElement
 					continue
 				}
 
@@ -305,13 +306,32 @@ func (w *RoutWorker) ProcessAudiofileElement() {
 				inputElement.AIKeywordsInDB = true
 				inputElement.FullyCompleted = true
 
-				w.TaskChan <- inputElement
+				w.ImportTaskChan <- inputElement
 
 			} else if inputElement.FullyCompleted {
 				slog.Info("Processing fully completed audio file: " + inputElement.AudiofileHash)
 			} else {
 				slog.Warn("Received audio file element with unknown state: " + inputElement.AudiofileHash)
 			}
+		case inputElement := <-w.SearchTaskChan:
+
+			//TODO: Implement the search logic
+			// Find Fts5 Candidates
+
+			// Extract All Segment IDs
+
+			// Create Embedding of segmantic search
+
+			// Do qdrant requests get Top K
+
+			// for every top k
+			// Load Full Audio File data
+			// Load Top K segment
+
+			// Build Response
+
+			// send response via chan
+
 		case <-w.StopChan:
 			return
 		}

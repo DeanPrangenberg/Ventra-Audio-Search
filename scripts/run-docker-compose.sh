@@ -2,13 +2,10 @@
 set -euo pipefail
 
 echo "Starting Docker Compose services..."
-docker compose build --no-cache audio_transcript_server
-docker compose build --no-cache audio_transcript_frontend
-docker compose up -d --force-recreate audio_transcript_server
-docker compose up -d --force-recreate audio_transcript_frontend
+docker compose up -d --build --force-recreate
 echo "Docker Compose services are running."
 
-CONTAINERS=("ollama" "whisper-server" "audio-transcript-server" "audio-transcript-frontend")
+CONTAINERS=("ollama" "whisper-server" "qdrant" "audio-transcript-server" "audio-transcript-frontend")
 
 echo "Waiting for containers to be running..."
 for C in "${CONTAINERS[@]}"; do
@@ -48,3 +45,4 @@ echo ""
 echo "===================================================="
 echo "= Setup complete. All services are up and running. ="
 echo "===================================================="
+echo ""

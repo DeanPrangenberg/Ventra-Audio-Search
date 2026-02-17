@@ -89,5 +89,6 @@ services:
       AUDIO_TRANSCRIPT_SERVER_URL: "http://audio-transcript-server:8880"
       FRONTEND_SERVER_URL: "http://audio-transcript-frontend:7860"
       DATA_DIR: "/app/data"
+      FILE_CLEAN_UP: 300 # 5 min
     volumes:
       - ./.data/frontend/:/app/data

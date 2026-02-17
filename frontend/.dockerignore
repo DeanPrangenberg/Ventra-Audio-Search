@@ -2,6 +2,7 @@
 __pycache__/
 *.pyo
 *.pyd
+*.pyc
 .git
 .DS_Store
 config.json

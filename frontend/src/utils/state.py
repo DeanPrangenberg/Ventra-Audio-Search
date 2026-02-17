@@ -11,6 +11,19 @@ def to_iso(dt_val) -> str:
 
     return str(dt_val)
 
+def iso_to_timestamp(val) -> int | str:
+    if val is None or val == "":
+        return ""
+    if isinstance(val, (int, float)):
+        return int(val)
+    if isinstance(val, str):
+        s = val.replace("Z", "+00:00")
+        dt = datetime.fromisoformat(s)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return int(dt.timestamp())
+    return ""
+
 def update_meta(value: str, files_state: list[dict[str, Any]], idx: int, field: str):
     if not files_state or idx < 0 or idx >= len(files_state):
         return files_state

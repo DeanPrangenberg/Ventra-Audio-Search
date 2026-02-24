@@ -1,130 +1,118 @@
 import logging
-import os
 from typing import Any
 
 import gradio as gr
-import src.utils.file as file_utils
-import src.utils.state as state_utils
+
+import config_manager
 from src.api import api
-from src.api.payloads import import_payload
+import src.utils.state as state_utils
+from src.api.payloads import search_payload
 
-#TODO: Update this to display and send search not import payloads
 
-def do_backend_request(files_state: list[dict[str, Any]]):
-    payload_list: list[import_payload.ImportPayload] = []
+# TODO: Update this to display and send search not import payloads
 
-    for idx, file in enumerate(files_state):
-        title = file.get("title", "")
-        category = file.get("category", "")
-        audio_type = file.get("audio_type", "")
-        user_summary = file.get("summary", "")
-        recording_date_raw = file.get("time", "")
-        recording_date = state_utils.to_iso(recording_date_raw)
+def do_backend_request(state: dict[str, Any]):
+    fts5_query: str = state.get("fts5_query", "")
+    semantic_search_query: str = state.get("semantic_search_query", "")
+    category: str = state.get("category", "")
+    start_time_period: int | float = state.get("start_time_period", "")
+    end_time_period: int | float = state.get("end_time_period", "")
+    max_segment_return: int = state.get("max_segment_return", "")
 
-        logging.info("Creating payload for file idx=%s, title=%s, recording_date=%s, user_summary=%s", idx, title, recording_date, user_summary)
+    logging.info("Creating Search payload payload: fts5_query=%s, semantic_search_query=%s, category=%s", fts5_query,
+                 semantic_search_query, category)
 
-        payload = import_payload.ImportPayload(
-            title=title,
-            recording_date=recording_date,
-            user_summary=user_summary,
-            base64_data=file_utils.file_to_base64_str(file["download_path"]),
-            duration_in_sec=file_utils.mp3_duration_seconds(file["download_path"])
-        )
+    payload = search_payload.SearchPayload(
+        fts5_query=fts5_query,
+        semantic_search_query=semantic_search_query,
+        category=category,
+        start_time_period=start_time_period,
+        end_time_period=end_time_period,
+        max_segment_return=max_segment_return
+    )
 
-        payload_list.append(payload)
+    api.API().search_request(payload)
 
-        api.API().import_request(payload_list)
 
 def mount_import_routes(app: gr.Blocks):
     with app.route("Import"):
-        gr.Markdown("# Import Audio Files")
-        gr.Markdown(
-            """
-        This page uploads new audio files.
-        For each file you can set metadata.
-        Later you send file URLs + metadata to the backend. The backend downloads the MP3 via that URL.
-        """
+        gr.Markdown("# Search Audio Files")
+        gr.Markdown("""
+            This page is for semantic search — results are matched by meaning, not just exact keywords.
+            """)
+
+        input_state = gr.State()
+
+        @gr.render(inputs=input_state)
+        def show_search_mask(state):
+            fts5_query = gr.Text(
+                label="Keywords",
+                placeholder="Enter exact keywords like (Deadline, Project x), some words you remember that was talked about",
+                value=state.get("fts5_query", None),
+                interactive=True
             )
 
-        # Holds [{orig_name, stored_path, file_url, title, summary}, ...]
-        files_state = gr.State([])
+            semantic_search_query = gr.Text(
+                label="Question",
+                placeholder="Enter a question like (When is the deadline for project x)",
+                value=state.get("semantic_search_query", None),
+                interactive=True
+            )
 
-        file_upload = gr.File(
-            label="Upload MP3 Audio Files",
-            file_types=[".mp3"],
-            file_count="multiple",
-            type="filepath",
-        )
+            category = gr.Dropdown(
+                label="Choose a Category",
+                choices=config_manager.ConfigManager().get_category_list(),
+                value=state.get("category", None),
+                interactive=True
+            )
 
-        # When upload changes, persist files + create urls
-        file_upload.change(
-            fn=file_utils.persist_and_make_state,
-            inputs=[file_upload],
-            outputs=[files_state],
-        )
+            start_time_period = gr.DateTime(
+                label="Search range start",
+                value=state.get("start_time_period", None),
+                interactive=True
+            )
 
-        send_btn = gr.Button("Send configured files to backend", variant="primary")
-        send_result = gr.Markdown()
+            end_time_period = gr.DateTime(
+                label="Search range end",
+                value=state.get("end_time_period", None),
+                interactive=True
+            )
 
-        send_btn.click(
-            fn=do_backend_request,
-            inputs=[files_state],
-            outputs=[send_result],
-        )
+            fts5_query.change(
+                fn=state_utils.update_meta_single,
+                inputs=[fts5_query, state, "fts5_query"],
+                outputs=[state]
+            )
 
-        @gr.render(inputs=files_state)
-        def show_audio(state):
-            if not state:
-                gr.Markdown("No files uploaded.")
-                return
+            semantic_search_query.change(
+                fn=state_utils.update_meta_single,
+                inputs=[semantic_search_query, state, "semantic_search_query"],
+                outputs=[state]
+            )
 
-            for idx, f in enumerate(state):
-                label = f"{f['orig_name']}"
+            category.change(
+                fn=state_utils.update_meta_single,
+                inputs=[category, state, "category"],
+                outputs=[state]
+            )
 
-                with gr.Accordion(label=label, open=True):
-                    title = gr.Textbox(label="Set a Title", value=f.get("title", ""))
-                    category = gr.Textbox(label="Set a Category (Team Name....)", value=f.get("category", ""))
-                    audio_type = gr.Dropdown(value="Meeting", choices=["Meeting", "Media", "Generic"])
-                    summary = gr.Textbox(
-                        label="Write a little summary",
-                        value=f.get("summary", ""),
-                        lines=3,
-                    )
+            start_time_period.change(
+                fn=state_utils.update_meta_single,
+                inputs=[start_time_period, state, "start_time_period"],
+                outputs=[state]
+            )
 
-                    record_time = gr.DateTime(
-                        label="Enter Recording date & time",
-                    )
+            end_time_period.change(
+                fn=state_utils.update_meta_single,
+                inputs=[end_time_period, state, "end_time_period"],
+                outputs=[state]
+            )
 
-                    # Update state when fields change
-                    title.change(
-                        fn=lambda v, s, i=idx: state_utils.update_meta(v, s, i, "title"),
-                        inputs=[title, files_state],
-                        outputs=[files_state],
-                        queue=False,
-                    )
-                    category.change(
-                        fn=lambda v, s, i=idx: state_utils.update_meta(v, s, i, "category"),
-                        inputs=[category, files_state],
-                        outputs=[files_state],
-                        queue=False,
-                    )
-                    audio_type.change(
-                        fn=lambda v, s, i=idx: state_utils.update_meta(v, s, i, "audio_type"),
-                        inputs=[audio_type, files_state],
-                        outputs=[files_state],
-                        queue=False,
-                    )
-                    summary.change(
-                        fn=lambda v, s, i=idx: state_utils.update_meta(v, s, i, "summary"),
-                        inputs=[summary, files_state],
-                        outputs=[files_state],
-                        queue=False,
-                    )
-                    record_time.change(
-                        fn=lambda v, s, i=idx: state_utils.update_meta(v, s, i, "time"),
-                        inputs=[record_time, files_state],
-                        outputs=[files_state],
-                        queue=False,
-                    )
+            send_btn = gr.Button("Send Search Request", variant="primary")
+            send_result = gr.Markdown()
 
-                    gr.Audio(f["stored_path"], label=os.path.basename(f["stored_path"]))
+            send_btn.click(
+                fn=do_backend_request,
+                inputs=[state],
+                outputs=[send_result]
+            )

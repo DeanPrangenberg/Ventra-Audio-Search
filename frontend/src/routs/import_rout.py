@@ -132,31 +132,31 @@ def mount_import_routes(app: gr.Blocks):
 
                     # Update state when fields change
                     title.change(
-                        fn=lambda v, s, i=idx: state_utils.update_meta(v, s, i, "title"),
+                        fn=lambda v, s, i=idx: state_utils.update_meta_array(v, s, i, "title"),
                         inputs=[title, files_state],
                         outputs=[files_state],
                         queue=False,
                     )
                     category.change(
-                        fn=lambda v, s, i=idx: state_utils.update_meta(v, s, i, "category"),
+                        fn=lambda v, s, i=idx: state_utils.update_meta_array(v, s, i, "category"),
                         inputs=[category, files_state],
                         outputs=[files_state],
                         queue=False,
                     )
                     audio_type.change(
-                        fn=lambda v, s, i=idx: state_utils.update_meta(v, s, i, "audio_type"),
+                        fn=lambda v, s, i=idx: state_utils.update_meta_array(v, s, i, "audio_type"),
                         inputs=[audio_type, files_state],
                         outputs=[files_state],
                         queue=False,
                     )
                     summary.change(
-                        fn=lambda v, s, i=idx: state_utils.update_meta(v, s, i, "summary"),
+                        fn=lambda v, s, i=idx: state_utils.update_meta_array(v, s, i, "summary"),
                         inputs=[summary, files_state],
                         outputs=[files_state],
                         queue=False,
                     )
                     record_time.change(
-                        fn=lambda v, s, i=idx: state_utils.update_meta(v, s, i, "time"),
+                        fn=lambda v, s, i=idx: state_utils.update_meta_array(v, s, i, "time"),
                         inputs=[record_time, files_state],
                         outputs=[files_state],
                         queue=False,

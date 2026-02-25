@@ -41,7 +41,7 @@ def mount_import_routes(app: gr.Blocks):
             This page is for semantic search — results are matched by meaning, not just exact keywords.
             """)
 
-        input_state = gr.State()
+        input_state = gr.State(dict[str, Any])
 
         @gr.render(inputs=input_state)
         def show_search_mask(state):

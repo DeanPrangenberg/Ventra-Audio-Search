@@ -76,21 +76,47 @@ func (c *Client) UpsertSegmentEmbedding(ctx context.Context, elements []globalTy
 	return nil
 }
 
-func (c *Client) FindTopNSegment(ctx context.Context, queryVec []float32, n uint64) ([]map[string]any, error) {
+func (c *Client) RerankCandidatesByHashes(
+	ctx context.Context,
+	queryVec []float32,
+	candidateSegmentHashes []string,
+	n uint64,
+) ([]globalTypes.SegmentElement, error) {
 	if len(queryVec) == 0 {
 		return nil, errors.New("queryVec empty")
 	}
+
+	if len(candidateSegmentHashes) == 0 {
+		return []globalTypes.SegmentElement{}, nil
+	}
+
 	if n == 0 {
 		n = 10
 	}
 
-	var resp []*qdrant.ScoredPoint
-	var err error
+	// Candidate IDs
+	ids := make([]*qdrant.PointId, 0, len(candidateSegmentHashes))
+	for _, h := range candidateSegmentHashes {
+		ids = append(ids, segmentHashToPointID(h))
+	}
 
-	resp, err = c.client.Query(ctx, &qdrant.QueryPoints{
+	filter := &qdrant.Filter{
+		Must: []*qdrant.Condition{
+			{
+				ConditionOneOf: &qdrant.Condition_HasId{
+					HasId: &qdrant.HasIdCondition{
+						HasId: ids,
+					},
+				},
+			},
+		},
+	}
+
+	resp, err := c.client.Query(ctx, &qdrant.QueryPoints{
 		CollectionName: c.collectionName,
 		Query:          qdrant.NewQuery(queryVec...),
 		Limit:          &n,
+		Filter:         filter,
 		WithPayload:    qdrant.NewWithPayloadInclude("SegmentHash"),
 	})
 
@@ -98,22 +124,13 @@ func (c *Client) FindTopNSegment(ctx context.Context, queryVec []float32, n uint
 		return nil, err
 	}
 
-	out := make([]map[string]any, 0, len(resp))
-	for _, element := range resp {
-		tmp := make(map[string]any)
-		if element.Payload != nil {
-			for key, value := range element.Payload {
-				tmp[key] = value
-			}
+	out := make([]globalTypes.SegmentElement, 0, len(resp))
+	for _, p := range resp {
+		segment := globalTypes.SegmentElement{
+			SegmentHash: p.Payload["SegmentHash"].GetStringValue(),
+			QueryScore:  p.Score,
 		}
-
-		tmp["score"] = element.Score
-
-		out = append(out, tmp)
-	}
-
-	if len(out) == 0 {
-		return out, nil
+		out = append(out, segment)
 	}
 
 	return out, nil

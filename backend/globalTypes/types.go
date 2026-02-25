@@ -45,51 +45,6 @@ type SegmentElement struct {
 	QueryScore              float32   `json:"vector_score"`
 }
 
-type SearchRequest struct {
-	Fts5Query           string `json:"fts5_query"`
-	SemanticSearchQuery string `json:"semantic_search_query"`
-	Category            string `json:"category"`
-	StartTimePeriodIso  string `json:"start_time_period_iso"`
-	EndTimePeriodIso    string `json:"end_time_period_iso"`
-	MaxSegmentReturn    string `json:"max_segment_return"`
-	BackendResponseChan chan SearchResponse
-}
-
-type SearchResponse struct {
-	RelatedAudioData []AudioDataElement `json:"full_audio_data,omitempty"`
-	TopKSegments     []SegmentElement   `json:"top_k_segments,omitempty"`
-	Ok               bool               `json:"ok"`
-	Err              string             `json:"error,omitempty"`
-}
-
-func (s *SearchRequest) ValidateApiInput() error {
-	if s.Fts5Query == "" {
-		return fmt.Errorf("fts5_query is empty")
-	}
-
-	if s.SemanticSearchQuery == "" {
-		return fmt.Errorf("semantic_search_query is empty")
-	}
-
-	if s.Category == "" {
-		return fmt.Errorf("category is empty")
-	}
-
-	if s.StartTimePeriodIso == "" {
-		return fmt.Errorf("start_time_period_iso is empty")
-	}
-
-	if s.EndTimePeriodIso == "" {
-		return fmt.Errorf("end_time_period_iso is empty")
-	}
-
-	if s.MaxSegmentReturn == "" {
-		return fmt.Errorf("max_segment_return is empty")
-	}
-
-	return nil
-}
-
 func (s *AudioDataElement) ValidateApiInput() error {
 	if s.Title == "" {
 		return fmt.Errorf("title is empty")

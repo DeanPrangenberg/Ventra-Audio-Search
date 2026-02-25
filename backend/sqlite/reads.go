@@ -8,42 +8,23 @@ import (
 	"strings"
 )
 
-type AudioRow struct {
-	AudiofileHash   string
-	Title           sql.NullString
-	RecordingDate   sql.NullString
-	FileUrl         sql.NullString
-	DownloadPath    sql.NullString
-	DurationInSec   float64
-	TranscriptFull  sql.NullString
-	UserSummaryText sql.NullString
-	AIKeywordsJSON  sql.NullString
-	AISummary       sql.NullString
-	CreatedAt       string
-	UpdatedAt       string
-}
-
-func (s *SQLiteStore) GetAudio(ctx context.Context, audioHash string) (*AudioRow, error) {
+func (s *SQLiteStore) GetSearchAudioDataByHash(ctx context.Context, audioHash string) (*globalTypes.SearchAudioData, error) {
 	const q = `
-SELECT audiofile_hash, title, recording_date, file_url, download_path, duration_in_sec,
-       transcript_full, user_summary_text, ai_keywords_json, ai_summary, created_at, updated_at
+SELECT audiofile_hash, title, recording_date, duration_in_sec,
+       transcript_full, user_summary_text, ai_keywords_json, ai_summary
 FROM audiofiles
 WHERE audiofile_hash = ?;
 `
-	var r AudioRow
+	var r globalTypes.SearchAudioData
 	err := s.db.QueryRowContext(ctx, q, audioHash).Scan(
 		&r.AudiofileHash,
 		&r.Title,
 		&r.RecordingDate,
-		&r.FileUrl,
-		&r.DownloadPath,
 		&r.DurationInSec,
 		&r.TranscriptFull,
-		&r.UserSummaryText,
-		&r.AIKeywordsJSON,
-		&r.AISummary,
-		&r.CreatedAt,
-		&r.UpdatedAt,
+		&r.UserSummary,
+		&r.AiKeywords,
+		&r.AiSummary,
 	)
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, nil
@@ -54,7 +35,37 @@ WHERE audiofile_hash = ?;
 	return &r, nil
 }
 
-// Stage-1 prefilter for vector search
+func (s *SQLiteStore) GetSegmentByHash(ctx context.Context, segmentHash string) (*globalTypes.SearchSegmentData, error) {
+	const q = `
+SELECT segment_hash, audiofile_hash, start_sec, end_sec, transcript
+FROM segments
+WHERE segment_hash = ?;
+`
+	var r globalTypes.SearchSegmentData
+	var start, end float64
+
+	err := s.db.QueryRowContext(ctx, q, segmentHash).Scan(
+		&r.SegmentHash,
+		&r.AudiofileHash,
+		&start,
+		&end,
+		&r.Transcript,
+	)
+
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, nil
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	r.StartInSec = float32(start)
+	r.EndInSec = float32(end)
+
+	return &r, nil
+}
+
 func (s *SQLiteStore) FTS5Candidates(ctx context.Context, userInput string, k int, category string, startDateISO string, endDateISO string) ([]globalTypes.SegmentElement, error) {
 	if strings.TrimSpace(userInput) == "" {
 		return nil, errors.New("userInput empty")

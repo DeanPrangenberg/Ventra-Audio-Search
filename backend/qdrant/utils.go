@@ -49,12 +49,6 @@ func loadEnv(key string) string {
 func segmentHashToPointID(segmentHash string) *qdrant.PointId {
 	segmentHash = strings.TrimSpace(segmentHash)
 
-	// 1) Falls segmentHash bereits UUID ist -> direkt nehmen
-	if _, err := uuid.Parse(segmentHash); err == nil {
-		return qdrant.NewIDUUID(segmentHash)
-	}
-
-	// 2) Sonst deterministische UUID v5 aus segmentHash
 	id := uuid.NewSHA1(uuid.NameSpaceOID, []byte(segmentHash)) // stabil
 	return qdrant.NewIDUUID(id.String())
 }

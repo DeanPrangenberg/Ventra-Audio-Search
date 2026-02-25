@@ -50,5 +50,12 @@ if __name__ == "__main__":
 
     port = int(os.environ.get("PORT", "7860"))
 
-    css = Path("src/theme.css").read_text(encoding="utf-8")
+    css_path = Path("src/theme.css")
+    try:
+        with open(css_path, "rt", encoding="utf-8") as f:
+            css = f.read()
+    except FileNotFoundError:
+        logging.error("CSS file " + css_path.__str__() + " not found")
+        css = ""
+
     demo.launch(allowed_paths=[config_manager.ConfigManager().get_upload_dir()], server_name="0.0.0.0", server_port=port, css=css)

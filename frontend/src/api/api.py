@@ -103,8 +103,7 @@ class API:
         match response_code:
             case 200:
                 logging.info("Search Request successful")
-
-                return None
+                return True, response_json
             case 413:
                 error_str = f"Payload too large. The limit is {response_json.get('limit')} bytes."
             case 415:
@@ -118,5 +117,5 @@ class API:
                 error_str = f"Unexpected status code {response_code}. Response: {response_json}"
 
         logging.error(error_str)
-        return error_str
+        return False, error_str
 

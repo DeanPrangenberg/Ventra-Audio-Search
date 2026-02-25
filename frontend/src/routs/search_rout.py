@@ -41,10 +41,10 @@ def mount_import_routes(app: gr.Blocks):
             This page is for semantic search — results are matched by meaning, not just exact keywords.
             """)
 
-        input_state = gr.State([])
+        @gr.render
+        def show_search_mask():
+            state = gr.State(dict[str, Any])
 
-        @gr.render(inputs=input_state)
-        def show_search_mask(state):
             fts5_query = gr.Text(
                 label="Keywords",
                 placeholder="Enter exact keywords like (Deadline, Project x), some words you remember that was talked about",
@@ -79,32 +79,32 @@ def mount_import_routes(app: gr.Blocks):
             )
 
             fts5_query.change(
-                fn=state_utils.update_meta_single,
-                inputs=[fts5_query, state, "fts5_query"],
+                fn=lambda v, s: state_utils.update_meta_single(v, s, "fts5_query"),
+                inputs=[fts5_query, state],
                 outputs=[state]
             )
 
             semantic_search_query.change(
-                fn=state_utils.update_meta_single,
-                inputs=[semantic_search_query, state, "semantic_search_query"],
+                fn=lambda v, s: state_utils.update_meta_single(v, s, "semantic_search_query"),
+                inputs=[semantic_search_query, state],
                 outputs=[state]
             )
 
             category.change(
-                fn=state_utils.update_meta_single,
-                inputs=[category, state, "category"],
+                fn=lambda v, s: state_utils.update_meta_single(v, s, "category"),
+                inputs=[category, state],
                 outputs=[state]
             )
 
             start_time_period.change(
-                fn=state_utils.update_meta_single,
-                inputs=[start_time_period, state, "start_time_period"],
+                fn=lambda v, s: state_utils.update_meta_single(v, s, "start_time_period"),
+                inputs=[start_time_period, state],
                 outputs=[state]
             )
 
             end_time_period.change(
-                fn=state_utils.update_meta_single,
-                inputs=[end_time_period, state, "end_time_period"],
+                fn=lambda v, s: state_utils.update_meta_single(v, s, "end_time_period"),
+                inputs=[end_time_period, state],
                 outputs=[state]
             )
 

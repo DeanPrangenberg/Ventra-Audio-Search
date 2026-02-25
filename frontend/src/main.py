@@ -43,6 +43,7 @@ if __name__ == "__main__":
 
     import_rout.mount_import_routes(demo)
     config_rout.mount_config_routes(demo)
+    search_rout.mount_import_routes(demo)
 
     start_ttl_cleanup_thread()
 

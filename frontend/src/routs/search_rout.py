@@ -41,10 +41,10 @@ def mount_import_routes(app: gr.Blocks):
             This page is for semantic search — results are matched by meaning, not just exact keywords.
             """)
 
-        @gr.render()
-        def show_search_mask():
-            state = gr.State(dict[str, Any])
+        search_state = gr.State({})
 
+        @gr.render(inputs=search_state)
+        def show_search_mask(state):
             fts5_query = gr.Text(
                 label="Keywords",
                 placeholder="Enter exact keywords like (Deadline, Project x), some words you remember that was talked about",

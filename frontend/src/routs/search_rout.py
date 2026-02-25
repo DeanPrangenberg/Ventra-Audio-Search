@@ -48,33 +48,33 @@ def mount_import_routes(app: gr.Blocks):
             fts5_query = gr.Text(
                 label="Keywords",
                 placeholder="Enter exact keywords like (Deadline, Project x), some words you remember that was talked about",
-                value=state.value.get("fts5_query", None),
+                value=state.get("fts5_query", None),
                 interactive=True
             )
 
             semantic_search_query = gr.Text(
                 label="Question",
                 placeholder="Enter a question like (When is the deadline for project x)",
-                value=state.value.get("semantic_search_query", None),
+                value=state.get("semantic_search_query", None),
                 interactive=True
             )
 
             category = gr.Dropdown(
                 label="Choose a Category",
                 choices=config_manager.ConfigManager().get_category_list(),
-                value=state.value.get("category", None),
+                value=state.get("category", None),
                 interactive=True
             )
 
             start_time_period = gr.DateTime(
                 label="Search range start",
-                value=state.value.get("start_time_period", None),
+                value=state.get("start_time_period", None),
                 interactive=True
             )
 
             end_time_period = gr.DateTime(
                 label="Search range end",
-                value=state.value.get("end_time_period", None),
+                value=state.get("end_time_period", None),
                 interactive=True
             )
 

@@ -1,5 +1,6 @@
-from typing import Any
 from datetime import datetime, timezone
+from typing import Any
+
 
 def to_iso(dt_val) -> str:
     if dt_val is None or dt_val == "":

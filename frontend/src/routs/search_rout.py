@@ -4,8 +4,8 @@ from typing import Any
 import gradio as gr
 
 import config_manager
-from src.api import api
 import src.utils.state as state_utils
+from src.api import api
 from src.api.payloads import search_payload
 
 
@@ -82,30 +82,40 @@ def mount_import_routes(app: gr.Blocks):
             fn=lambda v, s: state_utils.update_meta_single(v, s, "fts5_query"),
             inputs=[fts5_query, state],
             outputs=[state],
+            api_visibility="private",
+            queue=False,
         )
 
         semantic_search_query.change(
             fn=lambda v, s: state_utils.update_meta_single(v, s, "semantic_search_query"),
             inputs=[semantic_search_query, state],
             outputs=[state],
+            api_visibility="private",
+            queue=False,
         )
 
         category.change(
             fn=lambda v, s: state_utils.update_meta_single(v, s, "category"),
             inputs=[category, state],
             outputs=[state],
+            api_visibility="private",
+            queue=False,
         )
 
         start_time_period.change(
             fn=lambda v, s: state_utils.update_meta_single(v, s, "start_time_period"),
             inputs=[start_time_period, state],
             outputs=[state],
+            api_visibility="private",
+            queue=False,
         )
 
         end_time_period.change(
             fn=lambda v, s: state_utils.update_meta_single(v, s, "end_time_period"),
             inputs=[end_time_period, state],
             outputs=[state],
+            api_visibility="private",
+            queue=False,
         )
 
         send_btn = gr.Button("Send Search Request", variant="primary")
@@ -115,4 +125,5 @@ def mount_import_routes(app: gr.Blocks):
             fn=do_backend_request,
             inputs=[state],
             outputs=[send_result],
+            api_visibility="private",
         )

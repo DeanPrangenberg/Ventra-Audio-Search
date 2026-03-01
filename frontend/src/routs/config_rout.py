@@ -1,4 +1,5 @@
 import gradio as gr
+
 import src.config_manager as config_manager
 
 
@@ -61,12 +62,14 @@ def mount_config_routes(app: gr.Blocks):
             inputs=[],
             outputs=[needs_save_state, save_button],
             queue=False,
+            api_visibility="private",
         )
         category_input.change(
             fn=mark_dirty,
             inputs=[],
             outputs=[needs_save_state, save_button],
             queue=False,
+            api_visibility="private",
         )
 
         # Reset button -> restore saved values and clear dirty
@@ -75,6 +78,7 @@ def mount_config_routes(app: gr.Blocks):
             inputs=[],
             outputs=[backend_url, category_input, needs_save_state, save_button],
             queue=False,
+            api_visibility="private",
         )
 
         # Save button -> persist and clear dirty
@@ -83,4 +87,5 @@ def mount_config_routes(app: gr.Blocks):
             inputs=[backend_url, category_input],
             outputs=[needs_save_state, save_button],
             queue=False,
+            api_visibility="private",
         )

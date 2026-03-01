@@ -9,8 +9,8 @@ class ImportPayload:
         audio_type: str,
         duration_in_sec: float,
         user_summary: str,
-        base64_data: str,
-        file_url: str,
+        base64_data: str = False,
+        file_url: str = False,
     ):
 
         self.title = title

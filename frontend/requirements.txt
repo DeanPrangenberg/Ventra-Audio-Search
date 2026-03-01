@@ -1,3 +1,4 @@
 requests
 gradio
 mutagen
+feedparser

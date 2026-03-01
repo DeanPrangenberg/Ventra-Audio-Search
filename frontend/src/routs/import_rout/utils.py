@@ -4,10 +4,19 @@ from typing import Any
 
 import gradio as gr
 
-import api
+from src.api.api import API
+import config_manager
 from api.payloads import import_payload
 from src.utils import file as file_utils
+from urllib.parse import urlparse
+import utils.state as state_utils
 
+def is_valid_url(url: str) -> bool:
+    try:
+        parsed = urlparse(url)
+        return parsed.scheme in {"http", "https"} and bool(parsed.netloc)
+    except Exception:
+        return False
 
 def cleanup_uploaded_files(files_state: list[dict[str, Any]]) -> None:
     for f in files_state:
@@ -44,7 +53,7 @@ def do_backend_request(files_state: list[dict[str, Any]]):
             )
         )
 
-    return_value = api.API().import_request(payload_list)
+    return_value = API().import_request(payload_list)
 
     if not return_value:
         cleanup_uploaded_files(files_state)

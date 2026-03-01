@@ -10,7 +10,8 @@ import gradio as gr
 import config_manager
 import utils.file
 import utils.rss
-from routs import import_rout, config_rout, search_rout
+from routs import config_rout, search_rout
+from routs.import_rout.render import mount_import_routes
 
 
 # Clean files every 5 min
@@ -44,14 +45,14 @@ if __name__ == "__main__":
             """
         )
 
-    import_rout.mount_import_routes(demo)
+    mount_import_routes(demo)
     config_rout.mount_config_routes(demo)
-    search_rout.mount_import_routes(demo)
+    search_rout.mount_search_routes(demo)
 
     start_ttl_cleanup_thread()
 
 
-    port = int(os.environ.get("PORT", "7860"))
+    port = int(os.environ.get("PORT", "7861"))
 
     css_path = Path("src/theme.css")
     try:

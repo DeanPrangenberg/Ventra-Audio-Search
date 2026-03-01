@@ -37,7 +37,7 @@ def do_backend_request(state: dict[str, Any]) -> str:
     return res
 
 
-def mount_import_routes(app: gr.Blocks):
+def mount_search_routes(app: gr.Blocks):
     with app.route("Search"):
         gr.Markdown("# Search Audio Files")
         gr.Markdown("This page is for semantic search — results are matched by meaning, not just exact keywords.")

@@ -1,41 +1,43 @@
 import logging
 from datetime import timezone, datetime
 from email.utils import parsedate_to_datetime
-from pprint import pprint
-
 import feedparser
 
 
 def rss_feed_to_import_payloads(url: str) -> list[dict[str, str]] | str:
-    feed = feedparser.parse(url)
+    try:
+        feed = feedparser.parse(url)
 
-    if feed.status == 200:
+        if not feed.entries:
+            return "No episodes found in the RSS feed"
+
         cleaned_entries: list = []
+
         for entry in feed.entries:
-            cleand: dict = {
-                "title": str(entry.title),
-                "summary": str(entry.summary),
-                "category": str(feed.title),
+            cleaned: dict = {
+                "title": entry.get("title", "Unknown Episode"),
+                "summary": entry.get("summary", ""),
+                "category": feed.feed.get("title", "Podcast"),
                 "audio_type": "Media",
             }
 
             try:
-                cleand["recording_date"] = rss_pubdate_to_iso(entry.published)
+                cleaned["time"] = rss_pubdate_to_iso(entry.get("published", ""))
             except ValueError as e:
-                cleand["recording_date"] = datetime.now().isoformat()
+                cleaned["time"] = datetime.now().isoformat()
                 logging.error(f"{e}, replaced it with current time")
 
-
-            for link in entry.links:
-                if link["type"] == "audio/mp3":
-                    cleand["file_url"] = str(link["href"])
+            for link in entry.get("links", []):
+                if link.get("type") == "audio/mp3":
+                    cleaned["file_url"] = str(link.get("href", ""))
                     break
 
-            cleaned_entries.append(cleand)
+            cleaned_entries.append(cleaned)
 
-        pprint(feed.entries[0].links)  # Entry
+        return cleaned_entries
 
-    return f"Couldn't load Rss Feed: {url}"
+    except Exception as e:
+        return f"Couldn't load Rss Feed: {url} - {str(e)}"
 
 
 def rss_pubdate_to_iso(pub_date: str) -> str:

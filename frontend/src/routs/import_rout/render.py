@@ -2,18 +2,17 @@ from typing import Any
 
 import gradio as gr
 
-import file_upload
-import src.utils.file as file_utils
+import src.routs.import_rout.import_file_upload as file_upload
+import src.routs.import_rout.import_rss_url as rss_upload
 
 
-def render_selected_colum(
-    dropdown
-) -> list[dict[str, Any]]:
-   return [
-       gr.update(visible=dropdown == "Podcast-Rss-Feed"),
-       gr.update(visible=dropdown == "File-Upload"),
-       gr.update(visible=dropdown == "File-Url")
-   ]
+def render_selected_colum(dropdown) -> list[dict[str, Any]]:
+    return [
+        gr.update(visible=dropdown == "Podcast-Rss-Feed"),
+        gr.update(visible=dropdown == "File-Upload"),
+        gr.update(visible=dropdown == "File-Url")
+    ]
+
 
 def mount_import_routes(app: gr.Blocks):
     with app.route("Import"):
@@ -33,16 +32,14 @@ def mount_import_routes(app: gr.Blocks):
         )
 
         with gr.Column(visible=False) as rss_col:
-            rss_url = gr.Textbox(label="Podcast RSS Feed URL")
-            rss_import_btn = gr.Button("Load Podcast Feed")
+            rss_upload.mount_rss_renderer()
 
-        with gr.Column(visible=False) as upload_col:
+        with gr.Column(visible=True) as upload_col:
             file_upload.mount_uploaded_files_renderer()
 
         with gr.Column(visible=False) as url_col:
             file_url = gr.Textbox(label="Direct audio file URL")
             url_import_btn = gr.Button("Load from URL")
-
 
         audio_import_type.change(
             fn=render_selected_colum,

@@ -1,6 +1,8 @@
 import json
 import logging
 import os
+from unicodedata import category
+
 
 class ConfigManager:
     def __init__(self, config_path: str = "config.json"):
@@ -61,7 +63,7 @@ class ConfigManager:
     def get_category_csv(self) -> str:
         return ", ".join(self.get_category_list())
 
-    def set_category(self, category_str: str) -> None:
+    def set_categories(self, category_str: str) -> None:
         categories = [part.strip() for part in (category_str or "").split(",")]
         categories = [c for c in categories if c]
 
@@ -70,3 +72,9 @@ class ConfigManager:
 
         self._config["category"] = categories
         self.save_config()
+
+    def extend_categories(self, new_category_name: str) -> None:
+        categories = self.get_category_csv()
+        categories += ", " + new_category_name.strip().replace(",", ";")
+
+        self.set_categories(new_category_name)

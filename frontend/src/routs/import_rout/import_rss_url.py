@@ -51,6 +51,9 @@ def mount_rss_renderer():
         for idx, f in enumerate(state):
             label = f"{f.get('title', f'Episode {idx}')}"
 
+            if not f.get("category") in config_manager.ConfigManager().get_category_list():
+                config_manager.ConfigManager().extend_categories(f.get("category"))
+
             with gr.Accordion(label=label, open=True):
                 if f.get("error"):
                     gr.Markdown(f"**Error:** {f['error']}", elem_id="error-markdown")

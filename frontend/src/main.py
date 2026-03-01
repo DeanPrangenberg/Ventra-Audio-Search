@@ -52,7 +52,7 @@ if __name__ == "__main__":
     start_ttl_cleanup_thread()
 
 
-    port = int(os.environ.get("PORT", "7861"))
+    port = int(os.environ.get("PORT", "7860"))
 
     css_path = Path("src/theme.css")
     try:

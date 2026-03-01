@@ -52,7 +52,7 @@ def mount_config_routes(app: gr.Blocks):
             # Passe die Methodennamen an deine ConfigManager-API an:
             # z.B. cfg.set_api_base_url(url), cfg.set_category(cats), cfg.save()
             cfg.set_api_base_url(url)
-            cfg.set_category(cats)
+            cfg.set_categories(cats)
 
             return False, gr.update(interactive=False)
 

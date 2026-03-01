@@ -41,8 +41,8 @@ def mount_import_routes(app: gr.Blocks):
             file_url = gr.Textbox(label="Direct audio file URL")
             url_import_btn = gr.Button("Load from URL")
 
-        audio_import_type.change(
+	audio_import_type.change(
             fn=render_selected_colum,
             inputs=[audio_import_type],
             outputs=[rss_col, upload_col, url_col],
-        )
+     	)

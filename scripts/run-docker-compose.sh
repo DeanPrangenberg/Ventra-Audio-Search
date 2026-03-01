@@ -1,11 +1,29 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-echo "Starting Docker Compose services..."
-docker compose up -d --build --force-recreate
-echo "Docker Compose services are running."
+LOCAL_BUILD_SERVICES=(
+  "audio_transcript_server"
+  "audio_transcript_frontend"
+)
 
-CONTAINERS=("ollama" "whisper-server" "qdrant" "audio-transcript-server" "audio-transcript-frontend")
+CONTAINERS=(
+  "ollama"
+  "whisper-server"
+  "qdrant"
+  "audio-transcript-server"
+  "audio-transcript-frontend"
+)
+
+echo "Stopping and removing existing Docker Compose services..."
+docker compose down --remove-orphans
+
+echo "Rebuilding local Docker images without cache..."
+docker compose build --no-cache --pull "${LOCAL_BUILD_SERVICES[@]}"
+
+echo "Starting Docker Compose services with forced recreation..."
+docker compose up -d --force-recreate --remove-orphans
+
+echo "Docker Compose services started."
 
 echo "Waiting for containers to be running..."
 for C in "${CONTAINERS[@]}"; do
@@ -22,7 +40,6 @@ done
 
 echo "Waiting for Ollama to be ready..."
 for i in {1..600}; do
-  # Wenn der Server bereit ist, geht "ollama list" ohne Fehler durch.
   if docker exec ollama sh -lc 'ollama list >/dev/null 2>&1'; then
     echo "Ollama is ready."
     break

@@ -10,7 +10,7 @@ from src.api.payloads.import_payload import ImportPayload
 class API:
     def __init__(self):
         self.base_url = config_manager.ConfigManager().get_api_base_url()
-        self.import_url = f"{self.base_url}/import_rout"
+        self.import_url = f"{self.base_url}/import"
         self.health_url = f"{self.base_url}/health"
         self.search_url = f"{self.base_url}/search"
         self.status_url = f"{self.base_url}/status"

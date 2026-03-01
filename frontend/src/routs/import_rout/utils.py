@@ -50,6 +50,7 @@ def do_backend_request(files_state: list[dict[str, Any]]):
             title=title,
             recording_date=recording_date,
             user_summary=user_summary,
+            duration_in_sec=0,
             category=category,
             audio_type=audio_type,
         )

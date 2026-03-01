@@ -11,12 +11,14 @@ from src.utils import file as file_utils
 from urllib.parse import urlparse
 import utils.state as state_utils
 
+
 def is_valid_url(url: str) -> bool:
     try:
         parsed = urlparse(url)
         return parsed.scheme in {"http", "https"} and bool(parsed.netloc)
     except Exception:
         return False
+
 
 def cleanup_uploaded_files(files_state: list[dict[str, Any]]) -> None:
     for f in files_state:
@@ -31,6 +33,7 @@ def cleanup_uploaded_files(files_state: list[dict[str, Any]]) -> None:
             except Exception as e:
                 logging.warning(f"Could not delete file '{p}': {e}")
 
+
 def do_backend_request(files_state: list[dict[str, Any]]):
     payload_list: list[import_payload.ImportPayload] = []
 
@@ -40,18 +43,27 @@ def do_backend_request(files_state: list[dict[str, Any]]):
         audio_type = file.get("audio_type", "")
         user_summary = file.get("summary", "")
         recording_date = file.get("time", "")
+        file_url = file.get("file_url", "")
+        download_path = file.get("download_path", "")
 
-        payload_list.append(
-            import_payload.ImportPayload(
-                title=title,
-                recording_date=recording_date,
-                user_summary=user_summary,
-                base64_data=file_utils.file_to_base64_str(file["download_path"]),
-                duration_in_sec=file_utils.mp3_duration_seconds(file["download_path"]),
-                category=category,
-                audio_type=audio_type,
-            )
+        payload = import_payload.ImportPayload(
+            title=title,
+            recording_date=recording_date,
+            user_summary=user_summary,
+            base64_data=file_utils.file_to_base64_str(file["download_path"]),
+            duration_in_sec=file_utils.mp3_duration_seconds(file["download_path"]),
+            category=category,
+            audio_type=audio_type,
         )
+
+        if download_path != "":
+            payload.base64_data = file_utils.file_to_base64_str(download_path)
+            payload.duration_in_sec = file_utils.mp3_duration_seconds(download_path)
+        else:
+            payload.duration_in_sec = 0
+            payload.file_url = file_url
+
+        payload_list.append(payload)
 
     return_value = API().import_request(payload_list)
 
@@ -60,7 +72,8 @@ def do_backend_request(files_state: list[dict[str, Any]]):
         return [], gr.update(value=None), gr.update(value="All files got imported", elem_classes=["status", "ok"])
 
     if isinstance(return_value, str):
-        return files_state, gr.update(), gr.update(value=f"Error while sending Files to Backend: {return_value}", elem_classes=["status", "err"])
+        return files_state, gr.update(), gr.update(value=f"Error while sending Files to Backend: {return_value}",
+                                                   elem_classes=["status", "err"])
 
     err_by_idx = {d["index"]: d.get("error", "unknown") for d in return_value if isinstance(d.get("index"), int)}
 

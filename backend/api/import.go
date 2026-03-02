@@ -57,9 +57,9 @@ func (rs *Server) handleImport(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 3) Validieren -> 422 / 207 / 200
-	validItems := make([]globalTypes.AudioDataElement, 0, len(req))
-	invalidItemsIdx := make([]int, 0, len(req))
-	invalidItemsErr := make([]string, 0, len(req))
+	var validItems []globalTypes.AudioDataElement
+	var invalidItemsIdx []int
+	var invalidItemsErr []string
 
 	for idx, item := range req {
 		if err := item.ValidateApiInput(); err != nil {

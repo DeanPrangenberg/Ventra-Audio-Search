@@ -36,11 +36,12 @@ func saveAudiofileElementToDisk(element globalTypes.AudioDataElement, outChan ch
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute) // mp3 kann groß sein
 		defer cancel()
 
-		if err := globalUtils.DownloadURLToFile(ctx, element.FileUrl, initName); err != nil {
+		err, new_path := globalUtils.DownloadURLToFile(ctx, element.FileUrl, initName)
+		if err != nil {
 			return fmt.Errorf("error while downloading '%s': %w", element.FileUrl, err)
 		}
 
-		path, hash, err := globalUtils.MarkFileAtomicMP3(initName)
+		path, hash, err := globalUtils.MarkFileAtomicMP3(new_path)
 		if err != nil {
 			return fmt.Errorf("error while marking file as mp3 '%s': %w", initName, err)
 		}

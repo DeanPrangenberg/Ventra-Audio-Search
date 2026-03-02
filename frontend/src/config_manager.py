@@ -9,7 +9,7 @@ class ConfigManager:
         self._config_path = os.environ.get("DATA_DIR", "/app/data").rstrip("/") + "/" + config_path
         self._config = {}
         self.load_config()
-        logging.info(f"Loaded Config: {self._config}")
+        logging.debug(f"Loaded Config: {self._config}")
 
     def load_config(self):
         try:

@@ -17,7 +17,7 @@ class API:
 
     def import_request(self, payload_list: list[ImportPayload]) -> None | list[dict] | str:
         request_payloads = [p.to_dict() for p in payload_list]
-        r = requests.post(self.import_url, json=request_payloads, timeout=60)
+        r = requests.post(self.import_url, json=request_payloads, timeout=300)
 
         ct = (r.headers.get("content-type") or "").lower()
         if "application/json" in ct:

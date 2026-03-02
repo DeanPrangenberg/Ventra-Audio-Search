@@ -87,14 +87,14 @@ func (w *RoutWorker) ProcessChanInputs() {
 				ctx := context.Background()
 				err := w.db.UpsertBase(ctx, &inputElement)
 
+				w.dbLock.Unlock()
+
 				if err != nil {
 					slog.Error("Error inserting audio file into DB: " + err.Error())
 					inputElement.RetryCounter++
 					w.ImportTaskChan <- inputElement
 					continue
 				}
-
-				w.dbLock.Unlock()
 
 				slog.Info("Inserted audio file into DB: " + inputElement.AudiofileHash)
 
@@ -109,14 +109,13 @@ func (w *RoutWorker) ProcessChanInputs() {
 
 				ctx := context.Background()
 				result, err := w.whisper.Transcribe(ctx, inputElement.DownloadPath)
+				w.whisperLock.Unlock()
 				if err != nil {
 					slog.Error("Error transcribing audio file: " + err.Error())
 					inputElement.RetryCounter++
 					w.ImportTaskChan <- inputElement
 					continue
 				}
-
-				w.whisperLock.Unlock()
 
 				slog.Info(fmt.Sprintf("Transcript for file is done (Transcript Len: %d): %s", len(result.Transcript), inputElement.AudiofileHash))
 
@@ -144,6 +143,7 @@ func (w *RoutWorker) ProcessChanInputs() {
 				ctx = context.Background()
 
 				err = w.db.UpdateTranscriptFull(ctx, inputElement.AudiofileHash, inputElement.TranscriptFull)
+				w.dbLock.Unlock()
 				if err != nil {
 					slog.Error("Error updating full transcript in DB: " + err.Error())
 					inputElement.RetryCounter++
@@ -153,15 +153,15 @@ func (w *RoutWorker) ProcessChanInputs() {
 
 				slog.Info("Inserted transcript into into DB for file: " + inputElement.AudiofileHash)
 
+				w.dbLock.Lock()
 				err = w.db.InsertSegmentsUpsert(ctx, inputElement.AudiofileHash, inputElement.SegmentElements)
+				w.dbLock.Unlock()
 				if err != nil {
 					slog.Error("Error inserting audio segments in DB: " + err.Error())
 					inputElement.RetryCounter++
 					w.ImportTaskChan <- inputElement
 					continue
 				}
-
-				w.dbLock.Unlock()
 
 				slog.Info("Inserted segments into into DB for file: " + inputElement.AudiofileHash)
 
@@ -173,38 +173,40 @@ func (w *RoutWorker) ProcessChanInputs() {
 			} else if !inputElement.SegmentsEmbeddingCreated {
 				slog.Info("Creating Embeddings for Segments for file: " + inputElement.AudiofileHash)
 
-				w.embeddingsLock.Lock()
-
-				segments := make([]globalTypes.SegmentElement, len(inputElement.SegmentElements))
+				var segments []globalTypes.SegmentElement
+				hasError := false
 
 				for _, segment := range inputElement.SegmentElements {
+					w.embeddingsLock.Lock()
 					embedding, err := w.embeddings.CreateEmbedding(segment.Transcript)
+					w.embeddingsLock.Unlock()
 					if err != nil {
-						slog.Error("Error creating embeddings for file: " + inputElement.AudiofileHash + err.Error())
+						slog.Error("Error creating embeddings for file: " + inputElement.AudiofileHash + ": " + err.Error())
 						inputElement.RetryCounter++
 						w.ImportTaskChan <- inputElement
-						continue
+						hasError = true
+						break
 					}
 					segment.TranscriptEmbedding = embedding
 					segments = append(segments, segment)
 				}
 
-				w.embeddingsLock.Unlock()
+				if hasError {
+					continue
+				}
 
 				slog.Info(strconv.FormatInt(int64(len(segments)), 10) + " embeddings Segments created for file: " + inputElement.AudiofileHash)
 
-				w.dbLock.Lock()
-
 				ctx := context.Background()
+				w.qdrantLock.Lock()
 				err := w.qdrant.UpsertSegmentEmbedding(ctx, segments)
+				w.qdrantLock.Unlock()
 				if err != nil {
 					slog.Error("Error inserting audio segments in Vector-DB: " + err.Error())
 					inputElement.RetryCounter++
 					w.ImportTaskChan <- inputElement
 					continue
 				}
-
-				w.dbLock.Unlock()
 
 				slog.Info("Inserted segment embeddings into into DB for file: " + inputElement.AudiofileHash)
 
@@ -213,10 +215,10 @@ func (w *RoutWorker) ProcessChanInputs() {
 				w.ImportTaskChan <- inputElement
 
 			} else if !inputElement.AISummaryInDB {
-				w.llmLock.Lock()
 
 				_, SummarySysPrompt := ai.GetSysPrompts(inputElement.AudiofileHash)
 
+				w.llmLock.Lock()
 				summary, err := ai.OllamaRequest(
 					globalUtils.LoadEnv("LLM_MODEL"),
 					globalUtils.LoadEnv("OLLAMA_API_URL")+"/api/chat",
@@ -240,14 +242,13 @@ func (w *RoutWorker) ProcessChanInputs() {
 				ctx := context.Background()
 
 				err = w.db.UpdateAISummary(ctx, inputElement.AudiofileHash, inputElement.AiSummary)
+				w.dbLock.Unlock()
 				if err != nil {
 					slog.Error("Error updating summary in DB: " + err.Error())
 					inputElement.RetryCounter++
 					w.ImportTaskChan <- inputElement
 					continue
 				}
-
-				w.dbLock.Unlock()
 
 				inputElement.AISummaryInDB = true
 
@@ -294,14 +295,14 @@ func (w *RoutWorker) ProcessChanInputs() {
 				ctx := context.Background()
 
 				err = w.db.UpdateAIKeywords(ctx, inputElement.AudiofileHash, inputElement.AiKeywords)
+				w.dbLock.Unlock()
+
 				if err != nil {
 					slog.Error("Error updating Keywords in DB: " + err.Error())
 					inputElement.RetryCounter++
 					w.ImportTaskChan <- inputElement
 					continue
 				}
-
-				w.dbLock.Unlock()
 
 				inputElement.AIKeywordsInDB = true
 				inputElement.FullyCompleted = true
@@ -360,6 +361,7 @@ func (w *RoutWorker) ProcessChanInputs() {
 			w.embeddingsLock.Lock()
 
 			embedding, err := w.embeddings.CreateEmbedding(inputElement.SemanticSearchQuery)
+			w.embeddingsLock.Unlock()
 			if err != nil {
 				response.Err = "Error creating embedding for semantic search for query \"" + inputElement.SemanticSearchQuery + "\": " + err.Error()
 				response.Ok = false
@@ -370,8 +372,6 @@ func (w *RoutWorker) ProcessChanInputs() {
 				continue
 			}
 
-			w.embeddingsLock.Unlock()
-
 			// Do qdrant requests get Top K
 			w.qdrantLock.Lock()
 
@@ -381,6 +381,7 @@ func (w *RoutWorker) ProcessChanInputs() {
 				segmentIds,
 				inputElement.MaxSegmentReturn,
 			)
+			w.qdrantLock.Unlock()
 
 			if err != nil {
 				response.Err = "Error while searching qdrant candidates for query: " + inputElement.SemanticSearchQuery + err.Error()
@@ -402,20 +403,17 @@ func (w *RoutWorker) ProcessChanInputs() {
 				continue
 			}
 
-			w.qdrantLock.Unlock()
-
 			// Extract Audio File Hashes from Top K segments
 			audioFileHashes := make(map[string]bool)
 			for _, segment := range segments {
 				audioFileHashes[segment.AudiofileHash] = true
 			}
 
-			// Load Full Audio File data
-			w.dbLock.Lock()
-
 			var relatedAudioElements []globalTypes.SearchAudioData
 			for audioFileHash := range audioFileHashes {
+				w.dbLock.Lock()
 				audioData, err := w.db.GetSearchAudioDataByHash(ctx, audioFileHash)
+				w.dbLock.Unlock()
 				if err != nil {
 					slog.Error("Error loading audio file data for hash: " + audioFileHash + ", error: " + err.Error())
 					relatedAudioElements = append(relatedAudioElements, globalTypes.SearchAudioData{
@@ -438,7 +436,9 @@ func (w *RoutWorker) ProcessChanInputs() {
 			// Load Top K segment
 			var fullSegmentElements []globalTypes.SearchSegmentData
 			for _, segment := range segments {
+				w.dbLock.Lock()
 				fullSegmentData, err := w.db.GetSegmentByHash(ctx, segment.SegmentHash)
+				w.dbLock.Unlock()
 				if err != nil {
 					fullSegmentElements = append(fullSegmentElements, globalTypes.SearchSegmentData{
 						SegmentHash:   segment.SegmentHash,
@@ -479,8 +479,6 @@ func (w *RoutWorker) ProcessChanInputs() {
 				}
 
 			}
-
-			w.dbLock.Unlock()
 
 			// send response via chan
 			response.Ok = true

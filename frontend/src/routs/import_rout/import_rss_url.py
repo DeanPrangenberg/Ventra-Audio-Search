@@ -1,6 +1,8 @@
 import gradio as gr
 import os
 
+from pprint import pprint
+
 from src.utils.rss import rss_feed_to_import_payloads
 from src.routs.import_rout.utils import is_valid_url, do_backend_request
 import config_manager
@@ -16,6 +18,8 @@ def handle_podcast_input(rss_feed):
         ), []
 
     out = rss_feed_to_import_payloads(rss_feed)
+
+    pprint(out)
 
     if isinstance(out, str):
         return gr.update(

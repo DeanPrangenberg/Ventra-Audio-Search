@@ -27,10 +27,15 @@ def rss_feed_to_import_payloads(url: str) -> list[dict[str, str]] | str:
                 cleaned["time"] = datetime.now().isoformat()
                 logging.error(f"{e}, replaced it with current time")
 
-            for link in entry.get("links", []):
-                if link.get("type") == "audio/mp3":
-                    cleaned["file_url"] = str(link.get("href", ""))
-                    break
+            file_url = str(entry.get("link", ""))
+
+            if file_url != "":
+                cleaned["file_url"] = file_url
+            else:
+                for link in entry.get("links", []):
+                    if link.get("type") == "audio/mp3":
+                        cleaned["file_url"] = str(link.get("href", ""))
+                        break
 
             cleaned_entries.append(cleaned)
 

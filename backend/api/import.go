@@ -112,8 +112,9 @@ func (rs *Server) handleImport(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	slog.Info("Queueing " + string(len(validItems)) + " item for processing")
+
 	for _, item := range validItems {
-		slog.Info("Queueing item for processing: " + item.Title)
 		rs.importTaskChan <- item
 	}
 

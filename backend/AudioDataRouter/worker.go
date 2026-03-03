@@ -70,21 +70,21 @@ func NewRoutWorker(databasePath string, workerAmount uint8) *RoutWorker {
 		go worker.StartImportAudioDataWorker(int(i))
 	}
 
-	return &worker
-}
-
-func (w *RoutWorker) RunDispatcher() {
 	slog.Debug("Started Dispatcher worker")
-	w.dbLock.Lock()
-	err := w.db.ResetProcessingClaims(w.TimeoutCtx)
-	w.dbLock.Unlock()
+	worker.dbLock.Lock()
+	err = worker.db.ResetProcessingClaims(worker.TimeoutCtx)
+	worker.dbLock.Unlock()
 
 	if err != nil {
 		slog.Error("Error resetting processing claims in DB: " + err.Error())
 	}
 
-	notify(w.NewAudioDataSignal)
+	notify(worker.NewAudioDataSignal)
 
+	return &worker
+}
+
+func (w *RoutWorker) RunDispatcher() {
 	for {
 		select {
 		case <-w.StopCtx.Done():

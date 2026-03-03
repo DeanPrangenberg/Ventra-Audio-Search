@@ -24,18 +24,17 @@ func (rs *Server) handleImport(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 2) JSON lesen + limit -> 400/413
-	var req []globalTypes.AudioDataElement
+	var req *[]globalTypes.AudioDataElement
 
 	// 1000 MiB
 	const maxBody = 1000 * (1 << 20)
 
-	if err := ReadJSON(r, &req, maxBody); err != nil {
+	if err := ReadJSON(r, req, maxBody); err != nil {
 		// Wenn du ReadJSON nicht kontrollierst: wir mappen zumindest häufige Fälle.
 		// - zu groß -> 413
 		// - sonst -> 400
 		msg := err.Error()
 
-		// grobes Heuristik-Mapping (besser wäre: ReadJSON gibt sentinel error zurück)
 		if strings.Contains(strings.ToLower(msg), "too large") ||
 			strings.Contains(strings.ToLower(msg), "request body too large") ||
 			strings.Contains(strings.ToLower(msg), "http: request body too large") {
@@ -56,12 +55,21 @@ func (rs *Server) handleImport(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if req == nil {
+		writeJSON(w, http.StatusBadRequest, map[string]any{
+			"ok":    false,
+			"code":  "IMPORT_BAD_JSON",
+			"error": "Request body is not a valid JSON array of audio data elements",
+		})
+		return
+	}
+
 	// 3) Validieren -> 422 / 207 / 200
 	var validItems []globalTypes.AudioDataElement
 	var invalidItemsIdx []int
 	var invalidItemsErr []string
 
-	for idx, item := range req {
+	for idx, item := range *req {
 		if err := item.ValidateApiInput(); err != nil {
 			slog.Debug("Received invalid item via api: " + item.ToString())
 			invalidItemsIdx = append(invalidItemsIdx, idx)

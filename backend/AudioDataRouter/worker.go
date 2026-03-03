@@ -67,7 +67,7 @@ func NewRoutWorker(databasePath string, workerAmount uint8) *RoutWorker {
 
 	for i := uint8(0); i < workerAmount; i++ {
 		worker.WorkerWG.Add(int(i))
-		go worker.StartImportAudioDataWorker()
+		go worker.StartImportAudioDataWorker(int(i))
 	}
 
 	return &worker

@@ -69,7 +69,7 @@ func (rs *Server) handleImport(w http.ResponseWriter, r *http.Request) {
 	var invalidItemsIdx []int
 	var invalidItemsErr []string
 
-	for idx, item := range *req {
+	for idx, item := range req {
 		if err := item.ValidateApiInput(); err != nil {
 			slog.Debug("Received invalid item via api: " + item.ToString())
 			invalidItemsIdx = append(invalidItemsIdx, idx)

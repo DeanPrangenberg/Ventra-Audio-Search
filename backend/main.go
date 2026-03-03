@@ -6,6 +6,7 @@ import (
 	"go_audio_search_api_server/api"
 	"log/slog"
 	"os"
+	"strings"
 )
 
 func loadEnv(key string) (string, error) {
@@ -22,17 +23,17 @@ func initLogger() {
 		log = "INFO"
 	}
 
-	var logLevel = log
+	var logLevel = strings.ToLower(log)
 	var level slog.Level
 
 	switch logLevel {
-	case "DEBUG":
+	case "debug":
 		level = slog.LevelDebug
-	case "INFO":
+	case "info":
 		level = slog.LevelInfo
-	case "WARN":
+	case "warn":
 		level = slog.LevelWarn
-	case "ERROR":
+	case "error":
 		level = slog.LevelError
 	default:
 		level = slog.LevelInfo
@@ -41,6 +42,7 @@ func initLogger() {
 	handler := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 		Level: level,
 	})
+
 	slog.SetDefault(slog.New(handler))
 }
 

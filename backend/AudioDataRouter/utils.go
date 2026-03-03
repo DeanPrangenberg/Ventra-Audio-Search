@@ -11,16 +11,12 @@ import (
 	"time"
 )
 
-func saveAudiofileElementToDisk(element globalTypes.AudioDataElement, outChan chan<- globalTypes.AudioDataElement) error {
-	if element.FileSavedOnDisk {
-		return fmt.Errorf("file with hash %s already saved to disk", element.AudiofileHash)
-	}
-
+func saveAudiofileElementToDisk(element *globalTypes.AudioDataElement) (error, *globalTypes.AudioDataElement) {
 	hasURL := element.FileUrl != ""
 	hasB64 := element.Base64Data != ""
 
 	if !hasURL && !hasB64 {
-		return errors.New("tried to save a file without FileUrl or Base64Data")
+		return errors.New("tried to save a file without FileUrl or Base64Data"), nil
 	}
 
 	initSeed := element.FileUrl
@@ -38,15 +34,14 @@ func saveAudiofileElementToDisk(element globalTypes.AudioDataElement, outChan ch
 
 		err, new_path := globalUtils.DownloadURLToFile(ctx, element.FileUrl, initName)
 		if err != nil {
-			return fmt.Errorf("error while downloading '%s': %w", element.FileUrl, err)
+			return fmt.Errorf("error while downloading '%s': %w", element.FileUrl, err), nil
 		}
 
 		path, hash, err := globalUtils.MarkFileAtomicMP3(new_path)
 		if err != nil {
-			return fmt.Errorf("error while marking file as mp3 '%s': %w", initName, err)
+			return fmt.Errorf("error while marking file as mp3 '%s': %w", initName, err), nil
 		}
 
-		element.FileSavedOnDisk = true
 		element.DownloadPath = path
 		element.AudiofileHash = hash
 		element.FileUrl = ""
@@ -57,26 +52,31 @@ func saveAudiofileElementToDisk(element globalTypes.AudioDataElement, outChan ch
 
 		decodedBytes, err := base64.StdEncoding.DecodeString(element.Base64Data)
 		if err != nil {
-			return fmt.Errorf("base64 decode failed: %w", err)
+			return fmt.Errorf("base64 decode failed: %w", err), nil
 		}
 
 		filePath, err := globalUtils.WriteFileAtomicMP3(decodedBytes, initName)
 		if err != nil {
-			return fmt.Errorf("error while writing file '%s': %w", initName, err)
+			return fmt.Errorf("error while writing file '%s': %w", initName, err), nil
 		}
 
 		path, hash, err := globalUtils.MarkFileAtomicMP3(filePath)
 		if err != nil {
-			return fmt.Errorf("error while marking file as mp3 '%s': %w", initName, err)
+			return fmt.Errorf("error while marking file as mp3 '%s': %w", initName, err), nil
 		}
 
-		element.FileSavedOnDisk = true
 		element.DownloadPath = path
 		element.AudiofileHash = hash
 		element.Base64Data = ""
 		element.FileUrl = ""
 	}
 
-	outChan <- element
-	return nil
+	return nil, element
+}
+
+func notify(wake chan struct{}) {
+	select {
+	case wake <- struct{}{}:
+	default:
+	}
 }

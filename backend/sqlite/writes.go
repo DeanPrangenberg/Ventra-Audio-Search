@@ -24,9 +24,9 @@ func (s *SQLiteStore) UpsertBase(ctx context.Context, a *globalTypes.AudioDataEl
 
 	const q = `
 INSERT INTO audiofiles (
-  audiofile_hash, title, recording_date, category, audio_type,base64_data, file_url, download_path, duration_in_sec,
-  transcript_full, user_summary_text, ai_keywords_json, ai_summary
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  audiofile_hash, title, recording_date, category, audio_type, base64_data, file_url, download_path, duration_in_sec,
+  transcript_full, user_summary_text, ai_keywords, ai_summary, last_successful_step
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 ON CONFLICT(audiofile_hash) DO UPDATE SET
   title             = excluded.title,
   recording_date    = excluded.recording_date,
@@ -36,9 +36,10 @@ ON CONFLICT(audiofile_hash) DO UPDATE SET
   file_url          = excluded.file_url,
   download_path     = excluded.download_path,
   duration_in_sec   = excluded.duration_in_sec,
+  last_successful_step   = excluded.last_successful_step,
   transcript_full   = COALESCE(excluded.transcript_full, audiofiles.transcript_full),
   user_summary_text = COALESCE(excluded.user_summary_text, audiofiles.user_summary_text),
-  ai_keywords_json  = COALESCE(excluded.ai_keywords_json, audiofiles.ai_keywords_json),
+  ai_keywords  = COALESCE(excluded.ai_keywords, audiofiles.ai_keywords),
   ai_summary        = COALESCE(excluded.ai_summary, audiofiles.ai_summary);
 `
 	_, err = s.db.ExecContext(ctx, q,
@@ -55,7 +56,20 @@ ON CONFLICT(audiofile_hash) DO UPDATE SET
 		nullIfEmpty(a.UserSummary),
 		string(kwJSON),
 		nullIfEmpty(a.AiSummary),
+		a.LastSuccessfulStep,
 	)
+	return err
+}
+
+func (s *SQLiteStore) UpdateAudiofileHash(ctx context.Context, oldAudioHash string, newAudioHash string) error {
+	if oldAudioHash == "" {
+		return errors.New("oldAudioHash required")
+	} else if newAudioHash == "" {
+		return errors.New("newAudioHash required")
+	}
+
+	const q = `UPDATE audiofiles SET audiofile_hash = ? WHERE audiofile_hash = ?;`
+	_, err := s.db.ExecContext(ctx, q, newAudioHash, oldAudioHash)
 	return err
 }
 
@@ -94,17 +108,17 @@ func (s *SQLiteStore) UpdateAIKeywords(ctx context.Context, audioHash string, ke
 	if err != nil {
 		return fmt.Errorf("marshal keywords: %w", err)
 	}
-	const q = `UPDATE audiofiles SET ai_keywords_json = ? WHERE audiofile_hash = ?;`
+	const q = `UPDATE audiofiles SET ai_keywords = ? WHERE audiofile_hash = ?;`
 	_, err = s.db.ExecContext(ctx, q, string(b), audioHash)
 	return err
 }
 
 // InsertSegmentsUpsert schreibt Segmente (ohne Embeddings). Batch in einer TX.
-func (s *SQLiteStore) InsertSegmentsUpsert(ctx context.Context, audioHash string, segs []globalTypes.SegmentElement) error {
+func (s *SQLiteStore) InsertSegmentsUpsert(ctx context.Context, audioHash string, segs *[]globalTypes.SegmentElement) error {
 	if audioHash == "" {
 		return errors.New("audioHash required")
 	}
-	if len(segs) == 0 {
+	if len(*segs) == 0 {
 		return nil
 	}
 
@@ -129,7 +143,7 @@ ON CONFLICT(segment_hash) DO UPDATE SET
 	}
 	defer stmt.Close()
 
-	for _, sgm := range segs {
+	for _, sgm := range *segs {
 		if sgm.SegmentHash == "" {
 			return errors.New("segment_hash required")
 		}
@@ -148,4 +162,14 @@ ON CONFLICT(segment_hash) DO UPDATE SET
 	}
 
 	return tx.Commit()
+}
+
+func (s *SQLiteStore) ResetProcessingClaims(ctx context.Context) error {
+	const q = `
+UPDATE audiofiles
+SET gets_processed = FALSE
+WHERE gets_processed = TRUE
+`
+	_, err := s.db.ExecContext(ctx, q)
+	return err
 }

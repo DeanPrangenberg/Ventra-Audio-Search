@@ -4,32 +4,66 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+	"go_audio_search_api_server/globalUtils"
+)
+
+type ProcessingStage int
+
+const (
+	// Init Stage saved needed data in db
+	StageReceived ProcessingStage = 1
+	// File saved to disk, ready for processing
+	StageFilePersisted ProcessingStage = 2
+	// Created full transcript and segemnts and saved in sqlite
+	StageTranscript ProcessingStage = 3
+	// Embeddings created for all segments and saved in qdrant
+	StageEmbeddings ProcessingStage = 4
+	// Created summary
+	StageSummary ProcessingStage = 5
+	// Created keywords
+	StageKeywords ProcessingStage = 6
+
+	// end results
+	StageCompleted ProcessingStage = 0
+	StageFailed    ProcessingStage = -1
 )
 
 type AudioDataElement struct {
-	AudiofileHash            string           `json:"audiofile_hash"`
-	Title                    string           `json:"title"`
-	RecordingDate            string           `json:"recording_date"`
-	Base64Data               string           `json:"base64_data"`
-	FileUrl                  string           `json:"file_url"`
-	Category                 string           `json:"category"`
-	AudioType                string           `json:"audio_type"`
-	DownloadPath             string           `json:"-"`
-	DurationInSec            float32          `json:"duration_in_sec"`
-	TranscriptFull           string           `json:"transcript_full"`
-	UserSummary              string           `json:"user_summary"`
-	AiKeywords               []string         `json:"ai_keywords"`
-	AiSummary                string           `json:"ai_summary"`
-	SegmentElements          []SegmentElement `json:"-"`
-	FileSavedOnDisk          bool             `json:"-"`
-	InitInsertedInDB         bool             `json:"-"`
-	FullTranscriptInDB       bool             `json:"-"`
-	AllSegmentsInDB          bool             `json:"-"`
-	SegmentsEmbeddingCreated bool             `json:"-"`
-	AISummaryInDB            bool             `json:"-"`
-	AIKeywordsInDB           bool             `json:"-"`
-	FullyCompleted           bool             `json:"-"`
-	RetryCounter             int              `json:"-"`
+	AudiofileHash      string            `json:"audiofile_hash"`
+	Title              string            `json:"title"`
+	RecordingDate      string            `json:"recording_date"`
+	Base64Data         string            `json:"base64_data"`
+	FileUrl            string            `json:"file_url"`
+	Category           string            `json:"category"`
+	AudioType          string            `json:"audio_type"`
+	DownloadPath       string            `json:"-"`
+	DurationInSec      float32           `json:"duration_in_sec"`
+	TranscriptFull     string            `json:"transcript_full"`
+	UserSummary        string            `json:"user_summary"`
+	AiKeywords         []string          `json:"ai_keywords"`
+	AiSummary          string            `json:"ai_summary"`
+	SegmentElements    *[]SegmentElement `json:"-"`
+	LastSuccessfulStep ProcessingStage   `json:"last_successful_step"`
+	RetryCounter       int               `json:"retry_counter"`
+}
+
+func (s *AudioDataElement) UpdateToNextStage() {
+	switch s.LastSuccessfulStep {
+	case StageReceived:
+		s.LastSuccessfulStep = StageFilePersisted
+	case StageFilePersisted:
+		s.LastSuccessfulStep = StageTranscript
+	case StageTranscript:
+		s.LastSuccessfulStep = StageEmbeddings
+	case StageEmbeddings:
+		s.LastSuccessfulStep = StageSummary
+	case StageSummary:
+		s.LastSuccessfulStep = StageKeywords
+	case StageKeywords:
+		s.LastSuccessfulStep = StageCompleted
+	default:
+		s.LastSuccessfulStep = StageFailed
+	}
 }
 
 type SegmentElement struct {
@@ -88,4 +122,7 @@ func (s *AudioDataElement) ToString() string {
 			"AiKeywords: " + fmt.Sprintf("%v", s.AiKeywords) + "\n" +
 			"AiSummary: " + s.AiSummary,
 	)
+}
+func (s *AudioDataElement) GetTmpHash() string {
+	return globalUtils.StringSha256Hex(s.ToString())
 }

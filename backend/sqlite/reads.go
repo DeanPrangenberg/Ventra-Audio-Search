@@ -11,7 +11,7 @@ import (
 func (s *SQLiteStore) GetSearchAudioDataByHash(ctx context.Context, audioHash string) (*globalTypes.SearchAudioData, error) {
 	const q = `
 SELECT audiofile_hash, title, recording_date, duration_in_sec,
-       transcript_full, user_summary_text, ai_keywords_json, ai_summary
+       transcript_full, user_summary_text, ai_keywords, ai_summary
 FROM audiofiles
 WHERE audiofile_hash = ?;
 `
@@ -32,6 +32,109 @@ WHERE audiofile_hash = ?;
 	if err != nil {
 		return nil, err
 	}
+	return &r, nil
+}
+
+func (s *SQLiteStore) GetAllSegmentsByAudioHash(ctx context.Context, audioHash string) (*[]globalTypes.SegmentElement, error) {
+	const q = `
+SELECT segment_hash, start_sec, end_sec, transcript
+FROM segments
+WHERE audiofile_hash = ?;
+`
+	rows, err := s.db.QueryContext(ctx, q, audioHash)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var out []globalTypes.SegmentElement
+	for rows.Next() {
+		var segment globalTypes.SegmentElement
+		var start, end float64
+		err := rows.Scan(
+			&segment.SegmentHash,
+			&start, &end,
+			&segment.Transcript,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+		segment.AudiofileHash = audioHash
+		segment.StartInSec = float32(start)
+		segment.EndInSec = float32(end)
+		out = append(out, segment)
+	}
+	return &out, rows.Err()
+}
+
+func (s *SQLiteStore) ClaimNextAudioForProcessing(ctx context.Context) (*globalTypes.AudioDataElement, error) {
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		_ = tx.Rollback()
+	}()
+
+	const q = `
+UPDATE audiofiles
+SET gets_processed = TRUE
+WHERE audiofile_hash = (
+    SELECT audiofile_hash
+    FROM audiofiles
+    WHERE last_successful_step > 0
+      AND gets_processed = FALSE
+    ORDER BY last_successful_step ASC, rowid ASC
+    LIMIT 1
+)
+RETURNING audiofile_hash, 
+          title, 
+          recording_date, 
+          category, 
+          audio_type, 
+          base64_data, 
+          file_url, 
+          download_path, 
+          duration_in_sec, 
+          transcript_full, 
+          user_summary_text, 
+          ai_keywords, 
+          ai_summary, 
+          last_successful_step`
+
+	var r globalTypes.AudioDataElement
+	var step int64
+
+	err = tx.QueryRowContext(ctx, q).Scan(
+		&r.AudiofileHash,
+		&r.Title,
+		&r.RecordingDate,
+		&r.Category,
+		&r.AudioType,
+		&r.Base64Data,
+		&r.FileUrl,
+		&r.DownloadPath,
+		&r.DurationInSec,
+		&r.TranscriptFull,
+		&r.UserSummary,
+		&r.AiKeywords,
+		&r.AiSummary,
+		&step,
+	)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	r.LastSuccessfulStep = globalTypes.ProcessingStage(step)
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
 	return &r, nil
 }
 

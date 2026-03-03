@@ -22,8 +22,10 @@ CREATE TABLE IF NOT EXISTS audiofiles (
   duration_in_sec    REAL,
   transcript_full    TEXT,
   user_summary_text  TEXT,
-  ai_keywords_json   TEXT,
+  ai_keywords   TEXT,
   ai_summary         TEXT,
+  last_successful_step INTEGER,
+  gets_processed    BOOLEAN NOT NULL DEFAULT FALSE,
   created_at         TEXT NOT NULL DEFAULT (datetime('now')),
   updated_at         TEXT NOT NULL DEFAULT (datetime('now'))
 );

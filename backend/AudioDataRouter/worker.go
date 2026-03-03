@@ -126,8 +126,8 @@ func (w *RoutWorker) ProcessChanInputs() {
 				element.AudiofileHash = element.GetTmpHash()
 				element.LastSuccessfulStep = globalTypes.StageReceived
 
-				slog.Debug("Inserting new audio file into DB: " + element.AudiofileHash)
 				w.dbLock.Lock()
+				slog.Debug("Inserting new audio file into DB: " + element.AudiofileHash)
 				//TODO: Add mass import
 				err := w.db.UpsertBase(w.TimeoutCtx, &element)
 				w.dbLock.Unlock()

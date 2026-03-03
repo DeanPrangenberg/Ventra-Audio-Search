@@ -105,7 +105,7 @@ RETURNING audiofile_hash,
 
 	var r globalTypes.AudioDataElement
 	var step int64
-	var audiofileHash, title, recordingDate, category, audioType, base64Data, fileUrl, downloadPath, transcriptFull, userSummary, aiSummary sql.NullString
+	var audiofileHash, title, recordingDate, category, audioType, base64Data, fileUrl, downloadPath, transcriptFull, userSummary, aiSummary, aiKeywords sql.NullString
 
 	err = tx.QueryRowContext(ctx, q).Scan(
 		&audiofileHash,
@@ -119,7 +119,7 @@ RETURNING audiofile_hash,
 		&r.DurationInSec,
 		&transcriptFull,
 		&userSummary,
-		&r.AiKeywords,
+		&aiKeywords,
 		&aiSummary,
 		&step,
 	)
@@ -141,6 +141,10 @@ RETURNING audiofile_hash,
 	r.TranscriptFull = transcriptFull.String
 	r.UserSummary = userSummary.String
 	r.AiSummary = aiSummary.String
+
+	if aiKeywords.Valid {
+		r.AiKeywords = strings.Split(aiKeywords.String, ",")
+	}
 
 	r.LastSuccessfulStep = globalTypes.ProcessingStage(step)
 

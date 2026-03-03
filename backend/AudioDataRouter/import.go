@@ -11,7 +11,8 @@ import (
 	"strings"
 )
 
-func (w *RoutWorker) StartImportAudioDataWorker() {
+func (w *RoutWorker) StartImportAudioDataWorker(idx int) {
+	slog.Debug("Started StartImportAudioDataWorker (workerIndex %d)", idx)
 	for {
 		select {
 		case <-w.StopCtx.Done():

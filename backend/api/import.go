@@ -116,6 +116,8 @@ func (rs *Server) handleImport(w http.ResponseWriter, r *http.Request) {
 
 	rs.importTaskChan <- &validItems
 
+	slog.Debug("Finished handling import request, all items are valid and queued for processing")
+
 	// alles valid -> 200
 	writeJSON(w, http.StatusOK, map[string]any{
 		"ok": true,

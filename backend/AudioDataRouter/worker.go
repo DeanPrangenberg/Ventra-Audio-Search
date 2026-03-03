@@ -62,6 +62,7 @@ func NewRoutWorker(databasePath string, workerAmount uint8) *RoutWorker {
 	worker.StopCtx, worker.Cancel = context.WithCancel(context.Background())
 	worker.TimeoutCtx, worker.TimeoutCancel = context.WithTimeout(worker.StopCtx, 5*time.Minute)
 
+	go worker.ProcessChanInputs()
 	go worker.RunDispatcher()
 
 	for i := uint8(0); i < workerAmount; i++ {
@@ -73,7 +74,7 @@ func NewRoutWorker(databasePath string, workerAmount uint8) *RoutWorker {
 }
 
 func (w *RoutWorker) RunDispatcher() {
-
+	slog.Debug("Started Dispatcher worker")
 	w.dbLock.Lock()
 	err := w.db.ResetProcessingClaims(w.TimeoutCtx)
 	w.dbLock.Unlock()
@@ -116,6 +117,7 @@ func (w *RoutWorker) RunDispatcher() {
 }
 
 func (w *RoutWorker) ProcessChanInputs() {
+	slog.Debug("Started Input ProcessChanInputs Worker")
 	for {
 		select {
 		case inputElements := <-w.ImportTaskChan:

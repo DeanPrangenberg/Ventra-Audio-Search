@@ -24,7 +24,7 @@ func (rs *Server) handleImport(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 2) JSON lesen + limit -> 400/413
-	var req *[]globalTypes.AudioDataElement
+	var req []globalTypes.AudioDataElement
 
 	// 1000 MiB
 	const maxBody = 1000 * (1 << 20)

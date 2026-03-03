@@ -44,9 +44,11 @@ func (w *RoutWorker) HandleImportAudioDataJob(audioDataElement globalTypes.Audio
 
 		slog.Debug("Created audio file with hash: " + updatedElement.AudiofileHash)
 
+		ctx, cancel := w.opCtx()
 		w.dbLock.Lock()
-		err = w.db.UpdateAudiofileHash(w.TimeoutCtx, audioDataElement.AudiofileHash, updatedElement.AudiofileHash)
+		err = w.db.UpdateAudiofileHash(ctx, audioDataElement.AudiofileHash, updatedElement.AudiofileHash)
 		w.dbLock.Unlock()
+		cancel()
 
 		if err != nil {
 			return err
@@ -62,8 +64,10 @@ func (w *RoutWorker) HandleImportAudioDataJob(audioDataElement globalTypes.Audio
 		slog.Info("Creating Transcript for file: " + audioDataElement.AudiofileHash)
 
 		w.whisperLock.Lock()
-		result, err := w.whisper.Transcribe(w.TimeoutCtx, audioDataElement.DownloadPath)
+		ctx, cancel := w.opCtx()
+		result, err := w.whisper.Transcribe(ctx, audioDataElement.DownloadPath)
 		w.whisperLock.Unlock()
+		cancel()
 		if err != nil {
 			err := w.updateRetryCounter(&audioDataElement)
 			if err != nil {
@@ -95,8 +99,10 @@ func (w *RoutWorker) HandleImportAudioDataJob(audioDataElement globalTypes.Audio
 		}
 
 		w.dbLock.Lock()
-		err = w.db.UpdateTranscriptFull(w.TimeoutCtx, audioDataElement.AudiofileHash, audioDataElement.TranscriptFull)
+		ctx, cancel = w.opCtx()
+		err = w.db.UpdateTranscriptFull(ctx, audioDataElement.AudiofileHash, audioDataElement.TranscriptFull)
 		w.dbLock.Unlock()
+		cancel()
 		if err != nil {
 			err := w.updateRetryCounter(&audioDataElement)
 			if err != nil {
@@ -109,8 +115,10 @@ func (w *RoutWorker) HandleImportAudioDataJob(audioDataElement globalTypes.Audio
 		slog.Debug("Inserted transcript into DB for file: " + audioDataElement.AudiofileHash)
 
 		w.dbLock.Lock()
-		err = w.db.InsertSegmentsUpsert(w.TimeoutCtx, audioDataElement.AudiofileHash, audioDataElement.SegmentElements)
+		ctx, cancel = w.opCtx()
+		err = w.db.InsertSegmentsUpsert(ctx, audioDataElement.AudiofileHash, audioDataElement.SegmentElements)
 		w.dbLock.Unlock()
+		cancel()
 		if err != nil {
 			err := w.updateRetryCounter(&audioDataElement)
 			if err != nil {
@@ -133,8 +141,10 @@ func (w *RoutWorker) HandleImportAudioDataJob(audioDataElement globalTypes.Audio
 
 		var err error
 		w.dbLock.Lock()
-		audioDataElement.SegmentElements, err = w.db.GetAllSegmentsByAudioHash(w.TimeoutCtx, audioDataElement.AudiofileHash)
+		ctx, cancel := w.opCtx()
+		audioDataElement.SegmentElements, err = w.db.GetAllSegmentsByAudioHash(ctx, audioDataElement.AudiofileHash)
 		w.dbLock.Unlock()
+		cancel()
 		if err != nil {
 			err := w.updateRetryCounter(&audioDataElement)
 			if err != nil {
@@ -164,8 +174,10 @@ func (w *RoutWorker) HandleImportAudioDataJob(audioDataElement globalTypes.Audio
 		slog.Debug(strconv.FormatInt(int64(len(segments)), 10) + " embeddings segments created for file: " + audioDataElement.AudiofileHash)
 
 		w.qdrantLock.Lock()
-		err = w.qdrant.UpsertSegmentEmbedding(w.TimeoutCtx, segments)
+		ctx, cancel = w.opCtx()
+		err = w.qdrant.UpsertSegmentEmbedding(ctx, segments)
 		w.qdrantLock.Unlock()
+		cancel()
 		if err != nil {
 			err := w.updateRetryCounter(&audioDataElement)
 			if err != nil {
@@ -209,8 +221,10 @@ func (w *RoutWorker) HandleImportAudioDataJob(audioDataElement globalTypes.Audio
 		audioDataElement.AiSummary = summary
 
 		w.dbLock.Lock()
-		err = w.db.UpdateAISummary(w.TimeoutCtx, audioDataElement.AudiofileHash, audioDataElement.AiSummary)
+		ctx, cancel := w.opCtx()
+		err = w.db.UpdateAISummary(ctx, audioDataElement.AudiofileHash, audioDataElement.AiSummary)
 		w.dbLock.Unlock()
+		cancel()
 		if err != nil {
 			err := w.updateRetryCounter(&audioDataElement)
 			if err != nil {
@@ -269,8 +283,10 @@ func (w *RoutWorker) HandleImportAudioDataJob(audioDataElement globalTypes.Audio
 		audioDataElement.AiKeywords = record
 
 		w.dbLock.Lock()
-		err = w.db.UpdateAIKeywords(w.TimeoutCtx, audioDataElement.AudiofileHash, audioDataElement.AiKeywords)
+		ctx, cancel := w.opCtx()
+		err = w.db.UpdateAIKeywords(ctx, audioDataElement.AudiofileHash, audioDataElement.AiKeywords)
 		w.dbLock.Unlock()
+		cancel()
 		if err != nil {
 			err := w.updateRetryCounter(&audioDataElement)
 			if err != nil {
@@ -296,8 +312,10 @@ func (w *RoutWorker) createNewState(audioDataElement *globalTypes.AudioDataEleme
 	audioDataElement.UpdateToNextStage()
 
 	w.dbLock.Lock()
-	err := w.db.UpsertBase(w.TimeoutCtx, audioDataElement)
+	ctx, cancel := w.opCtx()
+	err := w.db.UpsertBase(ctx, audioDataElement)
 	w.dbLock.Unlock()
+	cancel()
 
 	return err
 }
@@ -306,8 +324,10 @@ func (w *RoutWorker) updateRetryCounter(audioDataElement *globalTypes.AudioDataE
 	audioDataElement.RetryCounter++
 
 	w.dbLock.Lock()
-	err := w.db.UpsertBase(w.TimeoutCtx, audioDataElement)
+	ctx, cancel := w.opCtx()
+	err := w.db.UpsertBase(ctx, audioDataElement)
 	w.dbLock.Unlock()
+	cancel()
 
 	return err
 }

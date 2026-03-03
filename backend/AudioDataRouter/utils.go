@@ -75,6 +75,7 @@ func saveAudiofileElementToDisk(element *globalTypes.AudioDataElement) (error, *
 }
 
 func notify(wake chan struct{}) {
+	slog.Debug("Notifying Dispatcher about new audio data")
 	select {
 	case wake <- struct{}{}:
 	default:

@@ -17,9 +17,12 @@ func (s *SQLiteStore) UpsertBase(ctx context.Context, a *globalTypes.AudioDataEl
 		return errors.New("AudiofileHash required")
 	}
 
-	kwJSON, err := json.Marshal(a.AiKeywords)
-	if err != nil {
-		return fmt.Errorf("marshal AIKeywords: %w", err)
+	aiKeywordsAsString := ""
+	for i, kw := range a.AiKeywords {
+		if i > 0 {
+			aiKeywordsAsString += ","
+		}
+		aiKeywordsAsString += kw
 	}
 
 	const q = `
@@ -42,7 +45,7 @@ ON CONFLICT(audiofile_hash) DO UPDATE SET
   ai_keywords  = COALESCE(excluded.ai_keywords, audiofiles.ai_keywords),
   ai_summary        = COALESCE(excluded.ai_summary, audiofiles.ai_summary);
 `
-	_, err = s.db.ExecContext(ctx, q,
+	_, err := s.db.ExecContext(ctx, q,
 		a.AudiofileHash,
 		nullIfEmpty(a.Title),
 		nullIfEmpty(a.RecordingDate),
@@ -54,7 +57,7 @@ ON CONFLICT(audiofile_hash) DO UPDATE SET
 		a.DurationInSec,
 		nullIfEmpty(a.TranscriptFull),
 		nullIfEmpty(a.UserSummary),
-		string(kwJSON),
+		nullIfEmpty(aiKeywordsAsString),
 		nullIfEmpty(a.AiSummary),
 		a.LastSuccessfulStep,
 	)

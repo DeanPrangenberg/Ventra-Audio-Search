@@ -20,7 +20,7 @@ func loadEnv(key string) (string, error) {
 func initLogger() {
 	log, err := loadEnv("LOG_LEVEL")
 	if err != nil {
-		log = "INFO"
+		log = "info"
 	}
 
 	var logLevel = strings.ToLower(log)

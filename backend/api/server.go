@@ -11,7 +11,7 @@ import (
 
 type Server struct {
 	port           string
-	importTaskChan chan globalTypes.AudioDataElement
+	importTaskChan chan *[]globalTypes.AudioDataElement
 	searchTaskChan chan globalTypes.SearchRequest
 	httpServer     *http.Server
 }

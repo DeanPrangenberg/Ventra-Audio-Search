@@ -12,7 +12,7 @@ import (
 )
 
 type RoutWorker struct {
-	ImportTaskChan chan globalTypes.AudioDataElement
+	ImportTaskChan chan *[]globalTypes.AudioDataElement
 	SearchTaskChan chan globalTypes.SearchRequest
 
 	NewAudioDataSignal      chan struct{}
@@ -49,7 +49,7 @@ func NewRoutWorker(databasePath string, workerAmount uint8) *RoutWorker {
 	}
 
 	worker := RoutWorker{
-		ImportTaskChan:          make(chan globalTypes.AudioDataElement),
+		ImportTaskChan:          make(chan *[]globalTypes.AudioDataElement),
 		SearchTaskChan:          make(chan globalTypes.SearchRequest),
 		NewAudioDataSignal:      make(chan struct{}),
 		AudioDataProcessingJobs: make(chan globalTypes.AudioDataElement),
@@ -118,18 +118,20 @@ func (w *RoutWorker) RunDispatcher() {
 func (w *RoutWorker) ProcessChanInputs() {
 	for {
 		select {
-		case inputElement := <-w.ImportTaskChan:
+		case inputElements := <-w.ImportTaskChan:
 
-			inputElement.AudiofileHash = inputElement.GetTmpHash()
-			inputElement.LastSuccessfulStep = globalTypes.StageReceived
+			for _, element := range *inputElements {
+				element.AudiofileHash = element.GetTmpHash()
+				element.LastSuccessfulStep = globalTypes.StageReceived
 
-			slog.Debug("Inserting new audio file into DB: " + inputElement.AudiofileHash)
-			w.dbLock.Lock()
-			err := w.db.UpsertBase(w.TimeoutCtx, &inputElement)
-			w.dbLock.Unlock()
-
-			if err != nil {
-				slog.Error("Error inserting audio file into DB: " + err.Error())
+				slog.Debug("Inserting new audio file into DB: " + element.AudiofileHash)
+				w.dbLock.Lock()
+				//TODO: Add mass import
+				err := w.db.UpsertBase(w.TimeoutCtx, &element)
+				w.dbLock.Unlock()
+				if err != nil {
+					slog.Error("Error inserting audio file into DB: " + err.Error())
+				}
 			}
 
 			notify(w.NewAudioDataSignal)

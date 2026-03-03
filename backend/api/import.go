@@ -114,9 +114,7 @@ func (rs *Server) handleImport(w http.ResponseWriter, r *http.Request) {
 
 	slog.Info("Queueing " + fmt.Sprintf("%d", len(validItems)) + " item for processing")
 
-	for _, item := range validItems {
-		rs.importTaskChan <- item
-	}
+	rs.importTaskChan <- &validItems
 
 	// alles valid -> 200
 	writeJSON(w, http.StatusOK, map[string]any{

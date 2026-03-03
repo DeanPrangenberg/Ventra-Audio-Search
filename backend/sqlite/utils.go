@@ -26,6 +26,13 @@ func nullIfEmpty(s string) interface{} {
 	return s
 }
 
+func emptyStringIfNil(s *string) string {
+	if s == nil {
+		return ""
+	}
+	return *s
+}
+
 func NowISO() string {
 	return time.Now().UTC().Format(time.RFC3339)
 }

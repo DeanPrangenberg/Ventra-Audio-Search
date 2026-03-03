@@ -11,19 +11,18 @@ import (
 	"strings"
 )
 
-func (w *RoutWorker) StartImportAudioDataWorker(audioDataElement globalTypes.AudioDataElement) error {
+func (w *RoutWorker) StartImportAudioDataWorker() {
 	for {
 		select {
 		case <-w.StopCtx.Done():
-			return nil
+			return
 
-		case <-w.NewAudioDataSignal:
+		case audioDataElement := <-w.AudioDataProcessingJobs:
 			err := w.HandleImportAudioDataJob(audioDataElement)
 			if err != nil {
 				slog.Error("Error handling import audio data job: " + err.Error())
 			}
 
-			return err
 		}
 	}
 }

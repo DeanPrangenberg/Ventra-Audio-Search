@@ -62,13 +62,11 @@ func NewRoutWorker(databasePath string, workerAmount uint8) *RoutWorker {
 	worker.StopCtx, worker.Cancel = context.WithCancel(context.Background())
 	worker.TimeoutCtx, worker.TimeoutCancel = context.WithTimeout(worker.StopCtx, 5*time.Minute)
 
-	go worker.ProcessChanInputs()
-
 	go worker.RunDispatcher()
 
 	for i := uint8(0); i < workerAmount; i++ {
 		worker.WorkerWG.Add(int(i))
-		go worker.ProcessChanInputs()
+		go worker.StartImportAudioDataWorker()
 	}
 
 	return &worker
@@ -314,6 +312,8 @@ func (w *RoutWorker) ProcessChanInputs() {
 			close(w.AudioDataProcessingJobs)
 			w.TimeoutCancel()
 			w.Cancel()
+			w.WorkerWG.Wait()
+			slog.Info("Stopped importing audio data")
 		}
 	}
 }

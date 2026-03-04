@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"go_audio_search_api_server/AudioDataRouter"
+	"go_audio_search_api_server/FlowManager"
 	"go_audio_search_api_server/api"
 	"log/slog"
 	"os"
@@ -50,7 +50,7 @@ func main() {
 	initLogger()
 	slog.Info("Starting Background workers...")
 
-	router := AudioDataRouter.NewRoutWorker("/app/sqlite/database.db", 12)
+	router := FlowManager.NewRoutWorker(12)
 
 	srv := api.NewRestServer("8880", router)
 	if err := srv.Run(); err != nil {

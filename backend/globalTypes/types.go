@@ -14,7 +14,7 @@ const (
 	StageReceived ProcessingStage = 1
 	// File saved to disk, ready for processing
 	StageFilePersisted ProcessingStage = 2
-	// Created full transcript and segemnts and saved in sqlite
+	// Created full transcript and segemnts and saved in postgres
 	StageTranscript ProcessingStage = 3
 	// Embeddings created for all segments and saved in qdrant
 	StageEmbeddings ProcessingStage = 4
@@ -75,7 +75,7 @@ type SegmentElement struct {
 	TranscriptEmbedding     []float32 `json:"-"`
 	SegmentInDB             bool      `json:"-"`
 	TranscriptEmbeddingDone bool      `json:"-"`
-	BM25                    float64   `json:"bm25_score"`
+	PostgresScore           float64   `json:"postgres_score"`
 	QueryScore              float32   `json:"vector_score"`
 }
 

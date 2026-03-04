@@ -1,14 +1,14 @@
 FROM golang:1.25 AS builder
 WORKDIR /app/backend
 
-# Toolchain + sqlite dev headers für CGO + FTS5
+# Toolchain + postgres dev headers für CGO + FTS5
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc g++ libc6-dev pkg-config libsqlite3-dev \
   && rm -rf /var/lib/apt/lists/*
 
 COPY . /app/backend
 
-RUN ls -la /app/backend && ls -la /app/backend/sqlite && head -n 5 /app/backend/go.mod
+RUN ls -la /app/backend && ls -la /app/backend/postgres && head -n 5 /app/backend/go.mod
 RUN go env GOMOD && pwd
 
 RUN go mod download

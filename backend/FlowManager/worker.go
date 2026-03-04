@@ -1,11 +1,11 @@
-package AudioDataRouter
+package FlowManager
 
 import (
 	"context"
 	"go_audio_search_api_server/ai"
 	"go_audio_search_api_server/globalTypes"
+	"go_audio_search_api_server/postgres"
 	"go_audio_search_api_server/qdrant"
-	"go_audio_search_api_server/sqlite"
 	"log/slog"
 	"sync"
 	"time"
@@ -26,7 +26,7 @@ type RoutWorker struct {
 	StopCtx  context.Context
 
 	whisper        *ai.WhisperApi
-	db             *sqlite.SQLiteStore
+	db             *postgres.PostgressWrapper
 	embeddings     *ai.EmbeddingsRequestHandler
 	qdrant         *qdrant.Client
 	qdrantLock     sync.Mutex
@@ -36,13 +36,12 @@ type RoutWorker struct {
 	dbLock         sync.Mutex
 }
 
-// FIX: Helper für per-Operation Context — kein globaler Timeout mehr
 func (w *RoutWorker) opCtx() (context.Context, context.CancelFunc) {
 	return context.WithTimeout(w.StopCtx, opTimeout)
 }
 
-func NewRoutWorker(databasePath string, workerAmount uint8) *RoutWorker {
-	db, err := sqlite.Open(databasePath)
+func NewRoutWorker(workerAmount uint8) *RoutWorker {
+	db, err := postgres.Open()
 	if err != nil {
 		slog.Error(err.Error())
 	}
@@ -54,11 +53,9 @@ func NewRoutWorker(databasePath string, workerAmount uint8) *RoutWorker {
 	}
 
 	worker := RoutWorker{
-		ImportTaskChan: make(chan *[]globalTypes.AudioDataElement),
-		SearchTaskChan: make(chan globalTypes.SearchRequest),
-		// FIX: Buffered mit size 1 — verhindert dropped Signals ohne zu blocken
-		NewAudioDataSignal: make(chan struct{}, 1),
-		// FIX: Gepuffert mit workerAmount — war unbuffered (cap=0), Loop lief nie
+		ImportTaskChan:          make(chan *[]globalTypes.AudioDataElement),
+		SearchTaskChan:          make(chan globalTypes.SearchRequest),
+		NewAudioDataSignal:      make(chan struct{}, 1),
 		AudioDataProcessingJobs: make(chan globalTypes.AudioDataElement, int(workerAmount)),
 		whisper:                 ai.NewWhisperApi(45.0),
 		db:                      db,
@@ -72,7 +69,7 @@ func NewRoutWorker(databasePath string, workerAmount uint8) *RoutWorker {
 	go worker.RunDispatcher()
 
 	for i := uint8(0); i < workerAmount; i++ {
-		worker.WorkerWG.Add(1) // FIX: war Add(int(i)) → zählte 0,1,2,3... statt immer 1
+		worker.WorkerWG.Add(1)
 		go worker.StartImportAudioDataWorker(int(i))
 	}
 
@@ -95,7 +92,6 @@ func NewRoutWorker(databasePath string, workerAmount uint8) *RoutWorker {
 
 func (w *RoutWorker) RunDispatcher() {
 	slog.Info("Started Dispatcher Worker")
-	// FIX: Sender schließt den Channel — war im Receiver (ProcessChanInputs) → Panic-Risiko
 	defer close(w.AudioDataProcessingJobs)
 	for {
 		select {
@@ -116,12 +112,10 @@ func (w *RoutWorker) RunDispatcher() {
 
 				if err != nil {
 					slog.Error("claim failed: " + err.Error())
-					// FIX: break statt continue — verhindert Busy-Loop bei DB-Fehler
 					break
 				}
 
 				if job == nil {
-					// FIX: break statt continue — kein Job verfügbar, nicht weiter loopen
 					break
 				}
 
@@ -139,7 +133,6 @@ func (w *RoutWorker) ProcessChanInputs() {
 	slog.Debug("Started Input ProcessChanInputs Worker")
 	for {
 		select {
-		// FIX: Shutdown hier — kein close() mehr auf Channels die wir nicht besitzen
 		case <-w.StopCtx.Done():
 			w.WorkerWG.Wait()
 			slog.Info("Stopped ProcessChanInputs")
@@ -179,7 +172,7 @@ func (w *RoutWorker) ProcessChanInputs() {
 			// FTS5 Kandidaten suchen
 			w.dbLock.Lock()
 			ctx, cancel := w.opCtx()
-			candidates, err := w.db.FTS5Candidates(
+			candidates, err := w.db.GetPostgresCandidates(
 				ctx,
 				inputElement.Fts5Query,
 				10,
@@ -288,7 +281,7 @@ func (w *RoutWorker) ProcessChanInputs() {
 						SegmentHash:   segment.SegmentHash,
 						AudiofileHash: segment.AudiofileHash,
 						Error:         "Error loading full segment data: " + err.Error(),
-						BM25:          segment.BM25,
+						BM25:          segment.PostgresScore,
 						QueryScore:    segment.QueryScore,
 					})
 					continue
@@ -297,7 +290,7 @@ func (w *RoutWorker) ProcessChanInputs() {
 				if fullSegmentData != nil {
 					for _, candidate := range candidates {
 						if candidate.SegmentHash == segment.SegmentHash {
-							fullSegmentData.BM25 = candidate.BM25
+							fullSegmentData.BM25 = candidate.PostgresScore
 							break
 						}
 					}
@@ -309,7 +302,7 @@ func (w *RoutWorker) ProcessChanInputs() {
 						SegmentHash:   segment.SegmentHash,
 						AudiofileHash: segment.AudiofileHash,
 						Error:         "No full segment data found for this segment",
-						BM25:          segment.BM25,
+						BM25:          segment.PostgresScore,
 						QueryScore:    segment.QueryScore,
 					})
 				}

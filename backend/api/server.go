@@ -2,7 +2,7 @@ package api
 
 import (
 	"errors"
-	"go_audio_search_api_server/AudioDataRouter"
+	"go_audio_search_api_server/FlowManager"
 	"go_audio_search_api_server/globalTypes"
 	"log/slog"
 	"net/http"
@@ -16,7 +16,7 @@ type Server struct {
 	httpServer     *http.Server
 }
 
-func NewRestServer(port string, router *AudioDataRouter.RoutWorker) *Server {
+func NewRestServer(port string, router *FlowManager.RoutWorker) *Server {
 	rs := &Server{
 		port:           port,
 		importTaskChan: router.ImportTaskChan,

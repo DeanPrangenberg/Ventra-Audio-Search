@@ -13,6 +13,19 @@ services:
     volumes:
       - ./.data/qdrant:/qdrant/storage
 
+  postgres:
+    container_name: postgres
+    image: postgres:latest
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: audio_transcript_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./.data/postgres:/var/lib/postgresql/data
+
   whisper-nvidia:
     container_name: whisper-server
     image: evilfreelancer/whisper-server:latest
@@ -62,13 +75,17 @@ services:
     ports:
       - "8880:8880" # Rest api
     volumes:
-      - ./.data/backend/sqlite:/app/sqlite
+      - ./.data/backend/postgres:/app/postgres
       - ./.data/backend/downloaded_audios:/app/downloaded_audios
     environment:
       WHISPER_API_URL: "http://whisper-nvidia:9000"
       OLLAMA_API_URL: "http://ollama:11434"
       QDRANT_API_HOST: "qdrant"
       QDRANT_API_PORT_GRPC: "6334"
+      POSTGRES_URL: "http://postgres:5432/audio_transcript_db"
+      POSTGRES_USER: "user"
+      POSTGRES_PASSWORD: "password"
+      POSTGRES_DB: "audio_transcript_db"
       LLM_MODEL: "dolphin-mistral:7b"
       EMBEDDING_MODEL: "nomic-embed-text"
       EMBEDDING_MODEL_DIM: "768"

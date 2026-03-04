@@ -83,7 +83,7 @@ services:
       OLLAMA_API_URL: "http://ollama:11434"
       QDRANT_API_HOST: "qdrant"
       QDRANT_API_PORT_GRPC: "6334"
-      POSTGRES_URL: "http://postgres:5432/audio_transcript_db"
+      POSTGRES_URL: "postgres:5432/audio_transcript_db"
       POSTGRES_USER: "user"
       POSTGRES_PASSWORD: "password"
       POSTGRES_DB: "audio_transcript_db"

@@ -38,15 +38,24 @@ func Open() (*PostgressWrapper, error) {
 		"postgres://%s:%s@%s/%s?sslmode=disable",
 		postgresUser, postgresPassword, postgresUrl, postgresDB,
 	)
+	var db *sql.DB
+	var err error
+	for _ = range 10 {
+		db, err = sql.Open("pgx", postgresConnection)
+		if err == nil {
+			break
+		}
 
-	db, err := sql.Open("pgx", postgresConnection)
-	if err != nil {
-		return nil, err
+		time.Sleep(10 * time.Second)
 	}
 
-	db.SetMaxOpenConns(20)
-	db.SetMaxIdleConns(10)
-	db.SetConnMaxIdleTime(15 * time.Minute)
+	if err != nil || db == nil {
+		panic("Couldn't connect to DB: " + postgresConnection)
+	}
+
+	db.SetMaxOpenConns(10)
+	db.SetMaxIdleConns(5)
+	db.SetConnMaxIdleTime(10 * time.Minute)
 	db.SetConnMaxLifetime(60 * time.Minute)
 
 	if err := db.Ping(); err != nil {

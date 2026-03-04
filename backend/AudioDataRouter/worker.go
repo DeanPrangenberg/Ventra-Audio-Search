@@ -78,8 +78,8 @@ func NewRoutWorker(databasePath string, workerAmount uint8) *RoutWorker {
 
 	slog.Debug("Started Dispatcher worker")
 
-	ctx, cancel := worker.opCtx()
 	worker.dbLock.Lock()
+	ctx, cancel := worker.opCtx()
 	err = worker.db.ResetProcessingClaims(ctx)
 	worker.dbLock.Unlock()
 	cancel()
@@ -108,8 +108,8 @@ func (w *RoutWorker) RunDispatcher() {
 					break
 				}
 
-				ctx, cancel := w.opCtx()
 				w.dbLock.Lock()
+				ctx, cancel := w.opCtx()
 				job, err := w.db.ClaimNextAudioForProcessing(ctx)
 				w.dbLock.Unlock()
 				cancel()
@@ -154,8 +154,8 @@ func (w *RoutWorker) ProcessChanInputs() {
 				element.AudiofileHash = element.GetTmpHash()
 				element.LastSuccessfulStep = globalTypes.StageReceived
 
-				ctx, cancel := w.opCtx()
 				w.dbLock.Lock()
+				ctx, cancel := w.opCtx()
 				slog.Debug("Inserting new audio file into DB: " + element.AudiofileHash)
 				// TODO: Add mass import
 				err := w.db.UpsertBase(ctx, &element)
@@ -177,8 +177,8 @@ func (w *RoutWorker) ProcessChanInputs() {
 			var response = globalTypes.SearchResponse{}
 
 			// FTS5 Kandidaten suchen
-			ctx, cancel := w.opCtx()
 			w.dbLock.Lock()
+			ctx, cancel := w.opCtx()
 			candidates, err := w.db.FTS5Candidates(
 				ctx,
 				inputElement.Fts5Query,
@@ -220,9 +220,9 @@ func (w *RoutWorker) ProcessChanInputs() {
 				continue
 			}
 
+			w.qdrantLock.Lock()
 			// Qdrant Reranking
 			ctx, cancel = w.opCtx()
-			w.qdrantLock.Lock()
 			segments, err := w.qdrant.RerankCandidatesByHashes(
 				ctx,
 				embedding,
@@ -256,8 +256,8 @@ func (w *RoutWorker) ProcessChanInputs() {
 
 			var relatedAudioElements []globalTypes.SearchAudioData
 			for audioFileHash := range audioFileHashes {
-				ctx, cancel = w.opCtx()
 				w.dbLock.Lock()
+				ctx, cancel = w.opCtx()
 				audioData, err := w.db.GetSearchAudioDataByHash(ctx, audioFileHash)
 				w.dbLock.Unlock()
 				cancel()
@@ -276,8 +276,8 @@ func (w *RoutWorker) ProcessChanInputs() {
 			// Top-K Segmente laden
 			var fullSegmentElements []globalTypes.SearchSegmentData
 			for _, segment := range segments {
-				ctx, cancel = w.opCtx()
 				w.dbLock.Lock()
+				ctx, cancel = w.opCtx()
 				fullSegmentData, err := w.db.GetSegmentByHash(ctx, segment.SegmentHash)
 				w.dbLock.Unlock()
 				cancel()

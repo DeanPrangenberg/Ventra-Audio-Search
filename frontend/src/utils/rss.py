@@ -2,12 +2,7 @@ import logging
 from datetime import timezone, datetime
 from email.utils import parsedate_to_datetime
 import feedparser
-
-
-import logging
 import re
-from datetime import datetime
-import feedparser
 
 
 MP3_URL_RE = re.compile(r"https?://[^\s\"'<>]+?\.mp3(?:\?[^\s\"'<>]*)?", re.IGNORECASE)

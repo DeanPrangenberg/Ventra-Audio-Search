@@ -40,7 +40,7 @@ ON CONFLICT(audiofile_hash) DO UPDATE SET
   download_path     = excluded.download_path,
   duration_in_sec   = excluded.duration_in_sec,
   last_successful_step   = excluded.last_successful_step,
-retry_counter = excluded.retry_counter,
+  retry_counter = excluded.retry_counter,
   transcript_full   = COALESCE(excluded.transcript_full, audiofiles.transcript_full),
   user_summary_text = COALESCE(excluded.user_summary_text, audiofiles.user_summary_text),
   ai_keywords  = COALESCE(excluded.ai_keywords, audiofiles.ai_keywords),

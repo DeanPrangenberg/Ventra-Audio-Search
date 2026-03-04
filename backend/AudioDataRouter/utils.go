@@ -8,10 +8,9 @@ import (
 	"go_audio_search_api_server/globalTypes"
 	"go_audio_search_api_server/globalUtils"
 	"log/slog"
-	"time"
 )
 
-func saveAudiofileElementToDisk(element *globalTypes.AudioDataElement) (error, *globalTypes.AudioDataElement) {
+func saveAudiofileElementToDisk(ctx context.Context, element *globalTypes.AudioDataElement) (error, *globalTypes.AudioDataElement) {
 	hasURL := element.FileUrl != ""
 	hasB64 := element.Base64Data != ""
 
@@ -28,9 +27,6 @@ func saveAudiofileElementToDisk(element *globalTypes.AudioDataElement) (error, *
 	switch {
 	case hasURL:
 		slog.Info("downloading from url", "url", element.FileUrl)
-
-		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute) // mp3 kann groß sein
-		defer cancel()
 
 		err, new_path := globalUtils.DownloadURLToFile(ctx, element.FileUrl, initName)
 		if err != nil {

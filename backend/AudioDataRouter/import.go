@@ -79,13 +79,15 @@ func (w *RoutWorker) HandleImportAudioDataJob(workerIdx int, audioDataElement gl
 	if audioDataElement.LastSuccessfulStep == globalTypes.StageReceived {
 		logImport(slog.LevelDebug, "persisting file to disk", workerIdx, audioDataElement)
 
-		err, updatedElement := saveAudiofileElementToDisk(&audioDataElement)
+		ctx, cancel := w.opCtx()
+		err, updatedElement := saveAudiofileElementToDisk(ctx, &audioDataElement)
+		cancel()
 		if err != nil {
 			return w.updateRetryCounter(workerIdx, &audioDataElement, err)
 		}
 
 		w.dbLock.Lock()
-		ctx, cancel := w.opCtx()
+		ctx, cancel = w.opCtx()
 		err = w.db.UpdateAudiofileHash(ctx, audioDataElement.AudiofileHash, updatedElement.AudiofileHash)
 		w.dbLock.Unlock()
 		cancel()

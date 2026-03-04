@@ -72,6 +72,7 @@ services:
       - whisper-nvidia
       - ollama
       - qdrant
+      - postgres
     ports:
       - "8880:8880" # Rest api
     volumes:

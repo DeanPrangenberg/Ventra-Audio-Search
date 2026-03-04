@@ -19,8 +19,6 @@ def handle_podcast_input(rss_feed):
 
     out = rss_feed_to_import_payloads(rss_feed)
 
-    pprint(out)
-
     if isinstance(out, str):
         return gr.update(
             value=f"**Error:** {out}",

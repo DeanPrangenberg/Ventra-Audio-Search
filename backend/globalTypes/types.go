@@ -29,22 +29,22 @@ const (
 )
 
 type AudioDataElement struct {
-	AudiofileHash      string            `json:"audiofile_hash"`
-	Title              string            `json:"title"`
-	RecordingDate      string            `json:"recording_date"`
-	Base64Data         string            `json:"base64_data"`
-	FileUrl            string            `json:"file_url"`
-	Category           string            `json:"category"`
-	AudioType          string            `json:"audio_type"`
-	DownloadPath       string            `json:"-"`
-	DurationInSec      float32           `json:"duration_in_sec"`
-	TranscriptFull     string            `json:"transcript_full"`
-	UserSummary        string            `json:"user_summary"`
-	AiKeywords         []string          `json:"ai_keywords"`
-	AiSummary          string            `json:"ai_summary"`
-	SegmentElements    *[]SegmentElement `json:"-"`
-	LastSuccessfulStep ProcessingStage   `json:"last_successful_step"`
-	RetryCounter       int               `json:"retry_counter"`
+	AudiofileHash      string           `json:"audiofile_hash"`
+	Title              string           `json:"title"`
+	RecordingDate      string           `json:"recording_date"`
+	Base64Data         string           `json:"base64_data"`
+	FileUrl            string           `json:"file_url"`
+	Category           string           `json:"category"`
+	AudioType          string           `json:"audio_type"`
+	DownloadPath       string           `json:"-"`
+	DurationInSec      float32          `json:"duration_in_sec"`
+	TranscriptFull     string           `json:"transcript_full"`
+	UserSummary        string           `json:"user_summary"`
+	AiKeywords         []string         `json:"ai_keywords"`
+	AiSummary          string           `json:"ai_summary"`
+	SegmentElements    []SegmentElement `json:"-"`
+	LastSuccessfulStep ProcessingStage  `json:"last_successful_step"`
+	RetryCounter       int              `json:"retry_counter"`
 }
 
 func (s *AudioDataElement) UpdateToNextStage() {

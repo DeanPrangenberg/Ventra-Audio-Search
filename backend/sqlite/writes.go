@@ -28,8 +28,8 @@ func (s *SQLiteStore) UpsertBase(ctx context.Context, a *globalTypes.AudioDataEl
 	const q = `
 INSERT INTO audiofiles (
   audiofile_hash, title, recording_date, category, audio_type, base64_data, file_url, download_path, duration_in_sec,
-  transcript_full, user_summary_text, ai_keywords, ai_summary, last_successful_step
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  transcript_full, user_summary_text, ai_keywords, ai_summary, last_successful_step, retry_counter
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 ON CONFLICT(audiofile_hash) DO UPDATE SET
   title             = excluded.title,
   recording_date    = excluded.recording_date,
@@ -40,6 +40,7 @@ ON CONFLICT(audiofile_hash) DO UPDATE SET
   download_path     = excluded.download_path,
   duration_in_sec   = excluded.duration_in_sec,
   last_successful_step   = excluded.last_successful_step,
+retry_counter = excluded.retry_counter,
   transcript_full   = COALESCE(excluded.transcript_full, audiofiles.transcript_full),
   user_summary_text = COALESCE(excluded.user_summary_text, audiofiles.user_summary_text),
   ai_keywords  = COALESCE(excluded.ai_keywords, audiofiles.ai_keywords),
@@ -60,6 +61,7 @@ ON CONFLICT(audiofile_hash) DO UPDATE SET
 		nullIfEmpty(aiKeywordsAsString),
 		nullIfEmpty(a.AiSummary),
 		a.LastSuccessfulStep,
+		a.RetryCounter,
 	)
 	return err
 }

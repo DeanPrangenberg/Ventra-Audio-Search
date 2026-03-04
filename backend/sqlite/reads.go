@@ -35,7 +35,7 @@ WHERE audiofile_hash = ?;
 	return &r, nil
 }
 
-func (s *SQLiteStore) GetAllSegmentsByAudioHash(ctx context.Context, audioHash string) (*[]globalTypes.SegmentElement, error) {
+func (s *SQLiteStore) GetAllSegmentsByAudioHash(ctx context.Context, audioHash string) ([]globalTypes.SegmentElement, error) {
 	const q = `
 SELECT segment_hash, start_sec, end_sec, transcript
 FROM segments
@@ -65,7 +65,7 @@ WHERE audiofile_hash = ?;
 		segment.EndInSec = float32(end)
 		out = append(out, segment)
 	}
-	return &out, rows.Err()
+	return out, rows.Err()
 }
 
 func (s *SQLiteStore) ClaimNextAudioForProcessing(ctx context.Context) (*globalTypes.AudioDataElement, error) {
@@ -101,7 +101,8 @@ RETURNING audiofile_hash,
           user_summary_text, 
           ai_keywords, 
           ai_summary, 
-          last_successful_step`
+          last_successful_step,
+    	  retry_counter`
 
 	var r globalTypes.AudioDataElement
 	var step int64
@@ -122,6 +123,7 @@ RETURNING audiofile_hash,
 		&aiKeywords,
 		&aiSummary,
 		&step,
+		&r.RetryCounter,
 	)
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, nil

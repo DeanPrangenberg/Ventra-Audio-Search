@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS audiofiles (
   ai_keywords   TEXT,
   ai_summary         TEXT,
   last_successful_step INTEGER,
+  retry_counter     INTEGER NOT NULL DEFAULT 0,
   gets_processed    BOOLEAN NOT NULL DEFAULT FALSE,
   created_at         TEXT NOT NULL DEFAULT (datetime('now')),
   updated_at         TEXT NOT NULL DEFAULT (datetime('now'))

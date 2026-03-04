@@ -120,9 +120,11 @@ func (w *RoutWorker) HandleImportAudioDataJob(workerIdx int, audioDataElement gl
 		}
 
 		audioDataElement.TranscriptFull = result.Transcript
+		audioDataElement.SegmentElements = []globalTypes.SegmentElement{}
 
 		for _, segment := range result.Segments {
 			hashInput := fmt.Sprintf("%s-%f-%f-%s", audioDataElement.AudiofileHash, segment.Start, segment.End, segment.Transcript)
+
 			builtSegment := globalTypes.SegmentElement{
 				AudiofileHash: audioDataElement.AudiofileHash,
 				StartInSec:    segment.Start,
@@ -131,7 +133,7 @@ func (w *RoutWorker) HandleImportAudioDataJob(workerIdx int, audioDataElement gl
 				SegmentHash:   globalUtils.StringSha256Hex(hashInput),
 			}
 
-			*audioDataElement.SegmentElements = append(*audioDataElement.SegmentElements, builtSegment)
+			audioDataElement.SegmentElements = append(audioDataElement.SegmentElements, builtSegment)
 		}
 
 		logImport(
@@ -154,7 +156,7 @@ func (w *RoutWorker) HandleImportAudioDataJob(workerIdx int, audioDataElement gl
 
 		w.dbLock.Lock()
 		ctx, cancel = w.opCtx()
-		err = w.db.InsertSegmentsUpsert(ctx, audioDataElement.AudiofileHash, audioDataElement.SegmentElements)
+		err = w.db.InsertSegmentsUpsert(ctx, audioDataElement.AudiofileHash, &audioDataElement.SegmentElements)
 		w.dbLock.Unlock()
 		cancel()
 		if err != nil {
@@ -190,7 +192,7 @@ func (w *RoutWorker) HandleImportAudioDataJob(workerIdx int, audioDataElement gl
 			return w.updateRetryCounter(workerIdx, &audioDataElement, err)
 		}
 
-		for _, segment := range *audioDataElement.SegmentElements {
+		for _, segment := range audioDataElement.SegmentElements {
 			w.embeddingsLock.Lock()
 			embedding, err := w.embeddings.CreateEmbedding(segment.Transcript)
 			w.embeddingsLock.Unlock()

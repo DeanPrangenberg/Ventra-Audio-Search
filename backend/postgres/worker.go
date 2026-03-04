@@ -61,7 +61,7 @@ func Open() (*PostgressWrapper, error) {
 	for range 10 {
 		db, err = sql.Open("pgx", postgresConnection)
 		if err != nil {
-			slog.Error("sql.Open failed", "err", err)
+			slog.Warn("sql.Open failed", "err", err)
 			time.Sleep(3 * time.Second)
 			continue
 		}
@@ -76,10 +76,12 @@ func Open() (*PostgressWrapper, error) {
 			return newPostgresWrapper(db), nil
 		}
 
-		slog.Error("db.Ping failed", "err", err, "dsn", postgresConnection)
+		slog.Warn("db.Ping failed", "err", err, "dsn", postgresConnection)
 		_ = db.Close()
 		time.Sleep(3 * time.Second)
 	}
+
+	panic("Could not connect to postgres. err: " + err.Error())
 
 	return nil, fmt.Errorf("could not connect to postgres after retries: %w", err)
 }

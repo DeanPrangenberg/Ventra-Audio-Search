@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"go_audio_search_api_server/globalUtils"
 	"log/slog"
@@ -28,42 +29,59 @@ func newPostgresWrapper(db *sql.DB) *PostgressWrapper {
 }
 
 func Open() (*PostgressWrapper, error) {
-
 	postgresUser := globalUtils.LoadEnv("POSTGRES_USER")
 	postgresPassword := globalUtils.LoadEnv("POSTGRES_PASSWORD")
-	postgresUrl := globalUtils.LoadEnv("POSTGRES_URL")
+	postgresHost := globalUtils.LoadEnv("POSTGRES_URL")
 	postgresDB := globalUtils.LoadEnv("POSTGRES_DB")
+
+	if postgresUser == "" {
+		return nil, errors.New("POSTGRES_USER is empty")
+	}
+	if postgresPassword == "" {
+		return nil, errors.New("POSTGRES_PASSWORD is empty")
+	}
+	if postgresHost == "" {
+		return nil, errors.New("POSTGRES_URL is empty")
+	}
+	if postgresDB == "" {
+		return nil, errors.New("POSTGRES_DB is empty")
+	}
 
 	postgresConnection := fmt.Sprintf(
 		"postgres://%s:%s@%s/%s?sslmode=disable",
-		postgresUser, postgresPassword, postgresUrl, postgresDB,
+		postgresUser,
+		postgresPassword,
+		postgresHost,
+		postgresDB,
 	)
+
 	var db *sql.DB
 	var err error
-	for _ = range 10 {
+
+	for range 10 {
 		db, err = sql.Open("pgx", postgresConnection)
-		if err == nil {
-			break
+		if err != nil {
+			slog.Error("sql.Open failed", "err", err)
+			time.Sleep(3 * time.Second)
+			continue
 		}
 
-		time.Sleep(10 * time.Second)
-	}
+		db.SetMaxOpenConns(10)
+		db.SetMaxIdleConns(5)
+		db.SetConnMaxIdleTime(10 * time.Minute)
+		db.SetConnMaxLifetime(60 * time.Minute)
 
-	if err != nil || db == nil {
-		panic("Couldn't connect to DB: " + postgresConnection)
-	}
+		err = db.Ping()
+		if err == nil {
+			return newPostgresWrapper(db), nil
+		}
 
-	db.SetMaxOpenConns(10)
-	db.SetMaxIdleConns(5)
-	db.SetConnMaxIdleTime(10 * time.Minute)
-	db.SetConnMaxLifetime(60 * time.Minute)
-
-	if err := db.Ping(); err != nil {
+		slog.Error("db.Ping failed", "err", err, "dsn", postgresConnection)
 		_ = db.Close()
-		return nil, err
+		time.Sleep(3 * time.Second)
 	}
 
-	return newPostgresWrapper(db), nil
+	return nil, fmt.Errorf("could not connect to postgres after retries: %w", err)
 }
 
 func (s *PostgressWrapper) Close() error { return s.db.Close() }

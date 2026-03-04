@@ -84,8 +84,8 @@ func (w *RoutWorker) HandleImportAudioDataJob(workerIdx int, audioDataElement gl
 			return w.updateRetryCounter(workerIdx, &audioDataElement, err)
 		}
 
-		ctx, cancel := w.opCtx()
 		w.dbLock.Lock()
+		ctx, cancel := w.opCtx()
 		err = w.db.UpdateAudiofileHash(ctx, audioDataElement.AudiofileHash, updatedElement.AudiofileHash)
 		w.dbLock.Unlock()
 		cancel()

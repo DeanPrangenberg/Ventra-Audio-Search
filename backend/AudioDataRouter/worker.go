@@ -12,7 +12,7 @@ import (
 )
 
 // FIX: Per-Operation Timeout statt globalem TimeoutCtx
-const opTimeout = 30 * time.Second
+const opTimeout = 5 * time.Minute
 
 type RoutWorker struct {
 	ImportTaskChan chan *[]globalTypes.AudioDataElement

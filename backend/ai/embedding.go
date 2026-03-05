@@ -2,11 +2,13 @@ package ai
 
 import (
 	"log/slog"
+	"sync"
 )
 
 type EmbeddingsRequestHandler struct {
 	model      string
 	requestURL string
+	Lock       sync.Mutex
 }
 
 func NewEmbeddingsRequestHandler() *EmbeddingsRequestHandler {
@@ -21,7 +23,9 @@ func NewEmbeddingsRequestHandler() *EmbeddingsRequestHandler {
 }
 
 func (h *EmbeddingsRequestHandler) CreateEmbedding(text string) ([]float32, error) {
+	h.Lock.Lock()
 	vec, err := OllamaEmbedRequest(h.model, h.requestURL, text)
+	h.Lock.Unlock()
 	if err != nil {
 		return nil, err
 	}

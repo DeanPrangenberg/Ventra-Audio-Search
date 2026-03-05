@@ -1,7 +1,6 @@
 import json
 import logging
 import os
-from unicodedata import category
 
 
 class ConfigManager:

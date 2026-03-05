@@ -9,7 +9,6 @@ import (
 	"go_audio_search_api_server/globalTypes"
 )
 
-// UpsertBase schreibt Metadaten in Postgres.
 func (s *PostgressWrapper) UpsertBase(ctx context.Context, a *globalTypes.AudioDataElement) error {
 	if a == nil {
 		return errors.New("nil audio element")
@@ -77,7 +76,7 @@ ON CONFLICT(audiofile_hash) DO UPDATE SET
 	_, err = s.db.ExecContext(ctx, q,
 		a.AudiofileHash,
 		nullIfEmpty(a.Title),
-		a.RecordingDate, // erwartet ISO: YYYY-MM-DD
+		a.RecordingDate,
 		nullIfEmpty(a.Category),
 		nullIfEmpty(a.AudioType),
 		nullIfEmpty(a.Base64Data),

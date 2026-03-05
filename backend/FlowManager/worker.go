@@ -11,7 +11,6 @@ import (
 	"time"
 )
 
-// FIX: Per-Operation Timeout statt globalem TimeoutCtx
 const opTimeout = 5 * time.Minute
 
 type RoutWorker struct {

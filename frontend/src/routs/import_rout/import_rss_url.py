@@ -1,7 +1,4 @@
 import gradio as gr
-import os
-
-from pprint import pprint
 
 from src.utils.rss import rss_feed_to_import_payloads
 from src.routs.import_rout.utils import is_valid_url, do_backend_request
@@ -119,9 +116,10 @@ def mount_rss_renderer():
                     api_visibility="private",
                 )
 
-    send_btn = gr.Button("Send configured episodes to backend", variant="primary")
-    send_btn.click(
-        fn=do_backend_request,
-        inputs=[found_episodes_state],
-        outputs=[found_episodes_state, gr.State(), send_result],
-    )
+        if state:
+            send_btn = gr.Button("Send configured episodes to backend", variant="primary")
+            send_btn.click(
+                fn=do_backend_request,
+                inputs=[found_episodes_state],
+                outputs=[found_episodes_state, gr.State(), send_result],
+            )

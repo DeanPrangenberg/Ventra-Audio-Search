@@ -87,7 +87,7 @@ class API:
 
     def search_request(self, payload: SearchPayload):
         request_payloads = payload.to_dict()
-        r = requests.get(self.import_url, json=request_payloads, timeout=600)
+        r = requests.get(self.search_url, json=request_payloads, timeout=600)
 
         ct = (r.headers.get("content-type") or "").lower()
         if "application/json" in ct:

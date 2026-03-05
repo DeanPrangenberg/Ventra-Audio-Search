@@ -1,16 +1,17 @@
 import src.utils.state as state_utils
 
+
 class ImportPayload:
     def __init__(
-        self,
-        title: str,
-        recording_date: str,
-        category: str,
-        audio_type: str,
-        duration_in_sec: float,
-        user_summary: str,
-        base64_data: str = False,
-        file_url: str = False,
+            self,
+            title: str,
+            recording_date: str,
+            category: str,
+            audio_type: str,
+            duration_in_sec: float,
+            user_summary: str,
+            base64_data: str = False,
+            file_url: str = False,
     ):
 
         self.title = title

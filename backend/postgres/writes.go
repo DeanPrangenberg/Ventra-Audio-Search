@@ -2,14 +2,14 @@ package postgres
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
+	"strings"
 
 	"go_audio_search_api_server/globalTypes"
 )
 
-func (s *PostgressWrapper) UpsertBase(ctx context.Context, a *globalTypes.AudioDataElement) error {
+func (s *Worker) UpsertBase(ctx context.Context, a *globalTypes.AudioDataElement) error {
 	if a == nil {
 		return errors.New("nil audio element")
 	}
@@ -37,7 +37,7 @@ INSERT INTO audiofiles (
   user_summary_text,
   ai_keywords,
   ai_summary,
-  last_successful_step,
+  last_successful_stage,
   retry_counter
 ) VALUES (
   $1,
@@ -65,9 +65,10 @@ ON CONFLICT(audiofile_hash) DO UPDATE SET
   file_url             = EXCLUDED.file_url,
   download_path        = EXCLUDED.download_path,
   duration_in_sec      = EXCLUDED.duration_in_sec,
-  last_successful_step = EXCLUDED.last_successful_step,
+  last_successful_stage = EXCLUDED.last_successful_stage,
   retry_counter        = EXCLUDED.retry_counter,
   transcript_full      = COALESCE(EXCLUDED.transcript_full, audiofiles.transcript_full),
+  download_path        = COALESCE(EXCLUDED.download_path, audiofiles.download_path),
   user_summary_text    = COALESCE(EXCLUDED.user_summary_text, audiofiles.user_summary_text),
   ai_keywords          = COALESCE(EXCLUDED.ai_keywords, audiofiles.ai_keywords),
   ai_summary           = COALESCE(EXCLUDED.ai_summary, audiofiles.ai_summary);
@@ -87,13 +88,150 @@ ON CONFLICT(audiofile_hash) DO UPDATE SET
 		nullIfEmpty(a.UserSummary),
 		aiKeywordsJSON,
 		nullIfEmpty(a.AiSummary),
-		a.LastSuccessfulStep,
+		a.LastSuccessfulStage,
 		a.RetryCounter,
 	)
 	return err
 }
 
-func (s *PostgressWrapper) UpdateAudiofileHash(ctx context.Context, oldAudioHash string, newAudioHash string) error {
+func (s *Worker) UpsertBaseBatch(ctx context.Context, items []*globalTypes.AudioDataElement) error {
+	if len(items) == 0 {
+		return nil
+	}
+
+	const colsPerRow = 15
+	const chunkSize = 1000
+
+	const head = `
+INSERT INTO audiofiles (
+  audiofile_hash,
+  title,
+  recording_date,
+  category,
+  audio_type,
+  base64_data,
+  file_url,
+  download_path,
+  duration_in_sec,
+  transcript_full,
+  user_summary_text,
+  ai_keywords,
+  ai_summary,
+  last_successful_stage,
+  retry_counter
+) VALUES
+`
+
+	const tail = `
+ON CONFLICT(audiofile_hash) DO UPDATE SET
+  title                = EXCLUDED.title,
+  recording_date       = EXCLUDED.recording_date,
+  category             = EXCLUDED.category,
+  audio_type           = EXCLUDED.audio_type,
+  base64_data          = EXCLUDED.base64_data,
+  file_url             = EXCLUDED.file_url,
+  download_path        = EXCLUDED.download_path,
+  duration_in_sec      = EXCLUDED.duration_in_sec,
+  last_successful_stage = EXCLUDED.last_successful_stage,
+  retry_counter        = EXCLUDED.retry_counter,
+  transcript_full      = COALESCE(EXCLUDED.transcript_full, audiofiles.transcript_full),
+  user_summary_text    = COALESCE(EXCLUDED.user_summary_text, audiofiles.user_summary_text),
+  ai_keywords          = COALESCE(EXCLUDED.ai_keywords, audiofiles.ai_keywords),
+  ai_summary           = COALESCE(EXCLUDED.ai_summary, audiofiles.ai_summary);
+`
+
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = tx.Rollback() }()
+
+	for start := 0; start < len(items); start += chunkSize {
+		end := start + chunkSize
+		if end > len(items) {
+			end = len(items)
+		}
+
+		batch := items[start:end]
+
+		if len(batch)*colsPerRow > 65000 {
+			return fmt.Errorf("batch too large: %d rows", len(batch))
+		}
+
+		var sb strings.Builder
+		sb.Grow(len(head) + len(tail) + len(batch)*256)
+		sb.WriteString(head)
+
+		args := make([]any, 0, len(batch)*colsPerRow)
+
+		for i, a := range batch {
+			if a == nil {
+				return fmt.Errorf("nil audio element at index %d", start+i)
+			}
+			if a.AudiofileHash == "" {
+				return fmt.Errorf("AudiofileHash required at index %d", start+i)
+			}
+
+			aiKeywordsJSON, jerr := jsonOrNilFromStringSlice(a.AiKeywords)
+			if jerr != nil {
+				return fmt.Errorf("marshal ai keywords at index %d: %w", start+i, jerr)
+			}
+
+			off := i*colsPerRow + 1
+
+			if i > 0 {
+				sb.WriteString(",\n")
+			}
+
+			fmt.Fprintf(&sb,
+				`($%d, $%d, NULLIF($%d, '')::date, $%d, $%d, $%d, $%d, $%d, $%d, $%d, $%d, $%d::jsonb, $%d, $%d, $%d)`,
+				off+0,
+				off+1,
+				off+2,
+				off+3,
+				off+4,
+				off+5,
+				off+6,
+				off+7,
+				off+8,
+				off+9,
+				off+10,
+				off+11,
+				off+12,
+				off+13,
+				off+14,
+			)
+
+			args = append(args,
+				a.AudiofileHash,
+				nullIfEmpty(a.Title),
+				a.RecordingDate,
+				nullIfEmpty(a.Category),
+				nullIfEmpty(a.AudioType),
+				nullIfEmpty(a.Base64Data),
+				nullIfEmpty(a.FileUrl),
+				nullIfEmpty(a.DownloadPath),
+				a.DurationInSec,
+				nullIfEmpty(a.TranscriptFull),
+				nullIfEmpty(a.UserSummary),
+				aiKeywordsJSON,
+				nullIfEmpty(a.AiSummary),
+				a.LastSuccessfulStage,
+				a.RetryCounter,
+			)
+		}
+
+		sb.WriteString(tail)
+
+		if _, err := tx.ExecContext(ctx, sb.String(), args...); err != nil {
+			return err
+		}
+	}
+
+	return tx.Commit()
+}
+
+func (s *Worker) UpdateAudiofileHash(ctx context.Context, oldAudioHash string, newAudioHash string) error {
 	if oldAudioHash == "" {
 		return errors.New("oldAudioHash required")
 	}
@@ -106,53 +244,8 @@ func (s *PostgressWrapper) UpdateAudiofileHash(ctx context.Context, oldAudioHash
 	return err
 }
 
-func (s *PostgressWrapper) UpdateTranscriptFull(ctx context.Context, audioHash string, transcript string) error {
-	if audioHash == "" {
-		return errors.New("audioHash required")
-	}
-
-	const q = `UPDATE audiofiles SET transcript_full = $1 WHERE audiofile_hash = $2;`
-	_, err := s.db.ExecContext(ctx, q, transcript, audioHash)
-	return err
-}
-
-func (s *PostgressWrapper) UpdateUserSummaryText(ctx context.Context, audioHash string, summary string) error {
-	if audioHash == "" {
-		return errors.New("audioHash required")
-	}
-
-	const q = `UPDATE audiofiles SET user_summary_text = $1 WHERE audiofile_hash = $2;`
-	_, err := s.db.ExecContext(ctx, q, summary, audioHash)
-	return err
-}
-
-func (s *PostgressWrapper) UpdateAISummary(ctx context.Context, audioHash string, aiSummary string) error {
-	if audioHash == "" {
-		return errors.New("audioHash required")
-	}
-
-	const q = `UPDATE audiofiles SET ai_summary = $1 WHERE audiofile_hash = $2;`
-	_, err := s.db.ExecContext(ctx, q, aiSummary, audioHash)
-	return err
-}
-
-func (s *PostgressWrapper) UpdateAIKeywords(ctx context.Context, audioHash string, keywords []string) error {
-	if audioHash == "" {
-		return errors.New("audioHash required")
-	}
-
-	b, err := json.Marshal(keywords)
-	if err != nil {
-		return fmt.Errorf("marshal keywords: %w", err)
-	}
-
-	const q = `UPDATE audiofiles SET ai_keywords = $1::jsonb WHERE audiofile_hash = $2;`
-	_, err = s.db.ExecContext(ctx, q, string(b), audioHash)
-	return err
-}
-
-// InsertSegmentsUpsert schreibt Segmente als Batch in einer TX.
-func (s *PostgressWrapper) InsertSegmentsUpsert(ctx context.Context, audioHash string, segs *[]globalTypes.SegmentElement) error {
+// UpsertSegments schreibt Segmente als Batch in einer TX.
+func (s *Worker) UpsertSegments(ctx context.Context, audioHash string, segs *[]globalTypes.SegmentElement) error {
 	if audioHash == "" {
 		return errors.New("audioHash required")
 	}
@@ -204,7 +297,7 @@ ON CONFLICT(segment_hash) DO UPDATE SET
 	return tx.Commit()
 }
 
-func (s *PostgressWrapper) ResetProcessingClaims(ctx context.Context) error {
+func (s *Worker) ResetProcessingClaims(ctx context.Context) error {
 	const q = `
 UPDATE audiofiles
 SET gets_processed = FALSE

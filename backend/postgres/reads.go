@@ -9,7 +9,7 @@ import (
 	"go_audio_search_api_server/globalTypes"
 )
 
-func (s *PostgressWrapper) GetSearchAudioDataByHash(ctx context.Context, audioHash string) (*globalTypes.SearchAudioData, error) {
+func (s *Worker) GetSearchAudioDataByHash(ctx context.Context, audioHash string) (*globalTypes.SearchAudioData, error) {
 	const q = `
 SELECT
   audiofile_hash,
@@ -45,7 +45,7 @@ WHERE audiofile_hash = $1;
 	return &r, nil
 }
 
-func (s *PostgressWrapper) GetAllSegmentsByAudioHash(ctx context.Context, audioHash string) ([]globalTypes.SegmentElement, error) {
+func (s *Worker) GetAllSegmentsByAudioHash(ctx context.Context, audioHash string) ([]globalTypes.SegmentElement, error) {
 	const q = `
 SELECT segment_hash, start_sec, end_sec, transcript
 FROM segments
@@ -82,7 +82,7 @@ ORDER BY start_sec ASC;
 	return out, rows.Err()
 }
 
-func (s *PostgressWrapper) ClaimNextAudioForProcessing(ctx context.Context) (*globalTypes.AudioDataElement, error) {
+func (s *Worker) ClaimNextAudioForProcessing(ctx context.Context) (*globalTypes.AudioDataElement, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, err
@@ -93,9 +93,9 @@ func (s *PostgressWrapper) ClaimNextAudioForProcessing(ctx context.Context) (*gl
 WITH next_row AS (
     SELECT audiofile_hash
     FROM audiofiles
-    WHERE last_successful_step > 0
+    WHERE last_successful_stage > 0
       AND gets_processed = FALSE
-    ORDER BY last_successful_step ASC, created_at ASC
+    ORDER BY last_successful_stage ASC, created_at ASC
     FOR UPDATE SKIP LOCKED
     LIMIT 1
 )
@@ -117,12 +117,12 @@ RETURNING
   COALESCE(a.user_summary_text, ''),
   COALESCE(a.ai_keywords::text, '[]'),
   COALESCE(a.ai_summary, ''),
-  COALESCE(a.last_successful_step, 0),
+  COALESCE(a.last_successful_stage, 0),
   a.retry_counter;
 `
 
 	var r globalTypes.AudioDataElement
-	var step int64
+	var stage int64
 	var aiKeywordsJSON string
 
 	err = tx.QueryRowContext(ctx, q).Scan(
@@ -139,7 +139,7 @@ RETURNING
 		&r.UserSummary,
 		&aiKeywordsJSON,
 		&r.AiSummary,
-		&step,
+		&stage,
 		&r.RetryCounter,
 	)
 	if errors.Is(err, sql.ErrNoRows) {
@@ -150,7 +150,7 @@ RETURNING
 	}
 
 	r.AiKeywords = stringSliceFromJSON(aiKeywordsJSON)
-	r.LastSuccessfulStep = globalTypes.ProcessingStage(step)
+	r.LastSuccessfulStage = globalTypes.ProcessingStage(stage)
 
 	if err := tx.Commit(); err != nil {
 		return nil, err
@@ -159,7 +159,7 @@ RETURNING
 	return &r, nil
 }
 
-func (s *PostgressWrapper) GetSegmentByHash(ctx context.Context, segmentHash string) (*globalTypes.SearchSegmentData, error) {
+func (s *Worker) GetSegmentByHash(ctx context.Context, segmentHash string) (*globalTypes.SearchSegmentData, error) {
 	const q = `
 SELECT segment_hash, audiofile_hash, start_sec, end_sec, transcript
 FROM segments
@@ -191,7 +191,7 @@ WHERE segment_hash = $1;
 
 // GetPostgresCandidates bleibt absichtlich gleich benannt, damit dein Restcode nicht bricht.
 // Intern ist das jetzt Postgres Full Text Search.
-func (s *PostgressWrapper) GetPostgresCandidates(ctx context.Context, userInput string, k int, category string, startDateISO string, endDateISO string) ([]globalTypes.SegmentElement, error) {
+func (s *Worker) GetPostgresCandidates(ctx context.Context, userInput string, k int, category string, startDateISO string, endDateISO string) ([]globalTypes.SegmentElement, error) {
 	if strings.TrimSpace(userInput) == "" {
 		return nil, errors.New("userInput empty")
 	}

@@ -1,9 +1,9 @@
 import logging
+import re
 from datetime import timezone, datetime
 from email.utils import parsedate_to_datetime
-import feedparser
-import re
 
+import feedparser
 
 MP3_URL_RE = re.compile(r"https?://[^\s\"'<>]+?\.mp3(?:\?[^\s\"'<>]*)?", re.IGNORECASE)
 
@@ -15,8 +15,8 @@ def extract_audio_url(entry) -> str:
         mime = str(enc.get("type", "")).lower().strip()
 
         if href and (
-            mime.startswith("audio/") or
-            ".mp3" in href.lower()
+                mime.startswith("audio/") or
+                ".mp3" in href.lower()
         ):
             return href
 
@@ -27,9 +27,9 @@ def extract_audio_url(entry) -> str:
         mime = str(link.get("type", "")).lower().strip()
 
         if href and (
-            rel == "enclosure" or
-            mime.startswith("audio/") or
-            ".mp3" in href.lower()
+                rel == "enclosure" or
+                mime.startswith("audio/") or
+                ".mp3" in href.lower()
         ):
             return href
 

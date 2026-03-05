@@ -4,6 +4,8 @@ import (
 	"go_audio_search_api_server/FlowManager"
 	"go_audio_search_api_server/api"
 	"go_audio_search_api_server/globalUtils"
+	"go_audio_search_api_server/postgres"
+	"go_audio_search_api_server/qdrant"
 	"log/slog"
 	"os"
 	"strings"
@@ -39,7 +41,18 @@ func main() {
 	initLogger()
 	slog.Info("Starting Background workers...")
 
-	router := FlowManager.NewRoutWorker(12)
+	db, err := postgres.Open()
+	if err != nil {
+		slog.Error(err.Error())
+	}
+
+	client, err := qdrant.New("AudioSegments")
+	if err != nil {
+		slog.Error("Failed to connect to Qdrant: " + err.Error())
+		panic("Failed to connect to Qdrant")
+	}
+
+	router := FlowManager.NewWorker(12)
 
 	srv := api.NewRestServer("8880", router)
 	if err := srv.Run(); err != nil {

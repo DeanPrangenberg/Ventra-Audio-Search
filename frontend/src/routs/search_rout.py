@@ -1,9 +1,8 @@
 import logging
 from typing import Any
 
-import gradio as gr
-
 import config_manager
+import gradio as gr
 import src.utils.state as state_utils
 from src.api import api
 from src.api.payloads import search_payload
@@ -32,7 +31,6 @@ def do_backend_request(state: dict[str, Any]) -> str:
     )
 
     res = api.API().search_request(payload)
-
 
     return res
 

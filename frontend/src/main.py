@@ -20,8 +20,10 @@ def start_ttl_cleanup_thread():
         while True:
             utils.file.cleanup_upload_dir_ttl()
             time.sleep(300)  # alle 5 min
+
     t = threading.Thread(target=loop, daemon=True)
     t.start()
+
 
 def setup_logging(level: str = "INFO") -> None:
     logging.basicConfig(
@@ -30,6 +32,7 @@ def setup_logging(level: str = "INFO") -> None:
         handlers=[logging.StreamHandler(sys.stdout)],
         force=True,  # überschreibt evtl. Gradio/Lib configs
     )
+
 
 if __name__ == "__main__":
     setup_logging("INFO")
@@ -51,7 +54,6 @@ if __name__ == "__main__":
 
     start_ttl_cleanup_thread()
 
-
     port = int(os.environ.get("PORT", "7860"))
 
     css_path = Path("src/theme.css")
@@ -62,4 +64,5 @@ if __name__ == "__main__":
         logging.error("CSS file " + css_path.__str__() + " not found")
         css = ""
 
-    demo.launch(allowed_paths=[config_manager.ConfigManager().get_upload_dir()], server_name="0.0.0.0", server_port=port, css=css)
+    demo.launch(allowed_paths=[config_manager.ConfigManager().get_upload_dir()], server_name="0.0.0.0",
+                server_port=port, css=css)

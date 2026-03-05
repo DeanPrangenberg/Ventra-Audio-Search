@@ -2,7 +2,7 @@ package postgres
 
 import "context"
 
-func (s *PostgressWrapper) CreateTables(ctx context.Context) error {
+func (s *Worker) CreateTables(ctx context.Context) error {
 	stmts := []string{
 		`
 CREATE TABLE IF NOT EXISTS audiofiles (
@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS audiofiles (
   user_summary_text     text,
   ai_keywords           jsonb,
   ai_summary            text,
-  last_successful_step  bigint,
+  last_successful_stage  bigint,
   retry_counter         integer NOT NULL DEFAULT 0,
   gets_processed        boolean NOT NULL DEFAULT false,
   created_at            timestamptz NOT NULL DEFAULT now(),
@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS segments (
 		`CREATE INDEX IF NOT EXISTS idx_segments_tsv ON segments USING GIN (transcript_tsv);`,
 		`
 CREATE INDEX IF NOT EXISTS idx_audiofiles_claim_queue
-ON audiofiles (gets_processed, last_successful_step, created_at)
+ON audiofiles (gets_processed, last_successful_stage, created_at)
 WHERE gets_processed = false;`,
 	}
 

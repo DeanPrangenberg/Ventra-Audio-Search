@@ -7,9 +7,8 @@ import time
 from pathlib import Path
 from typing import Any
 
-from mutagen.mp3 import MP3
-
 import src.config_manager as config_manager
+from mutagen.mp3 import MP3
 
 
 def file_sha256(path: str, chunk_size: int = 1024 * 1024) -> str:
@@ -19,9 +18,10 @@ def file_sha256(path: str, chunk_size: int = 1024 * 1024) -> str:
             h.update(chunk)
     return h.hexdigest()
 
+
 def cleanup_upload_dir_ttl() -> None:
     upload_dir = Path(os.environ.get("DATA_DIR", "/app/data")).resolve() / "uploads"
-    ttl_seconds = int(os.environ.get("FILE_CLEAN_UP", 30*60))
+    ttl_seconds = int(os.environ.get("FILE_CLEAN_UP", 30 * 60))
 
     now = time.time()
     if not upload_dir.exists():
@@ -36,6 +36,7 @@ def cleanup_upload_dir_ttl() -> None:
                 p.unlink()
         except Exception as e:
             logging.warning(f"TTL cleanup failed for {p}: {e}")
+
 
 def persist_and_make_state(paths: list[str] | None) -> list[dict[str, Any]]:
     if not paths:
@@ -68,9 +69,11 @@ def persist_and_make_state(paths: list[str] | None) -> list[dict[str, Any]]:
 
     return out
 
+
 def file_to_base64_str(path: str | Path) -> str:
     data = Path(path).read_bytes()
     return base64.b64encode(data).decode("ascii")
+
 
 def mp3_duration_seconds(path: str) -> float:
     audio = MP3(path)

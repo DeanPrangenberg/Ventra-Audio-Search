@@ -44,7 +44,7 @@ services:
           devices:
             - driver: nvidia
               count: all
-              capabilities: [gpu]
+              capabilities: [ gpu ]
 
   ollama:
     container_name: ollama
@@ -60,7 +60,7 @@ services:
           devices:
             - driver: nvidia
               count: all
-              capabilities: [gpu]
+              capabilities: [ gpu ]
 
   audio_transcript_server:
     container_name: audio-transcript-server

@@ -20,7 +20,7 @@ type LlmWorker struct {
 	lock       sync.Mutex
 }
 
-func NewLLMRequestHandler() *LlmWorker {
+func NewLlmWorker() *LlmWorker {
 	slog.Info("Creating new llmWorker...")
 	model := globalUtils.LoadEnvStr("LLM_MODEL")
 	ollama := globalUtils.LoadEnvStr("OLLAMA_API_URL")

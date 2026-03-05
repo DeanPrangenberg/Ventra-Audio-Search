@@ -57,7 +57,7 @@ func (rs *Server) handleImport(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 3) Validieren -> 422 / 207 / 200
-	var validItems []globalTypes.AudioDataElement
+	var validItems []*globalTypes.AudioDataElement
 	var invalidItemsIdx []int
 	var invalidItemsErr []string
 
@@ -68,7 +68,7 @@ func (rs *Server) handleImport(w http.ResponseWriter, r *http.Request) {
 			invalidItemsErr = append(invalidItemsErr, err.Error())
 			continue
 		}
-		validItems = append(validItems, item)
+		validItems = append(validItems, &item)
 	}
 
 	// alle invalid -> 422
@@ -114,7 +114,7 @@ func (rs *Server) handleImport(w http.ResponseWriter, r *http.Request) {
 
 	slog.Info("Queueing " + fmt.Sprintf("%d", len(validItems)) + " item for processing")
 
-	rs.importTaskChan <- &validItems
+	rs.importTaskChan <- validItems
 
 	slog.Debug("Finished handling import request, all items are valid and queued for processing")
 

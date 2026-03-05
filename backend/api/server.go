@@ -11,12 +11,12 @@ import (
 
 type Server struct {
 	port           string
-	importTaskChan chan *[]globalTypes.AudioDataElement
+	importTaskChan chan []*globalTypes.AudioDataElement
 	searchTaskChan chan globalTypes.SearchRequest
 	httpServer     *http.Server
 }
 
-func NewRestServer(port string, router *FlowManager.RoutWorker) *Server {
+func NewRestServer(port string, router *FlowManager.FlowWorker) *Server {
 	rs := &Server{
 		port:           port,
 		importTaskChan: router.ImportTaskChan,

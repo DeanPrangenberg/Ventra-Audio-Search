@@ -12,12 +12,12 @@ import (
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
-type PostgressWrapper struct {
+type Worker struct {
 	db *sql.DB
 }
 
-func newPostgresWrapper(db *sql.DB) *PostgressWrapper {
-	store := PostgressWrapper{db: db}
+func newPostgresWrapper(db *sql.DB) *Worker {
+	store := Worker{db: db}
 
 	ctx := context.Background()
 	if err := store.CreateTables(ctx); err != nil {
@@ -28,7 +28,7 @@ func newPostgresWrapper(db *sql.DB) *PostgressWrapper {
 	return &store
 }
 
-func Open() (*PostgressWrapper, error) {
+func Open() (*Worker, error) {
 	postgresUser := globalUtils.LoadEnvStr("POSTGRES_USER")
 	postgresPassword := globalUtils.LoadEnvStr("POSTGRES_PASSWORD")
 	postgresHost := globalUtils.LoadEnvStr("POSTGRES_URL")
@@ -87,4 +87,4 @@ func Open() (*PostgressWrapper, error) {
 	return nil, fmt.Errorf("could not connect to postgres after retries: %w", err)
 }
 
-func (s *PostgressWrapper) Close() error { return s.db.Close() }
+func (s *Worker) Close() error { return s.db.Close() }

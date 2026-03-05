@@ -13,24 +13,24 @@ import (
 	"time"
 )
 
-type EmbeddingsRequestHandler struct {
+type EmbeddingWorker struct {
 	model      string
 	requestURL string
 	lock       sync.Mutex
 }
 
-func NewEmbeddingsRequestHandler() *EmbeddingsRequestHandler {
-	slog.Info("Creating new NewEmbeddingsRequestHandler...")
-	model := globalUtils.LoadEnvStr("EMBEDDING_MODEL") // z.B. "nomic-embed-text"
-	ollama := globalUtils.LoadEnvStr("OLLAMA_API_URL") // z.B. "http://ollama:11434"
+func NewEmbeddingsWorker() *EmbeddingWorker {
+	slog.Info("Creating new NewEmbeddingsWorker...")
+	model := globalUtils.LoadEnvStr("EMBEDDING_MODEL")
+	ollama := globalUtils.LoadEnvStr("OLLAMA_API_URL")
 
-	return &EmbeddingsRequestHandler{
+	return &EmbeddingWorker{
 		model:      model,
 		requestURL: ollama + "/api/embed",
 	}
 }
 
-func (h *EmbeddingsRequestHandler) CreateEmbedding(text string) ([]float32, error) {
+func (h *EmbeddingWorker) CreateEmbedding(text string) ([]float32, error) {
 	slog.Info("Requesting Ollama embed", "model", h.model)
 	client := &http.Client{Timeout: 1200 * time.Second}
 

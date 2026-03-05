@@ -77,3 +77,39 @@ func notify(wake chan struct{}) {
 	default:
 	}
 }
+
+func (w *FlowWorker) opCtx() (context.Context, context.CancelFunc) {
+	return context.WithTimeout(w.StopCtx, opTimeout)
+}
+
+func (w *FlowWorker) updateStage(audioDataElement *globalTypes.AudioDataElement) error {
+	audioDataElement.UpdateToNextStage()
+
+	ctx, cancel := w.opCtx()
+	err := w.db.UpsertBase(ctx, audioDataElement)
+	cancel()
+
+	return err
+}
+
+func (w *FlowWorker) updateRetryCounter(workerIdx int, audioDataElement *globalTypes.AudioDataElement, cause error) error {
+	audioDataElement.RetryCounter++
+
+	logImport(
+		slog.LevelWarn,
+		"stage failed, incremented retry counter",
+		workerIdx,
+		*audioDataElement,
+		"err", cause,
+	)
+
+	ctx, cancel := w.opCtx()
+	err := w.db.UpsertBase(ctx, audioDataElement)
+	cancel()
+
+	if err != nil {
+		return fmt.Errorf("original error: %w; additionally failed to persist retry counter: %v", cause, err)
+	}
+
+	return cause
+}

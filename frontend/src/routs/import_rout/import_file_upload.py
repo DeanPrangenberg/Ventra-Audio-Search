@@ -1,9 +1,8 @@
-import gradio as gr
-
-import utils.file as file_utils
-from src.routs.import_rout.utils import do_backend_request
 import config_manager
+import gradio as gr
+import utils.file as file_utils
 import utils.state as state_utils
+from src.routs.import_rout.utils import do_backend_request
 
 
 def mount_uploaded_files_renderer():
@@ -19,7 +18,7 @@ def mount_uploaded_files_renderer():
     file_upload_interface.change(
         fn=file_utils.persist_and_make_state,
         inputs=[file_upload_interface],
-        outputs=[files_state],)
+        outputs=[files_state], )
 
     send_result = gr.Markdown()
 

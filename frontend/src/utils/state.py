@@ -12,6 +12,7 @@ def to_iso(dt_val) -> str:
 
     return str(dt_val)
 
+
 def iso_to_timestamp(val) -> int | str:
     if val is None or val == "":
         return ""
@@ -25,11 +26,13 @@ def iso_to_timestamp(val) -> int | str:
         return int(dt.timestamp())
     return ""
 
+
 def update_meta(value: str, files_state: list[dict[str, Any]], idx: int, field: str):
     if not files_state or idx < 0 or idx >= len(files_state):
         return files_state
     files_state[idx][field] = value
     return files_state
+
 
 def update_meta_single(value: str, state: dict[str, Any], field: str):
     state[field] = value

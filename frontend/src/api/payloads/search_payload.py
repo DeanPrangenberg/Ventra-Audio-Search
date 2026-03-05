@@ -1,14 +1,15 @@
 import src.utils.state as state_utils
 
+
 class SearchPayload:
     def __init__(
-        self,
-        fts5_query: str,
-        semantic_search_query: str,
-        category: str,
-        start_time_period: int | float,
-        end_time_period: int | float,
-        max_segment_return: int
+            self,
+            fts5_query: str,
+            semantic_search_query: str,
+            category: str,
+            start_time_period: int | float,
+            end_time_period: int | float,
+            max_segment_return: int
     ):
         self.fts5_query = fts5_query
         self.semantic_search_query = semantic_search_query

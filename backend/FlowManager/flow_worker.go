@@ -13,28 +13,26 @@ import (
 
 const opTimeout = 5 * time.Minute
 
-type RoutWorker struct {
-	ImportTaskChan chan *[]globalTypes.AudioDataElement
+type FlowWorker struct {
+	ImportTaskChan chan []*globalTypes.AudioDataElement
 	SearchTaskChan chan globalTypes.SearchRequest
 
-	NewAudioDataSignal      chan struct{}
+	PoolRefillSignal chan struct{}
+
 	AudioDataProcessingJobs chan globalTypes.AudioDataElement
 
 	WorkerWG sync.WaitGroup
 	Cancel   context.CancelFunc
 	StopCtx  context.Context
 
-	whisper    *ai.WhisperApi
-	db         *postgres.PostgressWrapper
-	embeddings *ai.EmbeddingsRequestHandler
+	whisper    *ai.WhisperWorker
+	db         *postgres.Worker
+	embeddings *ai.EmbeddingWorker
 	qdrant     *qdrant.Worker
+	llm        *ai.LlmWorker
 }
 
-func (w *RoutWorker) opCtx() (context.Context, context.CancelFunc) {
-	return context.WithTimeout(w.StopCtx, opTimeout)
-}
-
-func NewRoutWorker(workerAmount uint8) *RoutWorker {
+func NewWorker(workerAmount uint8) *FlowWorker {
 	db, err := postgres.Open()
 	if err != nil {
 		slog.Error(err.Error())
@@ -46,15 +44,16 @@ func NewRoutWorker(workerAmount uint8) *RoutWorker {
 		panic("Failed to connect to Qdrant")
 	}
 
-	worker := RoutWorker{
-		ImportTaskChan:          make(chan *[]globalTypes.AudioDataElement),
+	worker := FlowWorker{
+		ImportTaskChan:          make(chan []*globalTypes.AudioDataElement),
 		SearchTaskChan:          make(chan globalTypes.SearchRequest),
-		NewAudioDataSignal:      make(chan struct{}, 1),
+		PoolRefillSignal:        make(chan struct{}, 1),
 		AudioDataProcessingJobs: make(chan globalTypes.AudioDataElement, int(workerAmount)),
 		whisper:                 ai.New(45.0),
 		db:                      db,
-		embeddings:              ai.NewEmbeddingsRequestHandler(),
+		embeddings:              ai.NewEmbeddingsWorker(),
 		qdrant:                  client,
+		llm:                     ai.NewLlmWorker(),
 	}
 
 	worker.StopCtx, worker.Cancel = context.WithCancel(context.Background())
@@ -77,20 +76,20 @@ func NewRoutWorker(workerAmount uint8) *RoutWorker {
 		slog.Error("Error resetting processing claims in DB: " + err.Error())
 	}
 
-	notify(worker.NewAudioDataSignal)
+	notify(worker.PoolRefillSignal)
 
 	return &worker
 }
 
-func (w *RoutWorker) RunDispatcher() {
-	slog.Info("Started Dispatcher Worker")
+func (w *FlowWorker) RunDispatcher() {
+	slog.Info("Started Dispatcher FlowWorker")
 	defer close(w.AudioDataProcessingJobs)
 	for {
 		select {
 		case <-w.StopCtx.Done():
 			return
 
-		case <-w.NewAudioDataSignal:
+		case <-w.PoolRefillSignal:
 			for {
 				if len(w.AudioDataProcessingJobs) >= cap(w.AudioDataProcessingJobs) {
 					break
@@ -120,8 +119,8 @@ func (w *RoutWorker) RunDispatcher() {
 	}
 }
 
-func (w *RoutWorker) ProcessChanInputs() {
-	slog.Debug("Started Input ProcessChanInputs Worker")
+func (w *FlowWorker) ProcessChanInputs() {
+	slog.Debug("Started Input ProcessChanInputs FlowWorker")
 	for {
 		select {
 		case <-w.StopCtx.Done():
@@ -131,25 +130,21 @@ func (w *RoutWorker) ProcessChanInputs() {
 
 		case inputElements, ok := <-w.ImportTaskChan:
 			if !ok {
+				slog.Info("Stopped ProcessChanInputs - ImportTaskChan closed")
 				return
 			}
 
-			for _, element := range *inputElements {
-				element.AudiofileHash = element.GetTmpHash()
-				element.LastSuccessfulStep = globalTypes.StageReceived
+			slog.Debug("Inserting new audio file batch into DB")
 
-				ctx, cancel := w.opCtx()
-				slog.Debug("Inserting new audio file into DB: " + element.AudiofileHash)
-				// TODO: Add mass import
-				err := w.db.UpsertBase(ctx, &element)
-				cancel()
+			ctx, cancel := w.opCtx()
+			err := w.db.UpsertBaseBatch(ctx, inputElements)
+			cancel()
 
-				if err != nil {
-					slog.Error("Error inserting audio file into DB: " + err.Error())
-				}
+			if err != nil {
+				slog.Error("Error after Batch inserting audio files into DB: " + err.Error())
 			}
 
-			notify(w.NewAudioDataSignal)
+			notify(w.PoolRefillSignal)
 
 		case inputElement, ok := <-w.SearchTaskChan:
 			if !ok {

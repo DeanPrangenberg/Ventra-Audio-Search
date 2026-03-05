@@ -7,65 +7,65 @@ import (
 	"go_audio_search_api_server/globalUtils"
 )
 
+// ProcessingStage represents the different stages of processing an audio file, from receiving the data to completing all processing stages
 type ProcessingStage int
 
 const (
-	// Init Stage saved needed data in db
+	// StageReceived Init Stage saved needed data in db
 	StageReceived ProcessingStage = 1
-	// File saved to disk, ready for processing
+	// StageFilePersisted File saved to disk, ready for processing
 	StageFilePersisted ProcessingStage = 2
-	// Created full transcript and segemnts and saved in postgres
+	// StageTranscript Created full transcript and segemnts and saved in postgres
 	StageTranscript ProcessingStage = 3
-	// Embeddings created for all segments and saved in qdrant
+	// StageEmbeddings Embeddings created for all segments and saved in qdrant
 	StageEmbeddings ProcessingStage = 4
-	// Created summary
-	StageSummary ProcessingStage = 5
-	// Created keywords
-	StageKeywords ProcessingStage = 6
-
-	// end results
+	// StageAiGeneration Created summary and keywords
+	StageAiGeneration ProcessingStage = 5
+	// StageCompleted All stages completed successfully
 	StageCompleted ProcessingStage = 0
-	StageFailed    ProcessingStage = -1
+	// StageFailed Failed in one of the stages
+	StageFailed ProcessingStage = -1
 )
 
+// AudioDataElement represents the structure of the audio data received from the API and used throughout the processing pipeline
 type AudioDataElement struct {
-	AudiofileHash      string           `json:"audiofile_hash"`
-	Title              string           `json:"title"`
-	RecordingDate      string           `json:"recording_date"`
-	Base64Data         string           `json:"base64_data"`
-	FileUrl            string           `json:"file_url"`
-	Category           string           `json:"category"`
-	AudioType          string           `json:"audio_type"`
-	DownloadPath       string           `json:"-"`
-	DurationInSec      float32          `json:"duration_in_sec"`
-	TranscriptFull     string           `json:"transcript_full"`
-	UserSummary        string           `json:"user_summary"`
-	AiKeywords         []string         `json:"ai_keywords"`
-	AiSummary          string           `json:"ai_summary"`
-	SegmentElements    []SegmentElement `json:"-"`
-	LastSuccessfulStep ProcessingStage  `json:"last_successful_step"`
-	RetryCounter       int              `json:"retry_counter"`
+	AudiofileHash       string           `json:"audiofile_hash"`
+	Title               string           `json:"title"`
+	RecordingDate       string           `json:"recording_date"`
+	Base64Data          string           `json:"base64_data"`
+	FileUrl             string           `json:"file_url"`
+	Category            string           `json:"category"`
+	AudioType           string           `json:"audio_type"`
+	DownloadPath        string           `json:"-"`
+	DurationInSec       float32          `json:"duration_in_sec"`
+	TranscriptFull      string           `json:"transcript_full"`
+	UserSummary         string           `json:"user_summary"`
+	AiKeywords          []string         `json:"ai_keywords"`
+	AiSummary           string           `json:"ai_summary"`
+	SegmentElements     []SegmentElement `json:"-"`
+	LastSuccessfulStage ProcessingStage  `json:"last_successful_stage"`
+	RetryCounter        int              `json:"retry_counter"`
 }
 
+// UpdateToNextStage updates the LastSuccessfulStage to the next stage in the processing pipeline
 func (s *AudioDataElement) UpdateToNextStage() {
-	switch s.LastSuccessfulStep {
+	switch s.LastSuccessfulStage {
 	case StageReceived:
-		s.LastSuccessfulStep = StageFilePersisted
+		s.LastSuccessfulStage = StageFilePersisted
 	case StageFilePersisted:
-		s.LastSuccessfulStep = StageTranscript
+		s.LastSuccessfulStage = StageTranscript
 	case StageTranscript:
-		s.LastSuccessfulStep = StageEmbeddings
+		s.LastSuccessfulStage = StageEmbeddings
 	case StageEmbeddings:
-		s.LastSuccessfulStep = StageSummary
-	case StageSummary:
-		s.LastSuccessfulStep = StageKeywords
-	case StageKeywords:
-		s.LastSuccessfulStep = StageCompleted
+		s.LastSuccessfulStage = StageAiGeneration
+	case StageAiGeneration:
+		s.LastSuccessfulStage = StageCompleted
 	default:
-		s.LastSuccessfulStep = StageFailed
+		s.LastSuccessfulStage = StageFailed
 	}
 }
 
+// SegmentElement represents a segment of the audio file with its transcript and embedding information
 type SegmentElement struct {
 	SegmentHash             string    `json:"-"`
 	AudiofileHash           string    `json:"audiofile_hash"`
@@ -79,6 +79,7 @@ type SegmentElement struct {
 	QueryScore              float32   `json:"vector_score"`
 }
 
+// ValidateApiInput validates the input data for the AudioDataElement
 func (s *AudioDataElement) ValidateApiInput() error {
 	if s.Title == "" {
 		return fmt.Errorf("title is empty")
@@ -106,6 +107,7 @@ func (s *AudioDataElement) ValidateApiInput() error {
 	return nil
 }
 
+// ToString creates a string representation of the AudioDataElement
 func (s *AudioDataElement) ToString() string {
 	return fmt.Sprint(
 		"AudiofileHash: " + s.AudiofileHash + "\n" +

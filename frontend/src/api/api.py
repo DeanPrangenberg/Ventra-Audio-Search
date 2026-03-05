@@ -1,7 +1,6 @@
 import logging
 
 import requests
-
 import src.config_manager as config_manager
 from api.payloads.search_payload import SearchPayload
 from src.api.payloads.import_payload import ImportPayload
@@ -108,8 +107,9 @@ class API:
             case 413:
                 error_str = f"Payload too large. The limit is {response_json.get('limit')} bytes."
             case 415:
-                error_str = ("Request content type is not supported. \"application/json\" or \"application/json; charset=utf-8\""
-                             f"Got {response_json.get('got')}")
+                error_str = (
+                    "Request content type is not supported. \"application/json\" or \"application/json; charset=utf-8\""
+                    f"Got {response_json.get('got')}")
             case 400:
                 error_str = f"Payload Json is invalid. Response: {response_json}"
             case 422:
@@ -119,4 +119,3 @@ class API:
 
         logging.error(error_str)
         return False, error_str
-

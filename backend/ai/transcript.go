@@ -16,7 +16,7 @@ import (
 	"time"
 )
 
-type WhisperApi struct {
+type WhisperWorker struct {
 	BaseURL   string
 	Timeout   time.Duration
 	Temp      string
@@ -39,8 +39,8 @@ type TranscriptionResult struct {
 	Segments   []Segment `json:"segments"`
 }
 
-func New(minSegSec float32) *WhisperApi {
-	return &WhisperApi{
+func New(minSegSec float32) *WhisperWorker {
+	return &WhisperWorker{
 		BaseURL:   globalUtils.LoadEnvStr("WHISPER_API_URL"),
 		Timeout:   30 * time.Minute,
 		Temp:      "0.0",
@@ -51,7 +51,7 @@ func New(minSegSec float32) *WhisperApi {
 	}
 }
 
-func (wa *WhisperApi) Transcribe(ctx context.Context, filePath string) (*TranscriptionResult, error) {
+func (wa *WhisperWorker) Transcribe(ctx context.Context, filePath string) (*TranscriptionResult, error) {
 	if wa.BaseURL == "" {
 		wa.BaseURL = "http://127.0.0.1:9001"
 	}
@@ -92,7 +92,7 @@ func (wa *WhisperApi) Transcribe(ctx context.Context, filePath string) (*Transcr
 	return &out, nil
 }
 
-func (wa *WhisperApi) transcribeRaw(ctx context.Context, filePath string) ([]byte, error) {
+func (wa *WhisperWorker) transcribeRaw(ctx context.Context, filePath string) ([]byte, error) {
 	f, err := os.Open(filePath)
 	if err != nil {
 		return nil, fmt.Errorf("open file: %w", err)
@@ -154,7 +154,7 @@ func (wa *WhisperApi) transcribeRaw(ctx context.Context, filePath string) ([]byt
 	return respBody, nil
 }
 
-func (wa *WhisperApi) mergeSegmentsMinLen(in []Segment) []Segment {
+func (wa *WhisperWorker) mergeSegmentsMinLen(in []Segment) []Segment {
 	out := make([]Segment, 0, len(in))
 	if len(in) == 0 {
 		return out

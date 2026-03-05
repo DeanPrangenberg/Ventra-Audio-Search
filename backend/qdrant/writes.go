@@ -21,12 +21,10 @@ func (w *Worker) UpsertSegmentEmbeddings(ctx context.Context, elements []globalT
 		points = append(points, point)
 	}
 
-	w.lock.Lock()
 	operationInfo, err := w.client.Upsert(ctx, &qdrant.UpsertPoints{
 		CollectionName: w.collectionName,
 		Points:         points,
 	})
-	w.lock.Unlock()
 
 	if err != nil {
 		return err

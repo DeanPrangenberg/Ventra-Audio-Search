@@ -1,0 +1,94 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36" version="29.6.1">
+  <diagram name="Seite-1" id="o1ushl9p0icLOVvQD3a4">
+    <mxGraphModel dx="970" dy="505" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="MeyrsfemsURZ_dQtVtnB-26" edge="1" parent="1" source="MeyrsfemsURZ_dQtVtnB-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="MeyrsfemsURZ_dQtVtnB-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="MeyrsfemsURZ_dQtVtnB-27" connectable="0" parent="MeyrsfemsURZ_dQtVtnB-26" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Import Files And Metadata" vertex="1">
+          <mxGeometry relative="1" x="0.0474" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="MeyrsfemsURZ_dQtVtnB-1" parent="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" value="API" vertex="1">
+          <mxGeometry height="80" width="80" x="360" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="MeyrsfemsURZ_dQtVtnB-2" parent="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" value="Central Manager" vertex="1">
+          <mxGeometry height="80" width="80" x="360" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="MeyrsfemsURZ_dQtVtnB-3" parent="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" value="Postgres" vertex="1">
+          <mxGeometry height="80" width="80" x="160" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="MeyrsfemsURZ_dQtVtnB-4" parent="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" value="Qdrant" vertex="1">
+          <mxGeometry height="80" width="80" x="560" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="MeyrsfemsURZ_dQtVtnB-6" parent="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" value="LLM&amp;nbsp;&lt;div&gt;Worker&lt;/div&gt;&lt;div&gt;Pool&lt;/div&gt;" vertex="1">
+          <mxGeometry height="80" width="80" x="160" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="MeyrsfemsURZ_dQtVtnB-7" parent="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" value="Whisper&amp;nbsp;&lt;div&gt;Worker Pool&lt;/div&gt;" vertex="1">
+          <mxGeometry height="80" width="80" x="360" y="400" as="geometry" />
+        </mxCell>
+        <mxCell id="MeyrsfemsURZ_dQtVtnB-8" parent="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" value="Embedding&amp;nbsp;&lt;div&gt;Worker Pool&lt;/div&gt;" vertex="1">
+          <mxGeometry height="80" width="80" x="560" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="MeyrsfemsURZ_dQtVtnB-11" edge="1" parent="1" source="MeyrsfemsURZ_dQtVtnB-2" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="MeyrsfemsURZ_dQtVtnB-3" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="230" y="350" as="sourcePoint" />
+            <mxPoint x="280" y="300" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="MeyrsfemsURZ_dQtVtnB-12" connectable="0" parent="MeyrsfemsURZ_dQtVtnB-11" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Presisting and Caching" vertex="1">
+          <mxGeometry relative="1" x="-0.0405" y="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="MeyrsfemsURZ_dQtVtnB-14" edge="1" parent="1" source="MeyrsfemsURZ_dQtVtnB-2" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="MeyrsfemsURZ_dQtVtnB-4" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="390" y="276" as="sourcePoint" />
+            <mxPoint x="190" y="250" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="MeyrsfemsURZ_dQtVtnB-18" connectable="0" parent="MeyrsfemsURZ_dQtVtnB-14" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Ranking" vertex="1">
+          <mxGeometry relative="1" x="-0.0481" y="-2" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="MeyrsfemsURZ_dQtVtnB-20" edge="1" parent="1" source="MeyrsfemsURZ_dQtVtnB-2" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="MeyrsfemsURZ_dQtVtnB-6" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="420" y="320" as="sourcePoint" />
+            <mxPoint x="470" y="270" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="MeyrsfemsURZ_dQtVtnB-21" connectable="0" parent="MeyrsfemsURZ_dQtVtnB-20" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Keywords and Summarys" vertex="1">
+          <mxGeometry relative="1" x="-0.0133" y="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="MeyrsfemsURZ_dQtVtnB-22" edge="1" parent="1" source="MeyrsfemsURZ_dQtVtnB-2" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="MeyrsfemsURZ_dQtVtnB-7" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="420" y="320" as="sourcePoint" />
+            <mxPoint x="470" y="270" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="MeyrsfemsURZ_dQtVtnB-23" connectable="0" parent="MeyrsfemsURZ_dQtVtnB-22" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Transcripts" vertex="1">
+          <mxGeometry relative="1" x="0.0647" y="2" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="MeyrsfemsURZ_dQtVtnB-24" edge="1" parent="1" source="MeyrsfemsURZ_dQtVtnB-2" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=1;exitDx=0;exitDy=0;entryX=-0.013;entryY=0.429;entryDx=0;entryDy=0;entryPerimeter=0;" target="MeyrsfemsURZ_dQtVtnB-8" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="570" y="380" as="sourcePoint" />
+            <mxPoint x="620" y="330" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="MeyrsfemsURZ_dQtVtnB-25" connectable="0" parent="MeyrsfemsURZ_dQtVtnB-24" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Embeddings" vertex="1">
+          <mxGeometry relative="1" x="0.0317" y="-1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

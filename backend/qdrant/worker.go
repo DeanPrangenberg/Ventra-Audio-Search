@@ -4,7 +4,6 @@ import (
 	"context"
 	"go_audio_search_api_server/globalUtils"
 	"strings"
-	"sync"
 
 	"github.com/google/uuid"
 	"github.com/qdrant/go-client/qdrant"
@@ -13,7 +12,6 @@ import (
 type Worker struct {
 	collectionName string
 	client         *qdrant.Client
-	lock           sync.Mutex
 }
 
 func New(collectionName string) (*Worker, error) {

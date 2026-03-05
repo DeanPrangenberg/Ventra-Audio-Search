@@ -44,7 +44,6 @@ func (w *Worker) RerankCandidatesByHashes(
 		},
 	}
 
-	w.lock.Lock()
 	resp, err := w.client.Query(ctx, &qdrant.QueryPoints{
 		CollectionName: w.collectionName,
 		Query:          qdrant.NewQuery(queryVec...),
@@ -52,7 +51,6 @@ func (w *Worker) RerankCandidatesByHashes(
 		Filter:         filter,
 		WithPayload:    qdrant.NewWithPayloadInclude("SegmentHash"),
 	})
-	w.lock.Unlock()
 
 	if err != nil {
 		return nil, err

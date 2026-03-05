@@ -56,7 +56,7 @@ func NewRoutWorker(workerAmount uint8) *RoutWorker {
 		SearchTaskChan:          make(chan globalTypes.SearchRequest),
 		NewAudioDataSignal:      make(chan struct{}, 1),
 		AudioDataProcessingJobs: make(chan globalTypes.AudioDataElement, int(workerAmount)),
-		whisper:                 ai.NewWhisperApi(45.0),
+		whisper:                 ai.New(45.0),
 		db:                      db,
 		embeddings:              ai.NewEmbeddingsRequestHandler(),
 		qdrant:                  client,

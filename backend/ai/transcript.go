@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"sync"
 	"time"
 )
 
@@ -22,6 +23,7 @@ type WhisperApi struct {
 	Format    string
 	Language  string
 	MinSegSec float32 // 0 = kein mergen
+	Lock      sync.Mutex
 }
 
 type Segment struct {
@@ -36,7 +38,7 @@ type TranscriptionResult struct {
 	Segments   []Segment `json:"segments"`
 }
 
-func NewWhisperApi(minSegSec float32) *WhisperApi {
+func New(minSegSec float32) *WhisperApi {
 	return &WhisperApi{
 		BaseURL:   loadEnv("WHISPER_API_URL"), // falls du das schon hast
 		Timeout:   30 * time.Minute,
@@ -125,7 +127,9 @@ func (wa *WhisperApi) transcribeRaw(ctx context.Context, filePath string) ([]byt
 		return nil, fmt.Errorf("close multipart writer: %w", err)
 	}
 
+	wa.Lock.Lock()
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, wa.BaseURL+"/inference", &body)
+	wa.Lock.Unlock()
 	if err != nil {
 		return nil, fmt.Errorf("new request: %w", err)
 	}

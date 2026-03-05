@@ -7,7 +7,7 @@ type ChatReq struct {
 }
 
 type Message struct {
-	Role    string `json:"role"` // system|user|assistant
+	Role    string `json:"role"`
 	Content string `json:"content"`
 }
 

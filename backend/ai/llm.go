@@ -1,19 +1,106 @@
 package ai
 
 import (
+	"bytes"
+	"encoding/csv"
+	"encoding/json"
 	"fmt"
-	"os"
+	"go_audio_search_api_server/globalUtils"
+	"io"
+	"log/slog"
+	"net/http"
+	"strings"
+	"sync"
+	"time"
 )
 
-func loadEnv(key string) string {
-	v, ok := os.LookupEnv(key)
-	if !ok || v == "" {
-		panic(fmt.Sprintf("missing env var: %s", key))
-	}
-	return v
+type LlmWorker struct {
+	model      string
+	requestUrl string
+	lock       sync.Mutex
 }
 
-func GetSysPrompts(taskType string) (string, string) {
+func NewLLMRequestHandler() *LlmWorker {
+	slog.Info("Creating new llmWorker...")
+	model := globalUtils.LoadEnvStr("LLM_MODEL")
+	ollama := globalUtils.LoadEnvStr("OLLAMA_API_URL")
+
+	return &LlmWorker{
+		model:      model,
+		requestUrl: ollama + "/api/chat",
+	}
+}
+
+func (w *LlmWorker) Summary(audioType string, input string) (string, error) {
+	_, summarySysPrompt := w.getSysPrompts(audioType)
+	return w.ollamaRequest(summarySysPrompt, input)
+}
+
+func (w *LlmWorker) Keywords(audioType string, input string) ([]string, error) {
+	keywordSysPrompt, _ := w.getSysPrompts(audioType)
+
+	req, err := w.ollamaRequest(keywordSysPrompt, input)
+	if err != nil {
+		return nil, err
+	}
+
+	r := csv.NewReader(strings.NewReader(req))
+	keywords, err := r.Read()
+	if err != nil {
+		return nil, err
+	}
+
+	for i := range keywords {
+		keywords[i] = strings.TrimSpace(keywords[i])
+	}
+
+	return keywords, nil
+}
+
+func (w *LlmWorker) ollamaRequest(sysPrompt string, userPrompt string) (string, error) {
+	slog.Info("Requesting Ollama model", "model", w.model)
+
+	client := &http.Client{Timeout: 1200 * time.Second}
+
+	reqBody := ChatReq{
+		Model: w.model,
+		Messages: []Message{
+			{Role: "system", Content: sysPrompt},
+			{Role: "user", Content: userPrompt},
+		},
+		Stream: false,
+	}
+
+	b, _ := json.Marshal(reqBody)
+
+	w.lock.Lock()
+	resp, err := client.Post(w.requestUrl, "application/json", bytes.NewReader(b))
+	w.lock.Unlock()
+
+	if err != nil {
+		slog.Error("OllamaRequest error", "error", err)
+		panic(err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		body, _ := io.ReadAll(resp.Body)
+		slog.Error("OllamaRequest non-200 status", "status", resp.StatusCode, "body", string(body))
+		panic(fmt.Sprintf("status=%d body=%s", resp.StatusCode, string(body)))
+	}
+
+	var out ChatResp
+	if err := json.NewDecoder(resp.Body).Decode(&out); err != nil {
+		slog.Error("OllamaRequest decode error", "error", err)
+		panic(err)
+	}
+
+	slog.Info("OllamaRequest success")
+
+	return out.Message.Content, nil
+}
+
+func (w *LlmWorker) getSysPrompts(taskType string) (string, string) {
 	switch taskType {
 	case "meeting":
 		return meetingKeywordSysPrompt, meetingSummarySysPrompt

@@ -244,7 +244,7 @@ func (w *RoutWorker) HandleImportAudioDataJob(workerIdx int, audioDataElement gl
 
 		w.llmLock.Lock()
 		summary, err := ai.OllamaRequest(
-			globalUtils.LoadEnv("LLM_MODEL"),
+			globalUtils.LoadEnv("LLM_MODE/api/embedL"),
 			globalUtils.LoadEnv("OLLAMA_API_URL")+"/api/chat",
 			summarySysPrompt,
 			audioDataElement.TranscriptFull,

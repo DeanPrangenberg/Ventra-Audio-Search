@@ -1,27 +1,16 @@
 package main
 
 import (
-	"fmt"
 	"go_audio_search_api_server/FlowManager"
 	"go_audio_search_api_server/api"
+	"go_audio_search_api_server/globalUtils"
 	"log/slog"
 	"os"
 	"strings"
 )
 
-func loadEnv(key string) (string, error) {
-	v, ok := os.LookupEnv(key)
-	if !ok || v == "" {
-		return "", fmt.Errorf("env: %s doesn't exist", key)
-	}
-	return v, nil
-}
-
 func initLogger() {
-	log, err := loadEnv("LOG_LEVEL")
-	if err != nil {
-		log = "info"
-	}
+	log := globalUtils.LoadEnvStr("LOG_LEVEL")
 
 	var logLevel = strings.ToLower(log)
 	var level slog.Level

@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"go_audio_search_api_server/globalUtils"
 	"io"
 	"log/slog"
 	"mime/multipart"
@@ -22,8 +23,8 @@ type WhisperApi struct {
 	TempInc   string
 	Format    string
 	Language  string
-	MinSegSec float32 // 0 = kein mergen
-	Lock      sync.Mutex
+	MinSegSec float32
+	lock      sync.Mutex
 }
 
 type Segment struct {
@@ -40,7 +41,7 @@ type TranscriptionResult struct {
 
 func New(minSegSec float32) *WhisperApi {
 	return &WhisperApi{
-		BaseURL:   loadEnv("WHISPER_API_URL"), // falls du das schon hast
+		BaseURL:   globalUtils.LoadEnvStr("WHISPER_API_URL"),
 		Timeout:   30 * time.Minute,
 		Temp:      "0.0",
 		TempInc:   "0.2",
@@ -127,9 +128,9 @@ func (wa *WhisperApi) transcribeRaw(ctx context.Context, filePath string) ([]byt
 		return nil, fmt.Errorf("close multipart writer: %w", err)
 	}
 
-	wa.Lock.Lock()
+	wa.lock.Lock()
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, wa.BaseURL+"/inference", &body)
-	wa.Lock.Unlock()
+	wa.lock.Unlock()
 	if err != nil {
 		return nil, fmt.Errorf("new request: %w", err)
 	}
@@ -153,8 +154,6 @@ func (wa *WhisperApi) transcribeRaw(ctx context.Context, filePath string) ([]byt
 	return respBody, nil
 }
 
-// MinSegSec = Mindest-Dauer pro Segment (End-Start).
-// 0 => keine Änderung, nur IDs neu vergeben.
 func (wa *WhisperApi) mergeSegmentsMinLen(in []Segment) []Segment {
 	out := make([]Segment, 0, len(in))
 	if len(in) == 0 {

@@ -24,15 +24,10 @@ type RoutWorker struct {
 	Cancel   context.CancelFunc
 	StopCtx  context.Context
 
-	whisper        *ai.WhisperApi
-	db             *postgres.PostgressWrapper
-	embeddings     *ai.EmbeddingsRequestHandler
-	qdrant         *qdrant.Client
-	qdrantLock     sync.Mutex
-	llmLock        sync.Mutex
-	embeddingsLock sync.Mutex
-	whisperLock    sync.Mutex
-	dbLock         sync.Mutex
+	whisper    *ai.WhisperApi
+	db         *postgres.PostgressWrapper
+	embeddings *ai.EmbeddingsRequestHandler
+	qdrant     *qdrant.Worker
 }
 
 func (w *RoutWorker) opCtx() (context.Context, context.CancelFunc) {
@@ -45,7 +40,7 @@ func NewRoutWorker(workerAmount uint8) *RoutWorker {
 		slog.Error(err.Error())
 	}
 
-	client, err := qdrant.NewClient("AudioSegments")
+	client, err := qdrant.New("AudioSegments")
 	if err != nil {
 		slog.Error("Failed to connect to Qdrant: " + err.Error())
 		panic("Failed to connect to Qdrant")
@@ -74,10 +69,8 @@ func NewRoutWorker(workerAmount uint8) *RoutWorker {
 
 	slog.Debug("Started Dispatcher worker")
 
-	worker.dbLock.Lock()
 	ctx, cancel := worker.opCtx()
 	err = worker.db.ResetProcessingClaims(ctx)
-	worker.dbLock.Unlock()
 	cancel()
 
 	if err != nil {
@@ -103,10 +96,9 @@ func (w *RoutWorker) RunDispatcher() {
 					break
 				}
 
-				w.dbLock.Lock()
 				ctx, cancel := w.opCtx()
 				job, err := w.db.ClaimNextAudioForProcessing(ctx)
-				w.dbLock.Unlock()
+
 				cancel()
 
 				if err != nil {
@@ -146,12 +138,10 @@ func (w *RoutWorker) ProcessChanInputs() {
 				element.AudiofileHash = element.GetTmpHash()
 				element.LastSuccessfulStep = globalTypes.StageReceived
 
-				w.dbLock.Lock()
 				ctx, cancel := w.opCtx()
 				slog.Debug("Inserting new audio file into DB: " + element.AudiofileHash)
 				// TODO: Add mass import
 				err := w.db.UpsertBase(ctx, &element)
-				w.dbLock.Unlock()
 				cancel()
 
 				if err != nil {
@@ -169,7 +159,6 @@ func (w *RoutWorker) ProcessChanInputs() {
 			var response = globalTypes.SearchResponse{}
 
 			// FTS5 Kandidaten suchen
-			w.dbLock.Lock()
 			ctx, cancel := w.opCtx()
 			candidates, err := w.db.GetPostgresCandidates(
 				ctx,
@@ -179,7 +168,6 @@ func (w *RoutWorker) ProcessChanInputs() {
 				inputElement.StartTimePeriodIso,
 				inputElement.EndTimePeriodIso,
 			)
-			w.dbLock.Unlock()
 			cancel()
 
 			if err != nil {
@@ -200,9 +188,7 @@ func (w *RoutWorker) ProcessChanInputs() {
 			}
 
 			// Embedding erstellen
-			w.embeddingsLock.Lock()
 			embedding, err := w.embeddings.CreateEmbedding(inputElement.SemanticSearchQuery)
-			w.embeddingsLock.Unlock()
 
 			if err != nil {
 				response.Err = "Error creating embedding for semantic search for query \"" + inputElement.SemanticSearchQuery + "\": " + err.Error()
@@ -212,7 +198,6 @@ func (w *RoutWorker) ProcessChanInputs() {
 				continue
 			}
 
-			w.qdrantLock.Lock()
 			// Qdrant Reranking
 			ctx, cancel = w.opCtx()
 			segments, err := w.qdrant.RerankCandidatesByHashes(
@@ -221,7 +206,7 @@ func (w *RoutWorker) ProcessChanInputs() {
 				segmentIds,
 				inputElement.MaxSegmentReturn,
 			)
-			w.qdrantLock.Unlock()
+
 			cancel()
 
 			if err != nil {
@@ -248,10 +233,8 @@ func (w *RoutWorker) ProcessChanInputs() {
 
 			var relatedAudioElements []globalTypes.SearchAudioData
 			for audioFileHash := range audioFileHashes {
-				w.dbLock.Lock()
 				ctx, cancel = w.opCtx()
 				audioData, err := w.db.GetSearchAudioDataByHash(ctx, audioFileHash)
-				w.dbLock.Unlock()
 				cancel()
 
 				if err != nil {
@@ -268,10 +251,8 @@ func (w *RoutWorker) ProcessChanInputs() {
 			// Top-K Segmente laden
 			var fullSegmentElements []globalTypes.SearchSegmentData
 			for _, segment := range segments {
-				w.dbLock.Lock()
 				ctx, cancel = w.opCtx()
 				fullSegmentData, err := w.db.GetSegmentByHash(ctx, segment.SegmentHash)
-				w.dbLock.Unlock()
 				cancel()
 
 				if err != nil {

@@ -29,10 +29,10 @@ func newPostgresWrapper(db *sql.DB) *PostgressWrapper {
 }
 
 func Open() (*PostgressWrapper, error) {
-	postgresUser := globalUtils.LoadEnv("POSTGRES_USER")
-	postgresPassword := globalUtils.LoadEnv("POSTGRES_PASSWORD")
-	postgresHost := globalUtils.LoadEnv("POSTGRES_URL")
-	postgresDB := globalUtils.LoadEnv("POSTGRES_DB")
+	postgresUser := globalUtils.LoadEnvStr("POSTGRES_USER")
+	postgresPassword := globalUtils.LoadEnvStr("POSTGRES_PASSWORD")
+	postgresHost := globalUtils.LoadEnvStr("POSTGRES_URL")
+	postgresDB := globalUtils.LoadEnvStr("POSTGRES_DB")
 
 	if postgresUser == "" {
 		return nil, errors.New("POSTGRES_USER is empty")

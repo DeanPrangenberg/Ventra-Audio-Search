@@ -75,7 +75,7 @@ func (w *Worker) startPool(
 					if err := handler(idx, audioDataElement); err != nil {
 						slog.Error(errorMsg, "workerIdx", idx, "err", err)
 					}
-					notify(w.PoolRefillSignal)
+					w.PoolRefillSignal.Trigger()
 				}
 			}
 		}()

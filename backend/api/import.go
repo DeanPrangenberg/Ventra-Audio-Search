@@ -69,6 +69,7 @@ func (rs *Server) handleImport(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 		item.AudiofileHash = item.GetTmpHash()
+		item.LastSuccessfulStage = globalTypes.StageReceived
 		validItems = append(validItems, &item)
 	}
 

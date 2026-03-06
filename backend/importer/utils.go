@@ -67,12 +67,12 @@ func saveAudiofileElementToDisk(ctx context.Context, element *globalTypes.AudioD
 	case hasURL:
 		slog.Info("downloading from url", "url", element.FileUrl)
 
-		err, new_path := globalUtils.DownloadURLToFile(ctx, element.FileUrl, initName)
+		err, newPath := globalUtils.DownloadURLToFile(ctx, element.FileUrl, initName)
 		if err != nil {
 			return fmt.Errorf("error while downloading '%s': %w", element.FileUrl, err), nil
 		}
 
-		path, hash, err := globalUtils.MarkFileAtomicMP3(new_path)
+		path, hash, err := globalUtils.MarkFileAtomicMP3(newPath)
 		if err != nil {
 			return fmt.Errorf("error while marking file as mp3 '%s': %w", initName, err), nil
 		}
@@ -107,14 +107,6 @@ func saveAudiofileElementToDisk(ctx context.Context, element *globalTypes.AudioD
 	}
 
 	return nil, element
-}
-
-func notify(wake chan struct{}) {
-	slog.Debug("Notifying Dispatcher about new audio data")
-	select {
-	case wake <- struct{}{}:
-	default:
-	}
 }
 
 func (w *Worker) opCtx() (context.Context, context.CancelFunc) {

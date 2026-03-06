@@ -1,9 +1,15 @@
+import os
+
 import gradio as gr
 import pandas as pd
 from sqlalchemy import create_engine, text
 
+
+def load_postgres_url():
+    return os.environ.get("POSTGRES_URL", "user:password@localhost:5432/audio_transcript_db")
+
 engine = create_engine(
-    "postgresql+psycopg://user:password@localhost:5432/audio_transcript_db",
+    "postgresql+psycopg://" + load_postgres_url(),
     pool_pre_ping=True,
 )
 
@@ -194,7 +200,7 @@ def load_stats():
     )
 
 def mount_statistics_routes(app: gr.Blocks):
-    with app.route("Search") as rout:
+    with app.route("Statistics") as rout:
         gr.Markdown("# Statistics Dashboard")
 
         with gr.Group(elem_classes=["section-shell"]):

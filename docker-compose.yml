@@ -106,6 +106,10 @@ services:
       PORT: 7860
       AUDIO_TRANSCRIPT_SERVER_URL: "http://audio-transcript-server:8880"
       FRONTEND_SERVER_URL: "http://audio-transcript-frontend:7860"
+      POSTGRES_URL: "user:password@postgres:5432/audio_transcript_db"
+      POSTGRES_USER: "user"
+      POSTGRES_PASSWORD: "password"
+      POSTGRES_DB: "audio_transcript_db"
       DATA_DIR: "/app/data"
       FILE_CLEAN_UP: 300 # 5 min
     volumes:

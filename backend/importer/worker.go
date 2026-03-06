@@ -8,77 +8,113 @@ import (
 	"go_audio_search_api_server/qdrant"
 	"log/slog"
 	"sync"
+	"time"
 )
 
-type Worker struct {
-	ImportTaskChan chan []*globalTypes.AudioDataElement
-	SearchTaskChan chan globalTypes.SearchRequest
+const opTimeout = 5 * time.Minute
 
+type Worker struct {
 	PoolRefillSignal chan struct{}
 
-	AudioDataProcessingJobs chan globalTypes.AudioDataElement
+	persistFileBuffer      chan *globalTypes.AudioDataElement
+	transcriptAudioBuffer  chan *globalTypes.AudioDataElement
+	createEmbeddingsBuffer chan *globalTypes.AudioDataElement
+	genAiDataBuffer        chan *globalTypes.AudioDataElement
 
-	WorkerWG sync.WaitGroup
-	Cancel   context.CancelFunc
+	WorkerWG *sync.WaitGroup
 	StopCtx  context.Context
 
 	whisper    *ai.WhisperWorker
-	db         *postgres.Worker
+	postgres   *postgres.Worker
 	embeddings *ai.EmbeddingWorker
 	qdrant     *qdrant.Worker
 	llm        *ai.LlmWorker
 }
 
-func NewWorker(qdrant *qdrant.Worker, postgres *postgres.Worker, workerAmount uint8) *Worker {
+func NewWorker(ctx context.Context, wg *sync.WaitGroup, qdrant *qdrant.Worker, postgres *postgres.Worker, workerAmount uint) *Worker {
 
-	worker := FlowWorker{
-		ImportTaskChan:          make(chan []*globalTypes.AudioDataElement),
-		SearchTaskChan:          make(chan globalTypes.SearchRequest),
-		PoolRefillSignal:        make(chan struct{}, 1),
-		AudioDataProcessingJobs: make(chan globalTypes.AudioDataElement, int(workerAmount)),
-		whisper:                 ai.New(45.0),
-		db:                      db,
-		embeddings:              ai.NewEmbeddingsWorker(),
-		qdrant:                  client,
-		llm:                     ai.NewLlmWorker(),
+	if workerAmount < 10 {
+		panic("workerAmount must be >= 10")
 	}
 
-	worker.StopCtx, worker.Cancel = context.WithCancel(context.Background())
-
-	go worker.ProcessChanInputs()
-	go worker.RunDispatcher()
-
-	for i := uint8(0); i < workerAmount; i++ {
-		worker.WorkerWG.Add(1)
-		go worker.StartImportAudioDataWorker(int(i))
+	worker := Worker{
+		PoolRefillSignal:       make(chan struct{}, 1),
+		StopCtx:                ctx,
+		persistFileBuffer:      make(chan *globalTypes.AudioDataElement, int(workerAmount-6)*2),
+		transcriptAudioBuffer:  make(chan *globalTypes.AudioDataElement, int(workerAmount)*2),
+		createEmbeddingsBuffer: make(chan *globalTypes.AudioDataElement, int(workerAmount)*2),
+		genAiDataBuffer:        make(chan *globalTypes.AudioDataElement, int(workerAmount)*2),
+		whisper:                ai.New(45.0),
+		postgres:               postgres,
+		embeddings:             ai.NewEmbeddingsWorker(),
+		qdrant:                 qdrant,
+		llm:                    ai.NewLlmWorker(),
+		WorkerWG:               wg,
 	}
-
-	slog.Debug("Started Dispatcher worker")
 
 	ctx, cancel := worker.opCtx()
-	err = worker.db.ResetProcessingClaims(ctx)
+	err := worker.postgres.ResetProcessingClaims(ctx)
 	cancel()
 
 	if err != nil {
 		slog.Error("Error resetting processing claims in DB: " + err.Error())
 	}
 
+	worker.startPersistFilePool(ctx, workerAmount-6)
+	worker.startTranscriptAudioPool(ctx, 2)
+	worker.startCreateEmbeddingsPool(ctx, 2)
+	worker.startGenerateAiDataPool(ctx, 2)
+
+	go worker.startImportJobDispatcher()
+
 	notify(worker.PoolRefillSignal)
 
 	return &worker
 }
 
-func (w *FlowWorker) StartImportJobDispatcher(idx int) {
-	slog.Debug("import Stage Dispatcher started", "worker", idx)
+func (w *Worker) startImportJobDispatcher() {
+	slog.Debug("Started Importer Job Dispatcher")
 
 	for {
 		select {
 		case <-w.StopCtx.Done():
-			slog.Debug("import worker stopped", "worker", idx, "reason", "stop_ctx_done")
+			slog.Debug("Importer Job Dispatcher stopped", "reason", "stop_ctx_done")
 			return
 
-		case audioDataElement := <-w.AudioDataProcessingJobs:
+		case <-w.PoolRefillSignal:
 
 		}
+	}
+}
+
+func (w *Worker) refillPoolBuffers() {
+	slog.Debug("Refilling importer job buffers")
+
+	w.refillBuffer(w.persistFileBuffer, globalTypes.StageReceived)
+	w.refillBuffer(w.transcriptAudioBuffer, globalTypes.StageFilePersisted)
+	w.refillBuffer(w.createEmbeddingsBuffer, globalTypes.StageTranscript)
+	w.refillBuffer(w.genAiDataBuffer, globalTypes.StageTranscript)
+}
+
+func (w *Worker) refillBuffer(
+	buffer chan *globalTypes.AudioDataElement,
+	stage globalTypes.ProcessingStage,
+) {
+	space := cap(buffer) - len(buffer)
+	if space <= 0 {
+		return
+	}
+
+	ctx, cancel := w.opCtx()
+	audioDataElements, err := w.postgres.ClaimNextAudioForProcessing(ctx, stage, uint64(space))
+	cancel()
+
+	if err != nil {
+		slog.Error("claim failed", "stage", stage, "err", err)
+		return
+	}
+
+	for _, audioDataElement := range audioDataElements {
+		buffer <- audioDataElement
 	}
 }

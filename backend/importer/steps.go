@@ -2,36 +2,35 @@ package importer
 
 import (
 	"fmt"
-	"go_audio_search_api_server/FlowManager"
 	"go_audio_search_api_server/globalTypes"
 	"go_audio_search_api_server/globalUtils"
 	"log/slog"
 )
 
 // persistFile saves the audio file to disk and updates the database with the new file path and hash.
-func (w *FlowManager.FlowWorker) persistFile(workerIdx int, audioDataElement globalTypes.AudioDataElement) error {
-	FlowManager.logImport(slog.LevelDebug, "persisting file to disk", workerIdx, audioDataElement)
+func (w *Worker) persistFile(workerIdx uint, audioDataElement *globalTypes.AudioDataElement) error {
+	logImport(slog.LevelDebug, "persisting file to disk", workerIdx, audioDataElement)
 	ctx, cancel := w.opCtx()
-	err, updatedElement := FlowManager.saveAudiofileElementToDisk(ctx, &audioDataElement)
+	err, updatedElement := saveAudiofileElementToDisk(ctx, audioDataElement)
 	cancel()
 
 	if err != nil {
-		return w.updateRetryCounter(workerIdx, &audioDataElement, err)
+		return w.updateRetryCounter(workerIdx, audioDataElement, err)
 	}
 
 	ctx, cancel = w.opCtx()
-	err = w.db.UpdateAudiofileHash(ctx, audioDataElement.AudiofileHash, updatedElement.AudiofileHash)
+	err = w.postgres.UpdateAudiofileHash(ctx, audioDataElement.AudiofileHash, updatedElement.AudiofileHash)
 	cancel()
 
 	if err != nil {
 		return err
 	}
 
-	FlowManager.logImport(
+	logImport(
 		slog.LevelDebug,
 		"file persisted",
 		workerIdx,
-		*updatedElement,
+		updatedElement,
 		"newAudioHash", updatedElement.AudiofileHash,
 	)
 
@@ -44,15 +43,15 @@ func (w *FlowManager.FlowWorker) persistFile(workerIdx int, audioDataElement glo
 }
 
 // transcribeAudio transcribes the given audio data element, creates the segments and stores them in the database.
-func (w *FlowManager.FlowWorker) transcribeAudio(workerIdx int, audioDataElement globalTypes.AudioDataElement) error {
-	FlowManager.logImport(slog.LevelDebug, "starting transcription", workerIdx, audioDataElement)
+func (w *Worker) transcribeAudio(workerIdx uint, audioDataElement *globalTypes.AudioDataElement) error {
+	logImport(slog.LevelDebug, "starting transcription", workerIdx, audioDataElement)
 
 	ctx, cancel := w.opCtx()
 	result, err := w.whisper.Transcribe(ctx, audioDataElement.DownloadPath)
 	cancel()
 
 	if err != nil {
-		return w.updateRetryCounter(workerIdx, &audioDataElement, err)
+		return w.updateRetryCounter(workerIdx, audioDataElement, err)
 	}
 
 	audioDataElement.TranscriptFull = result.Transcript
@@ -72,7 +71,7 @@ func (w *FlowManager.FlowWorker) transcribeAudio(workerIdx int, audioDataElement
 		audioDataElement.SegmentElements = append(audioDataElement.SegmentElements, builtSegment)
 	}
 
-	FlowManager.logImport(
+	logImport(
 		slog.LevelDebug,
 		"transcription finished",
 		workerIdx,
@@ -81,7 +80,7 @@ func (w *FlowManager.FlowWorker) transcribeAudio(workerIdx int, audioDataElement
 		"segmentCount", len(result.Segments),
 	)
 
-	err = w.updateStage(&audioDataElement)
+	err = w.updateStage(audioDataElement)
 	if err != nil {
 		return err
 	}
@@ -90,31 +89,31 @@ func (w *FlowManager.FlowWorker) transcribeAudio(workerIdx int, audioDataElement
 }
 
 // createEmbeddings creates the embeddings for the segments of the given audio data element and stores them in the vector database.
-func (w *FlowManager.FlowWorker) createEmbeddings(workerIdx int, audioDataElement globalTypes.AudioDataElement) error {
-	FlowManager.logImport(slog.LevelDebug, "creating segment embeddings", workerIdx, audioDataElement)
+func (w *Worker) createEmbeddings(workerIdx uint, audioDataElement *globalTypes.AudioDataElement) error {
+	logImport(slog.LevelDebug, "creating segment embeddings", workerIdx, audioDataElement)
 
 	var segments []globalTypes.SegmentElement
 
 	var err error
 	ctx, cancel := w.opCtx()
-	audioDataElement.SegmentElements, err = w.db.GetAllSegmentsByAudioHash(ctx, audioDataElement.AudiofileHash)
+	audioDataElement.SegmentElements, err = w.postgres.GetAllSegmentsByAudioHash(ctx, audioDataElement.AudiofileHash)
 	cancel()
 
 	if err != nil {
-		return w.updateRetryCounter(workerIdx, &audioDataElement, err)
+		return w.updateRetryCounter(workerIdx, audioDataElement, err)
 	}
 
 	for _, segment := range audioDataElement.SegmentElements {
 		embedding, err := w.embeddings.CreateEmbedding(segment.Transcript)
 		if err != nil {
-			return w.updateRetryCounter(workerIdx, &audioDataElement, err)
+			return w.updateRetryCounter(workerIdx, audioDataElement, err)
 		}
 
 		segment.TranscriptEmbedding = embedding
 		segments = append(segments, segment)
 	}
 
-	FlowManager.logImport(
+	logImport(
 		slog.LevelDebug,
 		"segment embeddings created",
 		workerIdx,
@@ -127,18 +126,18 @@ func (w *FlowManager.FlowWorker) createEmbeddings(workerIdx int, audioDataElemen
 
 	cancel()
 	if err != nil {
-		return w.updateRetryCounter(workerIdx, &audioDataElement, err)
+		return w.updateRetryCounter(workerIdx, audioDataElement, err)
 	}
 
-	FlowManager.logImport(
+	logImport(
 		slog.LevelDebug,
-		"segment embeddings stored in vector db",
+		"segment embeddings stored in vector postgres",
 		workerIdx,
 		audioDataElement,
 		"segmentCount", len(segments),
 	)
 
-	err = w.updateStage(&audioDataElement)
+	err = w.updateStage(audioDataElement)
 	if err != nil {
 		return err
 	}
@@ -147,16 +146,16 @@ func (w *FlowManager.FlowWorker) createEmbeddings(workerIdx int, audioDataElemen
 }
 
 // generateAiData creates the ai summary and keywords for the given audio data element and stores them in the database.
-func (w *FlowManager.FlowWorker) generateAiData(workerIdx int, audioDataElement globalTypes.AudioDataElement) error {
+func (w *Worker) generateAiData(workerIdx uint, audioDataElement *globalTypes.AudioDataElement) error {
 	var err error
 
 	audioDataElement.AiSummary, err = w.llm.Summary(audioDataElement.AudioType, audioDataElement.TranscriptFull)
 
 	if err != nil {
-		return w.updateRetryCounter(workerIdx, &audioDataElement, err)
+		return w.updateRetryCounter(workerIdx, audioDataElement, err)
 	}
 
-	FlowManager.logImport(
+	logImport(
 		slog.LevelDebug,
 		"Created ai summary",
 		workerIdx,
@@ -167,10 +166,10 @@ func (w *FlowManager.FlowWorker) generateAiData(workerIdx int, audioDataElement 
 	audioDataElement.AiKeywords, err = w.llm.Keywords(audioDataElement.AudioType, audioDataElement.TranscriptFull)
 
 	if err != nil {
-		return w.updateRetryCounter(workerIdx, &audioDataElement, err)
+		return w.updateRetryCounter(workerIdx, audioDataElement, err)
 	}
 
-	FlowManager.logImport(
+	logImport(
 		slog.LevelDebug,
 		"ai keywords stored",
 		workerIdx,
@@ -178,7 +177,7 @@ func (w *FlowManager.FlowWorker) generateAiData(workerIdx int, audioDataElement 
 		"keywordCount", len(audioDataElement.AiKeywords),
 	)
 
-	err = w.updateStage(&audioDataElement)
+	err = w.updateStage(audioDataElement)
 	if err != nil {
 		return err
 	}

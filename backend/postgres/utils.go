@@ -1,7 +1,6 @@
 package postgres
 
 import (
-	"database/sql"
 	"encoding/json"
 	"strings"
 )
@@ -40,9 +39,9 @@ func stringSliceFromJSON(raw string) []string {
 	return out
 }
 
-func float64OrZero(v sql.NullFloat64) float64 {
-	if !v.Valid {
-		return 0
+func minInt(a, b int) int {
+	if a < b {
+		return a
 	}
-	return v.Float64
+	return b
 }

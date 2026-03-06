@@ -82,7 +82,15 @@ ORDER BY start_sec ASC;
 	return out, rows.Err()
 }
 
-func (s *Worker) ClaimNextAudioForProcessing(ctx context.Context) (*globalTypes.AudioDataElement, error) {
+func (s *Worker) ClaimNextAudioForProcessing(
+	ctx context.Context,
+	lastSuccessfulStage globalTypes.ProcessingStage,
+	amount uint64,
+) ([]*globalTypes.AudioDataElement, error) {
+	if amount == 0 {
+		return nil, nil
+	}
+
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, err
@@ -90,19 +98,19 @@ func (s *Worker) ClaimNextAudioForProcessing(ctx context.Context) (*globalTypes.
 	defer func() { _ = tx.Rollback() }()
 
 	const q = `
-WITH next_row AS (
+WITH next_rows AS (
     SELECT audiofile_hash
     FROM audiofiles
-    WHERE last_successful_stage > 0
+    WHERE last_successful_stage = $1
       AND gets_processed = FALSE
     ORDER BY last_successful_stage ASC, created_at ASC
     FOR UPDATE SKIP LOCKED
-    LIMIT 1
+    LIMIT $2
 )
 UPDATE audiofiles a
 SET gets_processed = TRUE
-FROM next_row
-WHERE a.audiofile_hash = next_row.audiofile_hash
+FROM next_rows
+WHERE a.audiofile_hash = next_rows.audiofile_hash
 RETURNING
   a.audiofile_hash,
   COALESCE(a.title, ''),
@@ -118,45 +126,60 @@ RETURNING
   COALESCE(a.ai_keywords::text, '[]'),
   COALESCE(a.ai_summary, ''),
   COALESCE(a.last_successful_stage, 0),
-  a.retry_counter;
+  COALESCE(a.retry_counter, 0);
 `
 
-	var r globalTypes.AudioDataElement
-	var stage int64
-	var aiKeywordsJSON string
-
-	err = tx.QueryRowContext(ctx, q).Scan(
-		&r.AudiofileHash,
-		&r.Title,
-		&r.RecordingDate,
-		&r.Category,
-		&r.AudioType,
-		&r.Base64Data,
-		&r.FileUrl,
-		&r.DownloadPath,
-		&r.DurationInSec,
-		&r.TranscriptFull,
-		&r.UserSummary,
-		&aiKeywordsJSON,
-		&r.AiSummary,
-		&stage,
-		&r.RetryCounter,
-	)
-	if errors.Is(err, sql.ErrNoRows) {
-		return nil, nil
-	}
+	rows, err := tx.QueryContext(ctx, q, int64(lastSuccessfulStage), int64(amount))
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
-	r.AiKeywords = stringSliceFromJSON(aiKeywordsJSON)
-	r.LastSuccessfulStage = globalTypes.ProcessingStage(stage)
+	out := make([]*globalTypes.AudioDataElement, 0, minInt(int(amount), 128))
+
+	for rows.Next() {
+		var r globalTypes.AudioDataElement
+		var stage int64
+		var aiKeywordsJSON string
+
+		if err := rows.Scan(
+			&r.AudiofileHash,
+			&r.Title,
+			&r.RecordingDate,
+			&r.Category,
+			&r.AudioType,
+			&r.Base64Data,
+			&r.FileUrl,
+			&r.DownloadPath,
+			&r.DurationInSec,
+			&r.TranscriptFull,
+			&r.UserSummary,
+			&aiKeywordsJSON,
+			&r.AiSummary,
+			&stage,
+			&r.RetryCounter,
+		); err != nil {
+			return nil, err
+		}
+
+		r.AiKeywords = stringSliceFromJSON(aiKeywordsJSON)
+		r.LastSuccessfulStage = globalTypes.ProcessingStage(stage)
+
+		out = append(out, &r)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
 
 	if err := tx.Commit(); err != nil {
 		return nil, err
 	}
 
-	return &r, nil
+	if len(out) == 0 {
+		return nil, nil
+	}
+	return out, nil
 }
 
 func (s *Worker) GetSegmentByHash(ctx context.Context, segmentHash string) (*globalTypes.SearchSegmentData, error) {

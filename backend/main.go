@@ -1,14 +1,17 @@
 package main
 
 import (
+	"context"
 	"go_audio_search_api_server/FlowManager"
 	"go_audio_search_api_server/api"
 	"go_audio_search_api_server/globalUtils"
+	"go_audio_search_api_server/importer"
 	"go_audio_search_api_server/postgres"
 	"go_audio_search_api_server/qdrant"
 	"log/slog"
 	"os"
 	"strings"
+	"sync"
 )
 
 func initLogger() {
@@ -40,8 +43,20 @@ func initLogger() {
 func main() {
 	initLogger()
 	slog.Info("Starting Background workers...")
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	var wg sync.WaitGroup
 
 	db, err := postgres.Open()
+	defer func(db *postgres.Worker) {
+		err := db.Close()
+		if err != nil {
+			slog.Error("Failed to close database connection gracefully: " + err.Error())
+			return
+		}
+	}(db)
+
 	if err != nil {
 		slog.Error(err.Error())
 	}
@@ -52,7 +67,7 @@ func main() {
 		panic("Failed to connect to Qdrant")
 	}
 
-	router := FlowManager.NewWorker(12)
+	importer.NewWorker(ctx, &wg, client, db, 10)
 
 	srv := api.NewRestServer("8880", router)
 	if err := srv.Run(); err != nil {

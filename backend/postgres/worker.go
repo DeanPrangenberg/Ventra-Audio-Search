@@ -87,4 +87,6 @@ func Open() (*Worker, error) {
 	return nil, fmt.Errorf("could not connect to postgres after retries: %w", err)
 }
 
-func (s *Worker) Close() error { return s.db.Close() }
+func (s *Worker) Close() error {
+	return s.db.Close()
+}

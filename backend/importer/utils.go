@@ -134,10 +134,10 @@ func (w *Worker) updateRetryCounter(workerIdx uint, audioDataElement *globalType
 		"err", cause,
 	)
 
-	if audioDataElement.RetryCounter > maxRetryCount {
+	if audioDataElement.RetryCounter >= maxRetryCount {
 		logImport(
 			slog.LevelError,
-			"audio element has been retried more than "+strconv.Itoa(maxRetryCount)+" times, skipping",
+			"audio element has been retried "+strconv.Itoa(maxRetryCount)+" times, skipping",
 			workerIdx,
 			audioDataElement,
 			"err", cause,

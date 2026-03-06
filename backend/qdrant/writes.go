@@ -8,10 +8,10 @@ import (
 	"github.com/qdrant/go-client/qdrant"
 )
 
-func (w *Worker) UpsertSegmentEmbeddings(ctx context.Context, elements []globalTypes.SegmentElement) error {
+func (w *Worker) UpsertSegmentEmbeddings(ctx context.Context, elements *[]globalTypes.SegmentElement) error {
 	var points []*qdrant.PointStruct
 
-	for _, element := range elements {
+	for _, element := range *elements {
 		point := &qdrant.PointStruct{
 			Id:      segmentHashToPointID(element.SegmentHash),
 			Vectors: qdrant.NewVectors(element.TranscriptEmbedding...),

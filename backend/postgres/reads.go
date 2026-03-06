@@ -261,7 +261,7 @@ LIMIT $5;
 			&start,
 			&end,
 			&segment.Transcript,
-			&segment.PostgresScore, // Feldname bleibt, Inhalt ist jetzt Postgres-Rank
+			&segment.TsScore, // Feldname bleibt, Inhalt ist jetzt Postgres-Rank
 		); err != nil {
 			return nil, err
 		}

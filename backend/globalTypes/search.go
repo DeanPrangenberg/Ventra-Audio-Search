@@ -20,13 +20,13 @@ type SearchSegmentData struct {
 	StartInSec    float32 `json:"start_in_sec"`
 	EndInSec      float32 `json:"end_in_sec"`
 	Transcript    string  `json:"transcript"`
-	BM25          float64 `json:"bm25_score"`
+	TsScore       float64 `json:"bm25_score"`
 	QueryScore    float32 `json:"vector_score"`
 	Error         string  `json:"error,omitempty"`
 }
 
 type SearchRequest struct {
-	Fts5Query           string `json:"fts5_query"`
+	TsQuery             string `json:"ts_query"`
 	SemanticSearchQuery string `json:"semantic_search_query"`
 	Category            string `json:"category"`
 	StartTimePeriodIso  string `json:"start_time_period_iso"`
@@ -43,8 +43,8 @@ type SearchResponse struct {
 }
 
 func (s *SearchRequest) ValidateApiInput() error {
-	if s.Fts5Query == "" {
-		return fmt.Errorf("fts5_query is empty")
+	if s.TsQuery == "" {
+		return fmt.Errorf("ts_query is empty")
 	}
 
 	if s.SemanticSearchQuery == "" {

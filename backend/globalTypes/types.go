@@ -75,7 +75,7 @@ type SegmentElement struct {
 	TranscriptEmbedding     []float32 `json:"-"`
 	SegmentInDB             bool      `json:"-"`
 	TranscriptEmbeddingDone bool      `json:"-"`
-	PostgresScore           float64   `json:"postgres_score"`
+	TsScore                 float64   `json:"ts_score"`
 	QueryScore              float32   `json:"vector_score"`
 }
 

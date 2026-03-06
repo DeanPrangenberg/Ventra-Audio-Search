@@ -61,14 +61,9 @@ func (rs *Server) handleSearch(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	searchRequest.BackendResponseChan = make(chan globalTypes.SearchResponse, 1)
-
 	slog.Info("Queueing Search item for processing Query: " + searchRequest.SemanticSearchQuery)
-	rs.searchTaskChan <- searchRequest
 
-	res := <-searchRequest.BackendResponseChan
-
-	close(searchRequest.BackendResponseChan)
+	res := rs.searcher.Search(searchRequest)
 
 	var status int
 	if res.Ok {

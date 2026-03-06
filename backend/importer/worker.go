@@ -4,6 +4,7 @@ import (
 	"context"
 	"go_audio_search_api_server/ai"
 	"go_audio_search_api_server/globalTypes"
+	"go_audio_search_api_server/globalUtils"
 	"go_audio_search_api_server/postgres"
 	"go_audio_search_api_server/qdrant"
 	"log/slog"
@@ -14,7 +15,7 @@ import (
 const opTimeout = 5 * time.Minute
 
 type Worker struct {
-	PoolRefillSignal chan struct{}
+	PoolRefillSignal *globalUtils.NoneStackingEvent
 
 	persistFileBuffer      chan *globalTypes.AudioDataElement
 	transcriptAudioBuffer  chan *globalTypes.AudioDataElement
@@ -31,14 +32,14 @@ type Worker struct {
 	llm        *ai.LlmWorker
 }
 
-func NewWorker(ctx context.Context, wg *sync.WaitGroup, qdrant *qdrant.Worker, postgres *postgres.Worker, workerAmount uint) *Worker {
+func NewWorker(ctx context.Context, wg *sync.WaitGroup, qdrant *qdrant.Worker, postgres *postgres.Worker, embedder *ai.EmbeddingWorker, workerAmount uint, poolRefillSignal *globalUtils.NoneStackingEvent) *Worker {
 
 	if workerAmount < 10 {
 		panic("workerAmount must be >= 10")
 	}
 
 	worker := Worker{
-		PoolRefillSignal:       make(chan struct{}, 1),
+		PoolRefillSignal:       poolRefillSignal,
 		StopCtx:                ctx,
 		persistFileBuffer:      make(chan *globalTypes.AudioDataElement, int(workerAmount-6)*2),
 		transcriptAudioBuffer:  make(chan *globalTypes.AudioDataElement, int(workerAmount)*2),
@@ -46,7 +47,7 @@ func NewWorker(ctx context.Context, wg *sync.WaitGroup, qdrant *qdrant.Worker, p
 		genAiDataBuffer:        make(chan *globalTypes.AudioDataElement, int(workerAmount)*2),
 		whisper:                ai.New(45.0),
 		postgres:               postgres,
-		embeddings:             ai.NewEmbeddingsWorker(),
+		embeddings:             embedder,
 		qdrant:                 qdrant,
 		llm:                    ai.NewLlmWorker(),
 		WorkerWG:               wg,
@@ -67,7 +68,7 @@ func NewWorker(ctx context.Context, wg *sync.WaitGroup, qdrant *qdrant.Worker, p
 
 	go worker.startImportJobDispatcher()
 
-	notify(worker.PoolRefillSignal)
+	worker.PoolRefillSignal.Trigger()
 
 	return &worker
 }
@@ -81,19 +82,15 @@ func (w *Worker) startImportJobDispatcher() {
 			slog.Debug("Importer Job Dispatcher stopped", "reason", "stop_ctx_done")
 			return
 
-		case <-w.PoolRefillSignal:
+		case <-w.PoolRefillSignal.Reader():
+			slog.Debug("Refilling importer job buffers")
 
+			w.refillBuffer(w.persistFileBuffer, globalTypes.StageReceived)
+			w.refillBuffer(w.transcriptAudioBuffer, globalTypes.StageFilePersisted)
+			w.refillBuffer(w.createEmbeddingsBuffer, globalTypes.StageTranscript)
+			w.refillBuffer(w.genAiDataBuffer, globalTypes.StageTranscript)
 		}
 	}
-}
-
-func (w *Worker) refillPoolBuffers() {
-	slog.Debug("Refilling importer job buffers")
-
-	w.refillBuffer(w.persistFileBuffer, globalTypes.StageReceived)
-	w.refillBuffer(w.transcriptAudioBuffer, globalTypes.StageFilePersisted)
-	w.refillBuffer(w.createEmbeddingsBuffer, globalTypes.StageTranscript)
-	w.refillBuffer(w.genAiDataBuffer, globalTypes.StageTranscript)
 }
 
 func (w *Worker) refillBuffer(

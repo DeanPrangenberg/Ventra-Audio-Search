@@ -2,12 +2,13 @@ package main
 
 import (
 	"context"
-	"go_audio_search_api_server/FlowManager"
+	"go_audio_search_api_server/ai"
 	"go_audio_search_api_server/api"
 	"go_audio_search_api_server/globalUtils"
 	"go_audio_search_api_server/importer"
 	"go_audio_search_api_server/postgres"
 	"go_audio_search_api_server/qdrant"
+	"go_audio_search_api_server/searcher"
 	"log/slog"
 	"os"
 	"strings"
@@ -43,6 +44,7 @@ func initLogger() {
 func main() {
 	initLogger()
 	slog.Info("Starting Background workers...")
+
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -61,17 +63,20 @@ func main() {
 		slog.Error(err.Error())
 	}
 
-	client, err := qdrant.New("AudioSegments")
+	qdrantWorker, err := qdrant.New("AudioSegments")
 	if err != nil {
 		slog.Error("Failed to connect to Qdrant: " + err.Error())
 		panic("Failed to connect to Qdrant")
 	}
 
-	importer.NewWorker(ctx, &wg, client, db, 10)
+	poolRefillSignal := globalUtils.NewSignal()
+	embedder := ai.NewEmbeddingsWorker()
 
-	srv := api.NewRestServer("8880", router)
+	importer.NewWorker(ctx, &wg, qdrantWorker, db, embedder, 10, poolRefillSignal)
+	searchWorker := searcher.NewWorker(ctx, &wg, qdrantWorker, db, embedder)
+
+	srv := api.NewRestServer(ctx, "8880", db, searchWorker, poolRefillSignal)
 	if err := srv.Run(); err != nil {
-		slog.Error("server stopped", "err", err)
-		os.Exit(1)
+		slog.Error("server stopping server", "err", err)
 	}
 }

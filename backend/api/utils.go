@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"log/slog"
@@ -44,4 +45,8 @@ func ReadJSON(r *http.Request, dst any, maxBytes int64) error {
 		return errors.New("invalid json: multiple values")
 	}
 	return nil
+}
+
+func (rs *Server) opCtx() (context.Context, context.CancelFunc) {
+	return context.WithTimeout(rs.StopCtx, opTimeout)
 }

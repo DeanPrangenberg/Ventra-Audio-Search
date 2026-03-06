@@ -114,7 +114,23 @@ func (rs *Server) handleImport(w http.ResponseWriter, r *http.Request) {
 
 	slog.Info("Queueing " + fmt.Sprintf("%d", len(validItems)) + " item for processing")
 
-	rs.importTaskChan <- validItems
+	ctx, cancel := rs.opCtx()
+	err := rs.postgres.UpsertBaseBatch(ctx, validItems)
+	cancel()
+
+	if err != nil {
+		slog.Error("Error after Batch inserting audio files into DB: " + err.Error())
+		writeJSON(w, http.StatusInternalServerError, map[string]any{
+			"ok":    false,
+			"code":  "COULD_NOT_QUEUE_IMPORT",
+			"error": "Internal Server Error: Failed to queue items for processing",
+			"got":   ct,
+		})
+
+		return
+	}
+
+	rs.PoolRefillSignal.Trigger()
 
 	slog.Debug("Finished handling import request, all items are valid and queued for processing")
 

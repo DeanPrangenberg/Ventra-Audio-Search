@@ -1,26 +1,34 @@
 package api
 
 import (
+	"context"
 	"errors"
-	"go_audio_search_api_server/FlowManager"
-	"go_audio_search_api_server/globalTypes"
+	"go_audio_search_api_server/globalUtils"
+	"go_audio_search_api_server/postgres"
+	"go_audio_search_api_server/searcher"
 	"log/slog"
 	"net/http"
 	"time"
 )
 
+const opTimeout = 1 * time.Minute
+
 type Server struct {
-	port           string
-	importTaskChan chan []*globalTypes.AudioDataElement
-	searchTaskChan chan globalTypes.SearchRequest
-	httpServer     *http.Server
+	port             string
+	PoolRefillSignal *globalUtils.NoneStackingEvent
+	StopCtx          context.Context
+	searcher         *searcher.Worker
+	httpServer       *http.Server
+	postgres         *postgres.Worker
 }
 
-func NewRestServer(port string, router *FlowManager.FlowWorker) *Server {
+func NewRestServer(ctx context.Context, port string, postgres *postgres.Worker, searcher *searcher.Worker, poolRefillSignal *globalUtils.NoneStackingEvent) *Server {
 	rs := &Server{
-		port:           port,
-		importTaskChan: router.ImportTaskChan,
-		searchTaskChan: router.SearchTaskChan,
+		port:             port,
+		PoolRefillSignal: poolRefillSignal,
+		StopCtx:          ctx,
+		searcher:         searcher,
+		postgres:         postgres,
 	}
 
 	mux := http.NewServeMux()
@@ -38,7 +46,7 @@ func NewRestServer(port string, router *FlowManager.FlowWorker) *Server {
 
 func (rs *Server) Run() error {
 	slog.Info("listening", "addr", rs.httpServer.Addr)
-	err := rs.httpServer.ListenAndServe() // BLOCKT
+	err := rs.httpServer.ListenAndServe()
 	if errors.Is(err, http.ErrServerClosed) {
 		return nil
 	}

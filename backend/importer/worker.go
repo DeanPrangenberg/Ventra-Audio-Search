@@ -61,10 +61,10 @@ func NewWorker(ctx context.Context, wg *sync.WaitGroup, qdrant *qdrant.Worker, p
 		slog.Error("Error resetting processing claims in DB: " + err.Error())
 	}
 
-	worker.startPersistFilePool(ctx, workerAmount-6)
-	worker.startTranscriptAudioPool(ctx, 2)
-	worker.startCreateEmbeddingsPool(ctx, 2)
-	worker.startGenerateAiDataPool(ctx, 2)
+	worker.startPersistFilePool(workerAmount - 6)
+	worker.startTranscriptAudioPool(2)
+	worker.startCreateEmbeddingsPool(2)
+	worker.startGenerateAiDataPool(2)
 
 	go worker.startImportJobDispatcher()
 

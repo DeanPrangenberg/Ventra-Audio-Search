@@ -1,14 +1,12 @@
 package importer
 
 import (
-	"context"
 	"go_audio_search_api_server/globalTypes"
 	"log/slog"
 )
 
-func (w *Worker) startPersistFilePool(ctx context.Context, workerAmount uint) {
+func (w *Worker) startPersistFilePool(workerAmount uint) {
 	w.startPool(
-		ctx,
 		workerAmount,
 		"Persist file pool",
 		w.persistFileBuffer,
@@ -17,9 +15,8 @@ func (w *Worker) startPersistFilePool(ctx context.Context, workerAmount uint) {
 	)
 }
 
-func (w *Worker) startTranscriptAudioPool(ctx context.Context, workerAmount uint) {
+func (w *Worker) startTranscriptAudioPool(workerAmount uint) {
 	w.startPool(
-		ctx,
 		workerAmount,
 		"Transcript audio pool",
 		w.transcriptAudioBuffer,
@@ -28,9 +25,8 @@ func (w *Worker) startTranscriptAudioPool(ctx context.Context, workerAmount uint
 	)
 }
 
-func (w *Worker) startCreateEmbeddingsPool(ctx context.Context, workerAmount uint) {
+func (w *Worker) startCreateEmbeddingsPool(workerAmount uint) {
 	w.startPool(
-		ctx,
 		workerAmount,
 		"Create embeddings pool",
 		w.createEmbeddingsBuffer,
@@ -39,9 +35,8 @@ func (w *Worker) startCreateEmbeddingsPool(ctx context.Context, workerAmount uin
 	)
 }
 
-func (w *Worker) startGenerateAiDataPool(ctx context.Context, workerAmount uint) {
+func (w *Worker) startGenerateAiDataPool(workerAmount uint) {
 	w.startPool(
-		ctx,
 		workerAmount,
 		"Generate AI data pool",
 		w.genAiDataBuffer,
@@ -51,7 +46,6 @@ func (w *Worker) startGenerateAiDataPool(ctx context.Context, workerAmount uint)
 }
 
 func (w *Worker) startPool(
-	ctx context.Context,
 	workerAmount uint,
 	poolName string,
 	buffer <-chan *globalTypes.AudioDataElement,
@@ -67,7 +61,7 @@ func (w *Worker) startPool(
 
 			for {
 				select {
-				case <-ctx.Done():
+				case <-w.StopCtx.Done():
 					slog.Info(poolName+" stopping ", "workerIdx", idx)
 					return
 

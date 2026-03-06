@@ -68,6 +68,7 @@ func (rs *Server) handleImport(w http.ResponseWriter, r *http.Request) {
 			invalidItemsErr = append(invalidItemsErr, err.Error())
 			continue
 		}
+		item.AudiofileHash = item.GetTmpHash()
 		validItems = append(validItems, &item)
 	}
 

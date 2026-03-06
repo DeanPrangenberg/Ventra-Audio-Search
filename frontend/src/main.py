@@ -10,7 +10,7 @@ import gradio as gr
 import config_manager
 import utils.file
 import utils.rss
-from routs import config_rout, search_rout
+from routs import config_rout, search_rout, statistics_rout
 from routs.import_rout.render import mount_import_routes
 
 
@@ -51,6 +51,7 @@ if __name__ == "__main__":
     mount_import_routes(demo)
     config_rout.mount_config_routes(demo)
     search_rout.mount_search_routes(demo)
+    statistics_rout.mount_statistics_routes(demo)
 
     start_ttl_cleanup_thread()
 

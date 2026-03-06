@@ -193,7 +193,7 @@ def load_stats():
         created_df,
     )
 
-def mount_search_routes(app: gr.Blocks):
+def mount_statistics_routes(app: gr.Blocks):
     with app.route("Search") as rout:
         gr.Markdown("# Statistics Dashboard")
 

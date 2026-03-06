@@ -1,19 +1,127 @@
 #error-markdown {
-    background-color: #f55 !important;
-    color: white !important;
+    background-color: #FF3442 !important;
+    color: #7a1f1f !important;
+    border: 1px solid #f3b5b5 !important;
+    border-radius: 8px !important;
+    padding: 8px 10px !important;
 }
 
 .status {
     padding: 8px 10px !important;
     border-radius: 8px !important;
+    border: 1px solid transparent !important;
 }
 
 .status.ok {
-    background: #0f6 !important;
-    color: #052 !important;
+    background: #42BB72 !important;
+    color: #1f5c38 !important;
+    border-color: #b7e4c7 !important;
 }
 
 .status.err {
-    background: #f55 !important;
-    color: #fff !important;
+    background: #FF3442 !important;
+    color: #7a1f1f !important;
+    border-color: #f3b5b5 !important;
+}
+
+.section-shell {
+    background: #202024;
+    border: 1px solid #31313a;
+    border-radius: 18px;
+    padding: 16px;
+    margin-top: 10px;
+}
+
+.stat-card {
+    position: relative;
+    background: #27272A;
+    border: 1px solid #3A3A44;
+    border-radius: 14px;
+    padding: 16px 16px 14px 16px;
+    min-height: 110px;
+    box-sizing: border-box;
+}
+
+.stat-card-accent {
+    width: 36px;
+    height: 4px;
+    border-radius: 999px;
+    background: #71717a;
+    margin-bottom: 12px;
+}
+
+.stat-ok .stat-card-accent {
+    background: #22c55e;
+}
+
+.stat-warn .stat-card-accent {
+    background: #eab308;
+}
+
+.stat-err .stat-card-accent {
+    background: #ef4444;
+}
+
+.stat-title {
+    font-size: 0.86rem;
+    color: #b4b4b8;
+    margin-bottom: 8px;
+}
+
+.stat-value {
+    font-size: 1.9rem;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.05;
+}
+
+.stat-sub {
+    margin-top: 8px;
+    font-size: 0.82rem;
+    color: #8f8f99;
+}
+
+/* stage strip */
+.stage-strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    background: #27272A;
+    border: 1px solid #3A3A44;
+    border-radius: 14px;
+    padding: 14px;
+    overflow-x: auto;
+}
+
+.stage-node {
+    min-width: 120px;
+    text-align: center;
+    padding: 8px 10px;
+    background: #2e2e34;
+    border: 1px solid #40404a;
+    border-radius: 12px;
+    flex-shrink: 0;
+}
+
+.stage-label {
+    font-size: 0.8rem;
+    color: #a1a1aa;
+    margin-bottom: 6px;
+}
+
+.stage-value {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.stage-arrow {
+    color: #71717a;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+h1, h2, h3 {
+    color: #ffffff !important;
 }

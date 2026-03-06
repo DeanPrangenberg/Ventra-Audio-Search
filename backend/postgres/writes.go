@@ -103,7 +103,7 @@ func (s *Worker) UpsertBaseBatch(ctx context.Context, items []*globalTypes.Audio
         return nil
     }
 
-    const colsPerRow = 15
+    const colsPerRow = 16
     const chunkSize = 1000
 
     const head = `

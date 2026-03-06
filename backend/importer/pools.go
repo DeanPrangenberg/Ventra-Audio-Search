@@ -62,12 +62,12 @@ func (w *Worker) startPool(
 			for {
 				select {
 				case <-w.StopCtx.Done():
-					slog.Info(poolName+" stopping ", "workerIdx", idx)
+					slog.Info(poolName+" stopping", ", worker", idx)
 					return
 
 				case audioDataElement := <-buffer:
 					if err := handler(idx, audioDataElement); err != nil {
-						slog.Error(errorMsg, "workerIdx", idx, "err", err)
+						slog.Error(errorMsg, ", worker", idx, "err", err)
 					}
 					w.PoolRefillSignal.Trigger()
 				}

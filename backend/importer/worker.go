@@ -13,6 +13,7 @@ import (
 )
 
 const opTimeout = 5 * time.Minute
+const maxRetryCount = 10
 
 type Worker struct {
 	PoolRefillSignal *globalUtils.NoneStackingEvent

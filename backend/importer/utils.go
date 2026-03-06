@@ -134,6 +134,18 @@ func (w *Worker) updateRetryCounter(workerIdx uint, audioDataElement *globalType
 		"err", cause,
 	)
 
+	if audioDataElement.RetryCounter > maxRetryCount {
+		logImport(
+			slog.LevelError,
+			"audio element has been retried more than "+strconv.Itoa(maxRetryCount)+" times, skipping",
+			workerIdx,
+			audioDataElement,
+			"err", cause,
+		)
+
+		audioDataElement.LastSuccessfulStage = globalTypes.StageFailed
+	}
+
 	ctx, cancel := w.opCtx()
 	err := w.postgres.UpsertBase(ctx, audioDataElement)
 	cancel()

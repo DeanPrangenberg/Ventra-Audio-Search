@@ -68,7 +68,7 @@ func (w *Worker) startPool(
 			for {
 				select {
 				case <-ctx.Done():
-					slog.Info(poolName+" stopping", "workerIdx", idx)
+					slog.Info(poolName+" stopping ", "workerIdx", idx)
 					return
 
 				case audioDataElement := <-buffer:

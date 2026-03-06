@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"go_audio_search_api_server/ai"
 	"go_audio_search_api_server/api"
 	"go_audio_search_api_server/globalUtils"
@@ -10,9 +11,13 @@ import (
 	"go_audio_search_api_server/qdrant"
 	"go_audio_search_api_server/searcher"
 	"log/slog"
+	"net/http"
 	"os"
+	"os/signal"
 	"strings"
 	"sync"
+	"syscall"
+	"time"
 )
 
 func initLogger() {
@@ -45,28 +50,26 @@ func main() {
 	initLogger()
 	slog.Info("Starting Background workers...")
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
 
 	var wg sync.WaitGroup
 
 	db, err := postgres.Open()
-	defer func(db *postgres.Worker) {
-		err := db.Close()
-		if err != nil {
-			slog.Error("Failed to close database connection gracefully: " + err.Error())
-			return
-		}
-	}(db)
-
 	if err != nil {
-		slog.Error(err.Error())
+		slog.Error("failed to open db", "err", err)
+		os.Exit(1)
 	}
+	defer func() {
+		if err := db.Close(); err != nil {
+			slog.Error("failed to close db gracefully", "err", err)
+		}
+	}()
 
 	qdrantWorker, err := qdrant.New("AudioSegments")
 	if err != nil {
-		slog.Error("Failed to connect to Qdrant: " + err.Error())
-		panic("Failed to connect to Qdrant")
+		slog.Error("failed to connect to qdrant", "err", err)
+		os.Exit(1)
 	}
 
 	poolRefillSignal := globalUtils.NewSignal()
@@ -76,7 +79,42 @@ func main() {
 	searchWorker := searcher.NewWorker(ctx, &wg, qdrantWorker, db, embedder)
 
 	srv := api.NewRestServer(ctx, "8880", db, searchWorker, poolRefillSignal)
-	if err := srv.Run(); err != nil {
-		slog.Error("server stopping server", "err", err)
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+
+		err := srv.Run()
+
+		if err != nil && !errors.Is(err, context.Canceled) && !errors.Is(err, http.ErrServerClosed) {
+			slog.Error("server stopped", "err", err)
+		} else {
+			slog.Info("server stopped")
+		}
+
+		stop()
+	}()
+
+	<-ctx.Done()
+
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	if err := srv.Shutdown(shutdownCtx); err != nil {
+		if !errors.Is(err, context.Canceled) && !errors.Is(err, http.ErrServerClosed) {
+			slog.Error("server shutdown failed", "err", err)
+		}
+	}
+
+	done := make(chan struct{})
+	go func() {
+		wg.Wait()
+		close(done)
+	}()
+
+	select {
+	case <-done:
+	case <-time.After(30 * time.Second):
+		slog.Error("shutdown timeout")
 	}
 }

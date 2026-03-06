@@ -52,3 +52,15 @@ func (rs *Server) Run() error {
 	}
 	return err
 }
+
+func (rs *Server) Shutdown(ctx context.Context) error {
+	slog.Info("Shutting down REST server...")
+
+	err := rs.httpServer.Shutdown(ctx)
+	if err != nil {
+		slog.Error("Error shutting down REST server", "err", err)
+		return err
+	}
+
+	return nil
+}

@@ -106,7 +106,7 @@ def load_stats():
     # grobe Statussicht aus aktuellem Zustand
     # -----------------------------
     successful_imports = fetch_scalar(
-        "SELECT COUNT(*) FROM audiofiles WHERE last_successful_stage = 0"
+        "SELECT COUNT(*) FROM audiofiles WHERE last_successful_stage = 5"
     )
     in_processing_queue = fetch_scalar(
         """

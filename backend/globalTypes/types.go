@@ -58,8 +58,6 @@ func (s *AudioDataElement) UpdateToNextStage() {
 		s.LastSuccessfulStage = StageEmbedded
 	case StageEmbedded:
 		s.LastSuccessfulStage = StageAiDataGenerated
-	case StageAiDataGenerated:
-		s.LastSuccessfulStage = StageCompleted
 	default:
 		s.LastSuccessfulStage = StageFailed
 	}

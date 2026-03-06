@@ -48,10 +48,10 @@ if __name__ == "__main__":
             """
         )
 
-    mount_import_routes(demo)
-    config_rout.mount_config_routes(demo)
     search_rout.mount_search_routes(demo)
+    mount_import_routes(demo)
     statistics_rout.mount_statistics_routes(demo)
+    config_rout.mount_config_routes(demo)
 
     start_ttl_cleanup_thread()
 

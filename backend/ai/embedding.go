@@ -31,7 +31,6 @@ func NewEmbeddingsWorker() *EmbeddingWorker {
 }
 
 func (h *EmbeddingWorker) CreateEmbedding(text string) ([]float32, error) {
-	slog.Info("Requesting Ollama embed", "model", h.model)
 	client := &http.Client{Timeout: 1200 * time.Second}
 
 	reqBody := ollamaEmbedReq{

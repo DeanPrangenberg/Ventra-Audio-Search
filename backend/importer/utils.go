@@ -13,16 +13,16 @@ import (
 
 func stageName(stage int) string {
 	switch stage {
-	case int(globalTypes.StageReceived):
-		return "received"
+	case int(globalTypes.StageQueued):
+		return "queued"
 	case int(globalTypes.StageFilePersisted):
 		return "file_persisted"
-	case int(globalTypes.StageTranscript):
-		return "transcript"
-	case int(globalTypes.StageEmbeddings):
-		return "embeddings"
-	case int(globalTypes.StageAiGeneration):
-		return "ai_generation"
+	case int(globalTypes.StageTranscribed):
+		return "transcribed"
+	case int(globalTypes.StageEmbedded):
+		return "embedded"
+	case int(globalTypes.StageAiDataGenerated):
+		return "ai_data_generated"
 	default:
 		return "unknown_stage_" + strconv.Itoa(stage)
 	}

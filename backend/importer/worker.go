@@ -86,10 +86,10 @@ func (w *Worker) startImportJobDispatcher() {
 		case <-w.PoolRefillSignal.Reader():
 			slog.Debug("Refilling importer job buffers")
 
-			w.refillBuffer(w.persistFileBuffer, globalTypes.StageReceived)
+			w.refillBuffer(w.persistFileBuffer, globalTypes.StageQueued)
 			w.refillBuffer(w.transcriptAudioBuffer, globalTypes.StageFilePersisted)
-			w.refillBuffer(w.createEmbeddingsBuffer, globalTypes.StageTranscript)
-			w.refillBuffer(w.genAiDataBuffer, globalTypes.StageTranscript)
+			w.refillBuffer(w.createEmbeddingsBuffer, globalTypes.StageTranscribed)
+			w.refillBuffer(w.genAiDataBuffer, globalTypes.StageEmbedded)
 		}
 	}
 }

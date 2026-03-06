@@ -11,16 +11,16 @@ import (
 type ProcessingStage int
 
 const (
-	// StageReceived Init Stage saved needed data in db
-	StageReceived ProcessingStage = 1
+	// StageQueued Init Stage saved needed data in db
+	StageQueued ProcessingStage = 1
 	// StageFilePersisted File saved to disk, ready for processing
 	StageFilePersisted ProcessingStage = 2
-	// StageTranscript Created full transcript and segemnts and saved in postgres
-	StageTranscript ProcessingStage = 3
-	// StageEmbeddings Embeddings created for all segments and saved in qdrant
-	StageEmbeddings ProcessingStage = 4
-	// StageAiGeneration Created summary and keywords
-	StageAiGeneration ProcessingStage = 5
+	// StageTranscribed Created full transcript and segments and saved in postgres
+	StageTranscribed ProcessingStage = 3
+	// StageEmbedded Embeddings created for all segments and saved in qdrant
+	StageEmbedded ProcessingStage = 4
+	// StageAiDataGenerated Created summary and keywords
+	StageAiDataGenerated ProcessingStage = 5
 	// StageCompleted All stages completed successfully
 	StageCompleted ProcessingStage = 0
 	// StageFailed Failed in one of the stages
@@ -50,15 +50,15 @@ type AudioDataElement struct {
 // UpdateToNextStage updates the LastSuccessfulStage to the next stage in the processing pipeline
 func (s *AudioDataElement) UpdateToNextStage() {
 	switch s.LastSuccessfulStage {
-	case StageReceived:
+	case StageQueued:
 		s.LastSuccessfulStage = StageFilePersisted
 	case StageFilePersisted:
-		s.LastSuccessfulStage = StageTranscript
-	case StageTranscript:
-		s.LastSuccessfulStage = StageEmbeddings
-	case StageEmbeddings:
-		s.LastSuccessfulStage = StageAiGeneration
-	case StageAiGeneration:
+		s.LastSuccessfulStage = StageTranscribed
+	case StageTranscribed:
+		s.LastSuccessfulStage = StageEmbedded
+	case StageEmbedded:
+		s.LastSuccessfulStage = StageAiDataGenerated
+	case StageAiDataGenerated:
 		s.LastSuccessfulStage = StageCompleted
 	default:
 		s.LastSuccessfulStage = StageFailed

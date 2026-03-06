@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
 	"strings"
@@ -237,10 +238,47 @@ func (s *Worker) UpdateAudiofileHash(ctx context.Context, oldAudioHash string, n
 	if newAudioHash == "" {
 		return errors.New("newAudioHash required")
 	}
+	if oldAudioHash == newAudioHash {
+		return nil
+	}
 
-	const q = `UPDATE audiofiles SET audiofile_hash = $1 WHERE audiofile_hash = $2;`
-	_, err := s.db.ExecContext(ctx, q, newAudioHash, oldAudioHash)
-	return err
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return fmt.Errorf("begin tx: %w", err)
+	}
+	defer func() {
+		_ = tx.Rollback()
+	}()
+
+	const q = `
+UPDATE audiofiles
+SET audiofile_hash = $1
+WHERE audiofile_hash = $2;
+`
+
+	res, err := tx.ExecContext(ctx, q, newAudioHash, oldAudioHash)
+	if err != nil {
+		return fmt.Errorf("update audiofile hash: %w", err)
+	}
+
+	rows, err := res.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("rows affected: %w", err)
+	}
+
+	if rows == 0 {
+		return sql.ErrNoRows
+	}
+
+	if rows > 1 {
+		return fmt.Errorf("updated %d rows, expected exactly 1", rows)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("commit tx: %w", err)
+	}
+
+	return nil
 }
 
 // UpsertSegments schreibt Segmente als Batch in einer TX.

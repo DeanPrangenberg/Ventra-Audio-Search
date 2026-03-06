@@ -126,5 +126,5 @@ func (s *AudioDataElement) ToString() string {
 	)
 }
 func (s *AudioDataElement) GetTmpHash() string {
-	return globalUtils.StringSha256Hex(s.ToString())
+	return "tmp_" + globalUtils.StringSha256Hex(s.ToString())
 }

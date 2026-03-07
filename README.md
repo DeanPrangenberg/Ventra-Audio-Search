@@ -124,7 +124,7 @@ Required fields per item:
 ### Search
 
 ```bash
-curl -X POST http://localhost:8880/search \
+curl -X GET http://localhost:8880/search \
   -H "Content-Type: application/json" \
   -d '{
     "ts_query": "deadline AND release",

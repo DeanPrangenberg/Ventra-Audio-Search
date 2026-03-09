@@ -12,7 +12,6 @@ class API:
         self.import_url = f"{self.base_url}/import"
         self.health_url = f"{self.base_url}/health"
         self.search_url = f"{self.base_url}/search"
-        self.status_url = f"{self.base_url}/status"
 
     def import_request(self, payload_list: list[ImportPayload]) -> None | list[dict] | str:
         request_payloads = [p.to_dict() for p in payload_list]

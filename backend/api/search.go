@@ -8,7 +8,7 @@ import (
 )
 
 func (rs *Server) handleSearch(w http.ResponseWriter, r *http.Request) {
-	slog.Info("Received request to /Search")
+	slog.Info("Received request to /search")
 
 	// 1) Content-Type hart prüfen -> 415
 	ct := r.Header.Get("Content-Type")

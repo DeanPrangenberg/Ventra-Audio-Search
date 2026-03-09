@@ -43,7 +43,7 @@ func (w *Worker) Search(searchQuery globalTypes.SearchRequest) *globalTypes.Sear
 	candidates, err := w.postgres.GetPostgresCandidates(
 		ctx,
 		searchQuery.TsQuery,
-		10,
+		100,
 		searchQuery.Category,
 		searchQuery.StartTimePeriodIso,
 		searchQuery.EndTimePeriodIso,

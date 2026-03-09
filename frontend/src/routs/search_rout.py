@@ -9,7 +9,7 @@ from src.api.payloads import search_payload
 
 
 def do_backend_request(state: dict[str, Any]) -> str:
-    fts5_query: str = state.get("fts5_query", "")
+    ts_query: str = state.get("ts_query", "")
     semantic_search_query: str = state.get("semantic_search_query", "")
     category: str = state.get("category", "")
     start_time_period = state.get("start_time_period", None)
@@ -17,12 +17,12 @@ def do_backend_request(state: dict[str, Any]) -> str:
     max_segment_return = state.get("max_segment_return", None)
 
     logging.info(
-        "Creating Search payload: fts5_query=%s, semantic_search_query=%s, category=%s",
-        fts5_query, semantic_search_query, category
+        "Creating Search payload: ts_query=%s, semantic_search_query=%s, category=%s",
+        ts_query, semantic_search_query, category
     )
 
     payload = search_payload.SearchPayload(
-        fts5_query=fts5_query,
+        ts_query=ts_query,
         semantic_search_query=semantic_search_query,
         category=category,
         start_time_period=start_time_period,
@@ -42,7 +42,7 @@ def mount_search_routes(app: gr.Blocks):
 
         state = gr.State({})
 
-        fts5_query = gr.Text(
+        ts_query = gr.Text(
             label="Keywords",
             placeholder="Enter exact keywords like (Deadline, Project x)...",
             value="",
@@ -76,9 +76,9 @@ def mount_search_routes(app: gr.Blocks):
             interactive=True,
         )
 
-        fts5_query.change(
-            fn=lambda v, s: state_utils.update_meta_single(v, s, "fts5_query"),
-            inputs=[fts5_query, state],
+        ts_query.change(
+            fn=lambda v, s: state_utils.update_meta_single(v, s, "ts_query"),
+            inputs=[ts_query, state],
             outputs=[state],
             api_visibility="private",
             queue=False,

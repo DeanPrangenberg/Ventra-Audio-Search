@@ -36,7 +36,7 @@ WHERE audiofile_hash = $1;
 		&r.AiSummary,
 	)
 	if errors.Is(err, sql.ErrNoRows) {
-		return nil, nil
+		return nil, err
 	}
 	if err != nil {
 		return nil, err

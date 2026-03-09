@@ -37,3 +37,9 @@ def update_meta(value: str, files_state: list[dict[str, Any]], idx: int, field: 
 def update_meta_single(value: str, state: dict[str, Any], field: str):
     state[field] = value
     return state
+
+def update_meta_array(value: str, files_state: list[dict[str, Any]], idx: int, field: str):
+    if not files_state or idx < 0 or idx >= len(files_state):
+        return files_state
+    files_state[idx][field] = value
+    return files_state

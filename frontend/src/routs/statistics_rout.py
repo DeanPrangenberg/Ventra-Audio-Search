@@ -229,7 +229,7 @@ def mount_statistics_routes(app: gr.Blocks):
                         title="Created rows (last 24h)",
                     )
 
-        timer = gr.Timer(value=5.0, active=True)
+        timer = gr.Timer(value=1.0, active=True)
 
         outputs = [
             audio_files_display,

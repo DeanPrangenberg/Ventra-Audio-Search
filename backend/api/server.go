@@ -34,7 +34,7 @@ func NewRestServer(ctx context.Context, port string, postgres *postgres.Worker, 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", rs.handleHealth)
 	mux.HandleFunc("POST /import", rs.handleImport)
-	mux.HandleFunc("GET /search", rs.handleSearch)
+	mux.HandleFunc("POST /search", rs.handleSearch)
 
 	rs.httpServer = &http.Server{
 		Addr:              ":" + rs.port,

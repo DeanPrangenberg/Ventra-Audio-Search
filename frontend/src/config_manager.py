@@ -1,14 +1,28 @@
 import json
 import logging
 import os
+from pathlib import Path
 
 
 class ConfigManager:
     def __init__(self, config_path: str = "config.json"):
-        self._config_path = os.environ.get("DATA_DIR", "/app/data").rstrip("/") + "/" + config_path
+        base_dir = self._resolve_base_dir()
+        self._config_path = str(base_dir / config_path)
+        self._default_data_dir = str(base_dir)
         self._config = {}
         self.load_config()
         logging.debug(f"Loaded Config: {self._config}")
+
+    def _resolve_base_dir(self) -> Path:
+        env_data_dir = os.environ.get("DATA_DIR")
+        if env_data_dir:
+            return Path(env_data_dir)
+
+        app_data_dir = Path("/app/data")
+        if app_data_dir.exists() and app_data_dir.is_dir():
+            return app_data_dir
+
+        return Path.cwd()
 
     def load_config(self):
         try:
@@ -18,14 +32,14 @@ class ConfigManager:
             logging.warning(f"Config file not found at {self._config_path}. Using default config.")
             self._config = {
                 "api_base_url": os.environ.get("AUDIO_TRANSCRIPT_SERVER_URL", "http://audio-transcript-server:8880"),
-                "upload_dir": os.environ.get("DATA_DIR", "/app/data").rstrip("/") + "/uploads",
-                "category": ["Standard"]
+                "upload_dir": str(Path(self._default_data_dir) / "uploads"),
+                "category": ["Standard"],
             }
-
             self.save_config()
 
     def save_config(self):
         try:
+            Path(self._config_path).parent.mkdir(parents=True, exist_ok=True)
             with open(self._config_path, "w") as f:
                 json.dump(self._config, f, indent=4)
         except Exception as e:
@@ -73,7 +87,11 @@ class ConfigManager:
         self.save_config()
 
     def extend_categories(self, new_category_name: str) -> None:
-        categories = self.get_category_csv()
-        categories += ", " + new_category_name.strip().replace(",", ";")
+        categories = self.get_category_list()
+        new_category = new_category_name.strip().replace(",", ";")
 
-        self.set_categories(new_category_name)
+        if new_category and new_category not in categories:
+            categories.append(new_category)
+
+        self._config["category"] = categories or ["Standard"]
+        self.save_config()

@@ -1,127 +1,158 @@
 import logging
-from typing import Any
+from datetime import datetime, timezone
 
-import config_manager
 import gradio as gr
-import src.utils.state as state_utils
+import config_manager
 from src.api import api
-from src.api.payloads import search_payload
+from src.api.payloads.search_payload import SearchPayload
 
 
-def do_backend_request(state: dict[str, Any]) -> str:
-    ts_query: str = state.get("ts_query", "")
-    semantic_search_query: str = state.get("semantic_search_query", "")
-    category: str = state.get("category", "")
-    start_time_period = state.get("start_time_period", None)
-    end_time_period = state.get("end_time_period", None)
-    max_segment_return = state.get("max_segment_return", None)
+def get_default_date_range():
+    oldest = datetime(1970, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
+    now = datetime.now(timezone.utc)
+    return oldest, now
 
+
+def do_backend_request(
+    ts_query: str,
+    semantic_search_query: str,
+    category: str,
+    start_time_period,
+    end_time_period,
+    max_segment_return,
+):
     logging.info(
-        "Creating Search payload: ts_query=%s, semantic_search_query=%s, category=%s",
-        ts_query, semantic_search_query, category
+        "Creating search payload: ts_query=%s, semantic_search_query=%s, category=%s",
+        ts_query,
+        semantic_search_query,
+        category,
     )
 
-    payload = search_payload.SearchPayload(
-        ts_query=ts_query,
-        semantic_search_query=semantic_search_query,
-        category=category,
+    payload = SearchPayload(
+        ts_query=ts_query or "",
+        semantic_search_query=semantic_search_query or "",
+        category=category or "",
         start_time_period=start_time_period,
         end_time_period=end_time_period,
-        max_segment_return=max_segment_return,
+        max_segment_return=int(max_segment_return) if max_segment_return else None,
     )
 
-    res = api.API().search_request(payload)
+    successful, res = api.API().search_request(payload)
 
-    return res
+    if successful:
+        result_count = len(res.get("results", [])) if isinstance(res, dict) else 0
+        return (
+            gr.update(value=f"Search successful. Results: {result_count}", visible=True),
+            gr.update(value=res, visible=True),
+        )
+
+    return (
+        gr.update(value=f"Search failed: {res}", visible=True),
+        gr.update(value=None, visible=False),
+    )
+
+
+def reset_search_form(default_category, oldest, now):
+    return (
+        "",
+        "",
+        default_category,
+        oldest,
+        now,
+        10,
+        gr.update(value="", visible=False),
+        gr.update(value=None, visible=False),
+    )
 
 
 def mount_search_routes(app: gr.Blocks):
+    oldest, now = get_default_date_range()
+
     with app.route("Search"):
         gr.Markdown("# Search Audio Files")
-        gr.Markdown("This page is for semantic search — results are matched by meaning, not just exact keywords.")
-
-        state = gr.State({})
-
-        ts_query = gr.Text(
-            label="Keywords",
-            placeholder="Enter exact keywords like (Deadline, Project x)...",
-            value="",
-            interactive=True,
-        )
-
-        semantic_search_query = gr.Text(
-            label="Question",
-            placeholder="Enter a question like (When is the deadline for project x)",
-            value="",
-            interactive=True,
+        gr.Markdown(
+            "Search by exact keywords, semantic meaning, category, and date range."
         )
 
         choices = config_manager.ConfigManager().get_category_list()
-        category = gr.Dropdown(
-            label="Choose a Category",
-            choices=choices,
-            value=(choices[0] if choices else None),
-            interactive=True,
-        )
+        default_category = choices[0] if choices else "Standard"
 
-        start_time_period = gr.DateTime(
-            label="Search range start",
-            value=None,
-            interactive=True,
-        )
+        with gr.Row():
+            with gr.Column(scale=2):
+                ts_query = gr.Textbox(
+                    label="Keyword Search",
+                    placeholder="e.g. keyword (names, persons, etc.)",
+                    value="",
+                    interactive=True,
+                )
 
-        end_time_period = gr.DateTime(
-            label="Search range end",
-            value=None,
-            interactive=True,
-        )
+                semantic_search_query = gr.Textbox(
+                    label="Semantic Search",
+                    placeholder="e.g. When is the release deadline?",
+                    value="",
+                    interactive=True,
+                )
 
-        ts_query.change(
-            fn=lambda v, s: state_utils.update_meta_single(v, s, "ts_query"),
-            inputs=[ts_query, state],
-            outputs=[state],
-            api_visibility="private",
-            queue=False,
-        )
+                category = gr.Dropdown(
+                    label="Category",
+                    choices=choices,
+                    value=default_category,
+                    interactive=True,
+                )
 
-        semantic_search_query.change(
-            fn=lambda v, s: state_utils.update_meta_single(v, s, "semantic_search_query"),
-            inputs=[semantic_search_query, state],
-            outputs=[state],
-            api_visibility="private",
-            queue=False,
-        )
+            with gr.Column(scale=1):
+                start_time_period = gr.DateTime(
+                    label="Start Date",
+                    value=oldest,
+                    interactive=True,
+                )
 
-        category.change(
-            fn=lambda v, s: state_utils.update_meta_single(v, s, "category"),
-            inputs=[category, state],
-            outputs=[state],
-            api_visibility="private",
-            queue=False,
-        )
+                end_time_period = gr.DateTime(
+                    label="End Date",
+                    value=now,
+                    interactive=True,
+                )
 
-        start_time_period.change(
-            fn=lambda v, s: state_utils.update_meta_single(v, s, "start_time_period"),
-            inputs=[start_time_period, state],
-            outputs=[state],
-            api_visibility="private",
-            queue=False,
-        )
+                max_segment_return = gr.Number(
+                    label="Maximum Results",
+                    value=10,
+                    minimum=1,
+                    precision=0,
+                    interactive=True,
+                )
 
-        end_time_period.change(
-            fn=lambda v, s: state_utils.update_meta_single(v, s, "end_time_period"),
-            inputs=[end_time_period, state],
-            outputs=[state],
-            api_visibility="private",
-            queue=False,
-        )
+        with gr.Row():
+            send_btn = gr.Button("Search", variant="primary")
+            reset_btn = gr.Button("Reset")
 
-        send_btn = gr.Button("Send Search Request", variant="primary")
-        send_result = gr.Markdown()
+        status = gr.Markdown(visible=False)
+        json_view = gr.JSON(visible=False)
 
         send_btn.click(
             fn=do_backend_request,
-            inputs=[state],
-            outputs=[send_result],
+            inputs=[
+                ts_query,
+                semantic_search_query,
+                category,
+                start_time_period,
+                end_time_period,
+                max_segment_return,
+            ],
+            outputs=[status, json_view],
+            api_visibility="private",
+        )
+
+        reset_btn.click(
+            fn=lambda: reset_search_form(default_category, oldest, now),
+            outputs=[
+                ts_query,
+                semantic_search_query,
+                category,
+                start_time_period,
+                end_time_period,
+                max_segment_return,
+                status,
+                json_view,
+            ],
             api_visibility="private",
         )

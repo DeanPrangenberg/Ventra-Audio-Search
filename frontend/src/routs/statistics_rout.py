@@ -94,8 +94,19 @@ def load_stats():
     # -----------------------------
     audio_amount = fetch_scalar("SELECT COUNT(*) FROM audiofiles")
     segment_amount = fetch_scalar("SELECT COUNT(*) FROM segments")
-    search_requests = fetch_scalar("SELECT COUNT(*) FROM audiofiles WHERE transcript_full IS NOT NULL")
-    import_requests = fetch_scalar("SELECT COUNT(*) FROM audiofiles WHERE ai_summary IS NOT NULL")
+    search_requests = fetch_scalar("""
+        SELECT
+        SUM(counter_value) AS total
+        FROM counters
+        WHERE counter_name IN ('search_requests_failed', 'search_requests_successful');
+    """)
+
+    import_requests = fetch_scalar("""
+        SELECT
+        SUM(counter_value) AS total
+        FROM counters
+        WHERE counter_name IN ('import_requests_failed', 'import_requests_successful');
+    """)
 
     audio_files_card = make_card("Audio Files", f"{audio_amount:,}", "rows in audiofiles")
     audio_segments_card = make_card("Segment Amount", f"{segment_amount:,}", "rows in segments")

@@ -20,7 +20,7 @@ type SearchSegmentData struct {
 	StartInSec    float32 `json:"start_in_sec"`
 	EndInSec      float32 `json:"end_in_sec"`
 	Transcript    string  `json:"transcript"`
-	TsScore       float64 `json:"bm25_score"`
+	TsScore       float64 `json:"ts_score"`
 	QueryScore    float32 `json:"vector_score"`
 	Error         string  `json:"error,omitempty"`
 }

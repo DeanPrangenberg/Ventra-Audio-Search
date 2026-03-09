@@ -105,8 +105,8 @@ func (w *Worker) Search(searchQuery globalTypes.SearchRequest) *globalTypes.Sear
 	var audioFileHashes []string
 	for _, segment := range segments {
 		contains := false
-		for _, seg := range segments {
-			if seg.AudiofileHash == segment.AudiofileHash {
+		for _, savedHash := range audioFileHashes {
+			if savedHash == segment.AudiofileHash {
 				contains = true
 				break
 			}

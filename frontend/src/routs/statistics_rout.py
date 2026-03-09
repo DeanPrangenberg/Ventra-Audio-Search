@@ -49,7 +49,6 @@ def fetch_scalar(sql: str) -> int:
         value = conn.execute(text(sql)).scalar_one()
         return int(value)
 
-
 def fetch_timeseries(ts_column: str, value_name: str, hours: int = 24) -> pd.DataFrame:
     allowed_columns = {"created_at", "updated_at"}
     if ts_column not in allowed_columns:

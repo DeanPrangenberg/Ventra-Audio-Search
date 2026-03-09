@@ -1,11 +1,30 @@
 import logging
+import os
 from datetime import datetime, timezone
 
 import gradio as gr
+from sqlalchemy import create_engine, text
+
 import config_manager
 from src.api import api
 from src.api.payloads.search_payload import SearchPayload
 
+def load_postgres_url():
+    return os.environ.get(
+        "POSTGRES_URL",
+        "user:password@localhost:5432/audio_transcript_db"
+    )
+
+
+def fetch_categories() -> list[str]:
+    engine = create_engine("postgresql+psycopg://" + load_postgres_url(), pool_pre_ping=True)
+
+    with engine.connect() as conn:
+        return list(conn.execute(text("""
+            SELECT DISTINCT category
+            FROM audiofiles
+            ORDER BY category
+        """)).scalars().all())
 
 def get_default_date_range():
     oldest = datetime(1970, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
@@ -59,7 +78,7 @@ def reset_search_form(default_category, oldest, now):
         default_category,
         oldest,
         now,
-        10,
+        1,
         gr.update(value="", visible=False),
         gr.update(value=None, visible=False),
     )
@@ -74,7 +93,7 @@ def mount_search_routes(app: gr.Blocks):
             "Search by exact keywords, semantic meaning, category, and date range."
         )
 
-        choices = config_manager.ConfigManager().get_category_list()
+        choices = fetch_categories()
         default_category = choices[0] if choices else "Standard"
 
         with gr.Row():
@@ -139,6 +158,8 @@ def mount_search_routes(app: gr.Blocks):
                 max_segment_return,
             ],
             outputs=[status, json_view],
+            show_progress="full",
+            show_progress_on=[status, json_view],
             api_visibility="private",
         )
 

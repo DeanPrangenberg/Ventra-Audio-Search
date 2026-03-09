@@ -25,6 +25,7 @@ WHERE audiofile_hash = $1;
 `
 
 	var r globalTypes.SearchAudioData
+	var aiKeywordsJSON string
 	err := s.db.QueryRowContext(ctx, q, audioHash).Scan(
 		&r.AudiofileHash,
 		&r.Title,
@@ -32,7 +33,7 @@ WHERE audiofile_hash = $1;
 		&r.DurationInSec,
 		&r.TranscriptFull,
 		&r.UserSummary,
-		&r.AiKeywords,
+		&aiKeywordsJSON,
 		&r.AiSummary,
 	)
 	if errors.Is(err, sql.ErrNoRows) {
@@ -41,6 +42,7 @@ WHERE audiofile_hash = $1;
 	if err != nil {
 		return nil, err
 	}
+	r.AiKeywords = stringSliceFromJSON(aiKeywordsJSON)
 
 	return &r, nil
 }

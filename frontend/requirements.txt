@@ -4,3 +4,4 @@ mutagen
 feedparser
 pandas
 sqlalchemy
+psycopg[binary]

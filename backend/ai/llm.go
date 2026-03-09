@@ -102,9 +102,9 @@ func (w *LlmWorker) ollamaRequest(sysPrompt string, userPrompt string) (string, 
 
 func (w *LlmWorker) getSysPrompts(taskType string) (string, string) {
 	switch taskType {
-	case "meeting":
+	case "Meeting":
 		return meetingKeywordSysPrompt, meetingSummarySysPrompt
-	case "media":
+	case "Media":
 		return mediaKeywordsSysPrompt, mediaSummarySysPrompt
 	default:
 		return genericKeywordsSysPrompt, genericSummarySysPrompt

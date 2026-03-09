@@ -59,9 +59,11 @@ func (rs *Server) handleSearch(w http.ResponseWriter, r *http.Request) {
 			"code":  "SEARCH_VALIDATION_FAILED",
 			"error": "Search request has a invalid parameter: " + err.Error(),
 		})
+
+		return
 	}
 
-	slog.Info("Queueing Search item for processing Query: " + searchRequest.SemanticSearchQuery)
+	slog.Info("Start Search for Query: " + searchRequest.SemanticSearchQuery)
 
 	res := rs.searcher.Search(searchRequest)
 

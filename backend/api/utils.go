@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"go_audio_search_api_server/postgres"
 	"log/slog"
 	"net/http"
 	"time"
@@ -17,17 +18,20 @@ func logging(next http.Handler) http.Handler {
 	})
 }
 
-func writeJSON(w http.ResponseWriter, status int, v any) {
+func (rs *Server) writeJSON(w http.ResponseWriter, status int, counter postgres.Counter, v any) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(status)
 	enc := json.NewEncoder(w)
 	enc.SetEscapeHTML(true)
 	_ = enc.Encode(v)
-}
 
-func writeError(w http.ResponseWriter, status int, msg string) {
-	slog.Error("Returning Request Error: " + msg)
-	writeJSON(w, status, map[string]any{"error": msg})
+	ctx, cancel := rs.opCtx()
+	err := rs.postgres.AddToCounter(ctx, counter, 1)
+	cancel()
+
+	if err != nil {
+		slog.Error("Error while updating " + string(counter) + " counter after api call: " + err.Error())
+	}
 }
 
 func ReadJSON(r *http.Request, dst any, maxBytes int64) error {

@@ -351,3 +351,17 @@ WHERE gets_processed = TRUE;
 	_, err := s.db.ExecContext(ctx, q)
 	return err
 }
+
+func (s *Worker) AddToCounter(ctx context.Context, counter Counter, delta int) error {
+	const q = `
+		INSERT INTO counters (counter_name, counter_value, updated_at)
+		VALUES ($1, $2, now())
+		ON CONFLICT (counter_name)
+		DO UPDATE SET
+		  counter_value = counters.counter_value + EXCLUDED.counter_value,
+		  updated_at = now();
+	`
+
+	_, err := s.db.ExecContext(ctx, q, counter, delta)
+	return err
+}

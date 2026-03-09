@@ -2,6 +2,7 @@ package api
 
 import (
 	"go_audio_search_api_server/globalTypes"
+	"go_audio_search_api_server/postgres"
 	"log/slog"
 	"net/http"
 	"strings"
@@ -13,7 +14,7 @@ func (rs *Server) handleSearch(w http.ResponseWriter, r *http.Request) {
 	// 1) Content-Type hart prüfen -> 415
 	ct := r.Header.Get("Content-Type")
 	if ct == "" || !strings.HasPrefix(ct, "application/json") && !strings.HasPrefix(ct, "application/json; charset=utf-8") {
-		writeJSON(w, http.StatusUnsupportedMediaType, map[string]any{
+		rs.writeJSON(w, http.StatusUnsupportedMediaType, postgres.SearchRequestsFailed, map[string]any{
 			"ok":    false,
 			"code":  "SEARCH_UNSUPPORTED_CONTENT_TYPE",
 			"error": "Content-Type must be \"application/json\" or \"application/json; charset=utf-8\"",
@@ -34,7 +35,7 @@ func (rs *Server) handleSearch(w http.ResponseWriter, r *http.Request) {
 		if strings.Contains(strings.ToLower(msg), "too large") ||
 			strings.Contains(strings.ToLower(msg), "request body too large") ||
 			strings.Contains(strings.ToLower(msg), "http: request body too large") {
-			writeJSON(w, http.StatusRequestEntityTooLarge, map[string]any{
+			rs.writeJSON(w, http.StatusRequestEntityTooLarge, postgres.SearchRequestsFailed, map[string]any{
 				"ok":    false,
 				"code":  "SEARCH_PAYLOAD_TOO_LARGE",
 				"error": "Request body too large",
@@ -43,7 +44,7 @@ func (rs *Server) handleSearch(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		writeJSON(w, http.StatusBadRequest, map[string]any{
+		rs.writeJSON(w, http.StatusBadRequest, postgres.SearchRequestsFailed, map[string]any{
 			"ok":    false,
 			"code":  "SEARCH_BAD_JSON",
 			"error": msg,
@@ -54,7 +55,7 @@ func (rs *Server) handleSearch(w http.ResponseWriter, r *http.Request) {
 	err := searchRequest.ValidateApiInput()
 	if err != nil {
 		slog.Info("Received an search with invalid parameters")
-		writeJSON(w, http.StatusUnprocessableEntity, map[string]any{
+		rs.writeJSON(w, http.StatusUnprocessableEntity, postgres.SearchRequestsFailed, map[string]any{
 			"ok":    false,
 			"code":  "SEARCH_VALIDATION_FAILED",
 			"error": "Search request has a invalid parameter: " + err.Error(),
@@ -75,5 +76,5 @@ func (rs *Server) handleSearch(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Return response
-	writeJSON(w, status, res)
+	rs.writeJSON(w, status, postgres.SearchRequestsSuccessful, res)
 }

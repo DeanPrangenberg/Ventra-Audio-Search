@@ -64,7 +64,11 @@ CREATE TABLE IF NOT EXISTS segments (
 		`
 CREATE INDEX IF NOT EXISTS idx_audiofiles_claim_queue
 ON audiofiles (gets_processed, last_successful_stage, created_at)
-WHERE gets_processed = false;`,
+WHERE gets_processed = false;`, `CREATE TABLE IF NOT EXISTS counters (
+  counter_name  text PRIMARY KEY,
+  counter_value bigint NOT NULL DEFAULT 0,
+  updated_at    timestamptz NOT NULL DEFAULT now()
+);`,
 	}
 
 	for _, stmt := range stmts {
@@ -73,5 +77,20 @@ WHERE gets_processed = false;`,
 		}
 	}
 
-	return nil
+	return s.InitCounters(ctx)
+}
+
+func (s *Worker) InitCounters(ctx context.Context) error {
+	const q = `
+		INSERT INTO counters (counter_name, counter_value, updated_at)
+		VALUES
+		  ('import_requests_failed', 0, now()),
+		  ('import_requests_successful', 0, now()),
+		  ('search_requests_failed', 0, now()),
+		  ('search_requests_successful', 0, now())
+		ON CONFLICT (counter_name) DO NOTHING;
+	`
+
+	_, err := s.db.ExecContext(ctx, q)
+	return err
 }

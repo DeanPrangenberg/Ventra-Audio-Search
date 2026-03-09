@@ -2,6 +2,7 @@ import json
 import logging
 import os
 from pathlib import Path
+from sqlalchemy import text, create_engine
 
 
 class ConfigManager:
@@ -12,6 +13,22 @@ class ConfigManager:
         self._config = {}
         self.load_config()
         logging.debug(f"Loaded Config: {self._config}")
+
+    def load_postgres_url(self):
+        return os.environ.get(
+            "POSTGRES_URL",
+            "user:password@localhost:5432/audio_transcript_db"
+        )
+
+    def fetch_categories(self) -> list[str]:
+        engine = create_engine("postgresql+psycopg://" + self.load_postgres_url(), pool_pre_ping=True)
+
+        with engine.connect() as conn:
+            return list(conn.execute(text("""
+                                          SELECT DISTINCT category
+                                          FROM audiofiles
+                                          ORDER BY category
+                                          """)).scalars().all())
 
     def _resolve_base_dir(self) -> Path:
         env_data_dir = os.environ.get("DATA_DIR")
@@ -71,7 +88,15 @@ class ConfigManager:
         if not cat:
             cat = ["Standard"]
 
-        return cat
+        cat_set = set(cat)
+
+        category_list_backend = self.fetch_categories()
+
+        cat.extend(category_list_backend)
+
+        unique_cat = list(set(cat))
+
+        return unique_cat
 
     def get_category_csv(self) -> str:
         return ", ".join(self.get_category_list())

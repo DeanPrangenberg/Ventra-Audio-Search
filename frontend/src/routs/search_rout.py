@@ -1,30 +1,12 @@
 import logging
-import os
 from datetime import datetime, timezone
 
 import gradio as gr
-from sqlalchemy import create_engine, text
 
 import config_manager
 from src.api import api
 from src.api.payloads.search_payload import SearchPayload
 
-def load_postgres_url():
-    return os.environ.get(
-        "POSTGRES_URL",
-        "user:password@localhost:5432/audio_transcript_db"
-    )
-
-
-def fetch_categories() -> list[str]:
-    engine = create_engine("postgresql+psycopg://" + load_postgres_url(), pool_pre_ping=True)
-
-    with engine.connect() as conn:
-        return list(conn.execute(text("""
-            SELECT DISTINCT category
-            FROM audiofiles
-            ORDER BY category
-        """)).scalars().all())
 
 def get_default_date_range():
     oldest = datetime(1970, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
@@ -33,12 +15,12 @@ def get_default_date_range():
 
 
 def do_backend_request(
-    ts_query: str,
-    semantic_search_query: str,
-    category: str,
-    start_time_period,
-    end_time_period,
-    max_segment_return,
+        ts_query: str,
+        semantic_search_query: str,
+        category: str,
+        start_time_period,
+        end_time_period,
+        max_segment_return,
 ):
     logging.info(
         "Creating search payload: ts_query=%s, semantic_search_query=%s, category=%s",
@@ -93,7 +75,7 @@ def mount_search_routes(app: gr.Blocks):
             "Search by exact keywords, semantic meaning, category, and date range."
         )
 
-        choices = fetch_categories()
+        choices = config_manager.ConfigManager().fetch_categories()
         default_category = choices[0] if choices else "Standard"
 
         with gr.Row():
@@ -134,7 +116,7 @@ def mount_search_routes(app: gr.Blocks):
 
                 max_segment_return = gr.Number(
                     label="Maximum Results",
-                    value=10,
+                    value=1,
                     minimum=1,
                     precision=0,
                     interactive=True,

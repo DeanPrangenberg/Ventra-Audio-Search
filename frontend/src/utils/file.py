@@ -7,8 +7,9 @@ import time
 from pathlib import Path
 from typing import Any
 
-import src.config_manager as config_manager
 from mutagen.mp3 import MP3
+
+import src.config_manager as config_manager
 
 
 def file_sha256(path: str, chunk_size: int = 1024 * 1024) -> str:

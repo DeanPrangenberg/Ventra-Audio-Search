@@ -8,6 +8,7 @@ from sqlalchemy import create_engine, text
 def load_postgres_url():
     return os.environ.get("POSTGRES_URL", "user:password@localhost:5432/audio_transcript_db")
 
+
 engine = create_engine(
     "postgresql+psycopg://" + load_postgres_url(),
     pool_pre_ping=True,
@@ -48,6 +49,7 @@ def fetch_scalar(sql: str) -> int:
     with engine.connect() as conn:
         value = conn.execute(text(sql)).scalar_one()
         return int(value)
+
 
 def fetch_timeseries(ts_column: str, value_name: str, hours: int = 24) -> pd.DataFrame:
     allowed_columns = {"created_at", "updated_at"}
@@ -94,18 +96,16 @@ def load_stats():
     audio_amount = fetch_scalar("SELECT COUNT(*) FROM audiofiles")
     segment_amount = fetch_scalar("SELECT COUNT(*) FROM segments")
     search_requests = fetch_scalar("""
-        SELECT
-        SUM(counter_value) AS total
-        FROM counters
-        WHERE counter_name IN ('search_requests_failed', 'search_requests_successful');
-    """)
+                                   SELECT SUM(counter_value) AS total
+                                   FROM counters
+                                   WHERE counter_name IN ('search_requests_failed', 'search_requests_successful');
+                                   """)
 
     import_requests = fetch_scalar("""
-        SELECT
-        SUM(counter_value) AS total
-        FROM counters
-        WHERE counter_name IN ('import_requests_failed', 'import_requests_successful');
-    """)
+                                   SELECT SUM(counter_value) AS total
+                                   FROM counters
+                                   WHERE counter_name IN ('import_requests_failed', 'import_requests_successful');
+                                   """)
 
     audio_files_card = make_card("Audio Files", f"{audio_amount:,}", "rows in audiofiles")
     audio_segments_card = make_card("Segment Amount", f"{segment_amount:,}", "rows in segments")
@@ -130,7 +130,7 @@ def load_stats():
         SELECT COUNT(*)
         FROM audiofiles
         WHERE COALESCE(gets_processed, false) = false
-        AND last_successful_stage != 5 
+          AND last_successful_stage != 5
         """
     )
     failed_imports = fetch_scalar(
@@ -202,6 +202,7 @@ def load_stats():
         stage_strip,
         created_df,
     )
+
 
 def mount_statistics_routes(app: gr.Blocks):
     with app.route("Statistics") as rout:

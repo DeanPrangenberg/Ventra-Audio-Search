@@ -1,6 +1,7 @@
 import logging
 
 import requests
+
 import src.config_manager as config_manager
 from api.payloads.search_payload import SearchPayload
 from src.api.payloads.import_payload import ImportPayload

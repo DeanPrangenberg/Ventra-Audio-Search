@@ -120,6 +120,7 @@ def load_stats():
         SELECT COUNT(*)
         FROM audiofiles
         WHERE COALESCE(gets_processed, false) = false
+        AND last_successful_stage != 5 
         """
     )
     failed_imports = fetch_scalar(
@@ -143,6 +144,7 @@ def load_stats():
         SELECT COUNT(*)
         FROM audiofiles
         WHERE last_successful_stage = 1
+        AND COALESCE(gets_processed, false) = false
         """
     )
     stage_persisted = fetch_scalar(
@@ -150,6 +152,7 @@ def load_stats():
         SELECT COUNT(*)
         FROM audiofiles
         WHERE last_successful_stage = 2
+        AND COALESCE(gets_processed, false) = false
         """
     )
     stage_transcribed = fetch_scalar(
@@ -157,6 +160,7 @@ def load_stats():
         SELECT COUNT(*)
         FROM audiofiles
         WHERE last_successful_stage = 3
+        AND COALESCE(gets_processed, false) = false
         """
     )
     stage_embedded = fetch_scalar(
@@ -164,13 +168,7 @@ def load_stats():
         SELECT COUNT(*)
         FROM audiofiles
         WHERE last_successful_stage = 4
-        """
-    )
-    stage_generated = fetch_scalar(
-        """
-        SELECT COUNT(*)
-        FROM audiofiles
-        WHERE last_successful_stage = 5
+        AND COALESCE(gets_processed, false) = false
         """
     )
 

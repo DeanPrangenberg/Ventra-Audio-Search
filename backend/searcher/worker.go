@@ -102,13 +102,22 @@ func (w *Worker) Search(searchQuery globalTypes.SearchRequest) *globalTypes.Sear
 	}
 
 	// Audio-Dateien laden
-	audioFileHashes := make(map[string]bool)
+	var audioFileHashes []string
 	for _, segment := range segments {
-		audioFileHashes[segment.AudiofileHash] = true
+		contains := false
+		for _, seg := range segments {
+			if seg.AudiofileHash == segment.AudiofileHash {
+				contains = true
+				break
+			}
+		}
+		if !contains {
+			audioFileHashes = append(audioFileHashes, segment.AudiofileHash)
+		}
 	}
 
 	var relatedAudioElements []globalTypes.SearchAudioData
-	for audioFileHash := range audioFileHashes {
+	for _, audioFileHash := range audioFileHashes {
 		ctx, cancel = w.opCtx()
 		audioData, err := w.postgres.GetSearchAudioDataByHash(ctx, audioFileHash)
 		cancel()

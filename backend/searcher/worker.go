@@ -101,38 +101,6 @@ func (w *Worker) Search(searchQuery globalTypes.SearchRequest) *globalTypes.Sear
 		return &response
 	}
 
-	// Audio-Dateien laden
-	var audioFileHashes []string
-	for _, segment := range segments {
-		contains := false
-		for _, savedHash := range audioFileHashes {
-			if savedHash == segment.AudiofileHash {
-				contains = true
-				break
-			}
-		}
-		if !contains {
-			audioFileHashes = append(audioFileHashes, segment.AudiofileHash)
-		}
-	}
-
-	var relatedAudioElements []globalTypes.SearchAudioData
-	for _, audioFileHash := range audioFileHashes {
-		ctx, cancel = w.opCtx()
-		audioData, err := w.postgres.GetSearchAudioDataByHash(ctx, audioFileHash)
-		cancel()
-
-		if err != nil {
-			slog.Error("Error loading audio file data for hash: " + audioFileHash + ", error: " + err.Error())
-			relatedAudioElements = append(relatedAudioElements, globalTypes.SearchAudioData{
-				AudiofileHash: audioFileHash,
-				Error:         "Error loading audio file data for this audio hash",
-			})
-			continue
-		}
-		relatedAudioElements = append(relatedAudioElements, *audioData)
-	}
-
 	// Top-K Segmente laden
 	var fullSegmentElements []globalTypes.SearchSegmentData
 	for _, segment := range segments {
@@ -171,6 +139,38 @@ func (w *Worker) Search(searchQuery globalTypes.SearchRequest) *globalTypes.Sear
 				QueryScore:    segment.QueryScore,
 			})
 		}
+	}
+
+	// Audio-Dateien laden
+	var audioFileHashes []string
+	for _, segment := range fullSegmentElements {
+		contains := false
+		for _, savedHash := range audioFileHashes {
+			if savedHash == segment.AudiofileHash {
+				contains = true
+				break
+			}
+		}
+		if !contains {
+			audioFileHashes = append(audioFileHashes, segment.AudiofileHash)
+		}
+	}
+
+	var relatedAudioElements []globalTypes.SearchAudioData
+	for _, audioFileHash := range audioFileHashes {
+		ctx, cancel = w.opCtx()
+		audioData, err := w.postgres.GetSearchAudioDataByHash(ctx, audioFileHash)
+		cancel()
+
+		if err != nil {
+			slog.Error("Error loading audio file data for hash: " + audioFileHash + ", error: " + err.Error())
+			relatedAudioElements = append(relatedAudioElements, globalTypes.SearchAudioData{
+				AudiofileHash: audioFileHash,
+				Error:         "Error loading audio file data for this audio hash: " + err.Error(),
+			})
+			continue
+		}
+		relatedAudioElements = append(relatedAudioElements, *audioData)
 	}
 
 	response.Ok = true

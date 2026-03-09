@@ -18,7 +18,7 @@ func logging(next http.Handler) http.Handler {
 	})
 }
 
-func (rs *Server) writeJSON(w http.ResponseWriter, status int, counter postgres.Counter, v any) {
+func (rs *Server) writeJsonWithCounter(w http.ResponseWriter, status int, counter postgres.Counter, v any) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(status)
 	enc := json.NewEncoder(w)
@@ -32,6 +32,14 @@ func (rs *Server) writeJSON(w http.ResponseWriter, status int, counter postgres.
 	if err != nil {
 		slog.Error("Error while updating " + string(counter) + " counter after api call: " + err.Error())
 	}
+}
+
+func (rs *Server) writeJson(w http.ResponseWriter, status int, v any) {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(status)
+	enc := json.NewEncoder(w)
+	enc.SetEscapeHTML(true)
+	_ = enc.Encode(v)
 }
 
 func ReadJSON(r *http.Request, dst any, maxBytes int64) error {

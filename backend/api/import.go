@@ -15,7 +15,7 @@ func (rs *Server) handleImport(w http.ResponseWriter, r *http.Request) {
 	// 1) Content-Type hart prüfen -> 415
 	ct := r.Header.Get("Content-Type")
 	if ct == "" || !strings.HasPrefix(ct, "application/json") && !strings.HasPrefix(ct, "application/json; charset=utf-8") {
-		rs.writeJSON(w, http.StatusUnsupportedMediaType, postgres.ImportRequestsFailed, map[string]any{
+		rs.writeJsonWithCounter(w, http.StatusUnsupportedMediaType, postgres.ImportRequestsFailed, map[string]any{
 			"ok":    false,
 			"code":  "IMPORT_UNSUPPORTED_CONTENT_TYPE",
 			"error": "Content-Type must be application/json",
@@ -40,7 +40,7 @@ func (rs *Server) handleImport(w http.ResponseWriter, r *http.Request) {
 		if strings.Contains(strings.ToLower(msg), "too large") ||
 			strings.Contains(strings.ToLower(msg), "request body too large") ||
 			strings.Contains(strings.ToLower(msg), "http: request body too large") {
-			rs.writeJSON(w, http.StatusRequestEntityTooLarge, postgres.ImportRequestsFailed, map[string]any{
+			rs.writeJsonWithCounter(w, http.StatusRequestEntityTooLarge, postgres.ImportRequestsFailed, map[string]any{
 				"ok":    false,
 				"code":  "IMPORT_PAYLOAD_TOO_LARGE",
 				"error": "Request body too large",
@@ -49,7 +49,7 @@ func (rs *Server) handleImport(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		rs.writeJSON(w, http.StatusBadRequest, postgres.ImportRequestsFailed, map[string]any{
+		rs.writeJsonWithCounter(w, http.StatusBadRequest, postgres.ImportRequestsFailed, map[string]any{
 			"ok":    false,
 			"code":  "IMPORT_BAD_JSON",
 			"error": msg,
@@ -77,7 +77,7 @@ func (rs *Server) handleImport(w http.ResponseWriter, r *http.Request) {
 	// alle invalid -> 422
 	if len(validItems) == 0 {
 		slog.Info("Received an import with no valid items to import")
-		rs.writeJSON(w, http.StatusUnprocessableEntity, postgres.ImportRequestsFailed, map[string]any{
+		rs.writeJsonWithCounter(w, http.StatusUnprocessableEntity, postgres.ImportRequestsFailed, map[string]any{
 			"ok":    false,
 			"code":  "IMPORT_VALIDATION_FAILED",
 			"error": "No valid items in request",
@@ -99,7 +99,7 @@ func (rs *Server) handleImport(w http.ResponseWriter, r *http.Request) {
 		)
 		slog.Info(errMsg)
 
-		rs.writeJSON(w, http.StatusMultiStatus, postgres.ImportRequestsFailed, map[string]any{
+		rs.writeJsonWithCounter(w, http.StatusMultiStatus, postgres.ImportRequestsFailed, map[string]any{
 			"ok":    false,
 			"code":  "IMPORT_PARTIAL",
 			"error": "Some items were rejected",
@@ -123,7 +123,7 @@ func (rs *Server) handleImport(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		slog.Error("Error after Batch inserting audio files into DB: " + err.Error())
-		rs.writeJSON(w, http.StatusInternalServerError, postgres.ImportRequestsFailed, map[string]any{
+		rs.writeJsonWithCounter(w, http.StatusInternalServerError, postgres.ImportRequestsFailed, map[string]any{
 			"ok":    false,
 			"code":  "COULD_NOT_QUEUE_IMPORT",
 			"error": "Internal Server Error: Failed to queue items for processing",
@@ -138,7 +138,7 @@ func (rs *Server) handleImport(w http.ResponseWriter, r *http.Request) {
 	slog.Debug("Finished handling import request, all items are valid and queued for processing")
 
 	// alles valid -> 200
-	rs.writeJSON(w, http.StatusOK, postgres.ImportRequestsSuccessful, map[string]any{
+	rs.writeJsonWithCounter(w, http.StatusOK, postgres.ImportRequestsSuccessful, map[string]any{
 		"ok": true,
 		"imported": map[string]any{
 			"count": len(validItems),

@@ -165,7 +165,6 @@ def load_stats():
         SELECT COUNT(*)
         FROM audiofiles
         WHERE last_successful_stage = 4
-        AND COALESCE(gets_processed, false) = false
         """
     )
 

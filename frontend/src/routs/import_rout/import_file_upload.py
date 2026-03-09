@@ -1,4 +1,5 @@
 import os
+from datetime import datetime, timezone
 
 import config_manager
 import gradio as gr
@@ -42,7 +43,7 @@ def mount_uploaded_files_renderer():
                 title = gr.Textbox(label="Set a Title", value=f.get("title", ""))
                 record_time = gr.DateTime(
                     label="Enter Recording date & time",
-                    value=f.get("time", None),
+                    value=f.get("time", datetime.now(timezone.utc)),
                 )
                 category = gr.Dropdown(label="Choose a Category",
                                        choices=config_manager.ConfigManager().get_category_list(),

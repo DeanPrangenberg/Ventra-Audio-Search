@@ -56,12 +56,24 @@ for i in {1..600}; do
     continue
   fi
 
-  if docker compose exec -T whisper sh -lc 'ffmpeg -version >/dev/null 2>&1 && test -s /app/models/ggml-*.bin' >/dev/null 2>&1; then
-    echo "Whisper model file exists."
+  if docker compose logs whisper 2>&1 | grep -q "failed to initialize whisper context"; then
+    echo "ERROR: Whisper failed to initialize."
+    docker compose logs --tail=200 whisper
+    exit 1
+  fi
+
+  if docker compose logs whisper 2>&1 | grep -q "ERROR not all tensors loaded from model file"; then
+    echo "ERROR: Whisper model file is incomplete or corrupted."
+    docker compose logs --tail=200 whisper
+    exit 1
+  fi
+
+  if docker compose exec -T whisper sh -lc 'wget -q -O /dev/null http://127.0.0.1:9000/ || wget -q -O /dev/null http://127.0.0.1:9000/docs || nc -z 127.0.0.1 9000' >/dev/null 2>&1; then
+    echo "Whisper is ready."
     break
   fi
 
-  echo "Waiting for whisper model download / initialization..."
+  echo "Waiting for whisper server startup..."
   sleep 2
 
   if [[ "$i" -eq 600 ]]; then
@@ -125,7 +137,7 @@ if [[ "${TARGET_WHISPER_REPLICAS}" != "${INITIAL_WHISPER_REPLICAS}" ]]; then
 fi
 
 echo "Starting api and frontend after base services are ready..."
-docker compose up -d api frontend
+docker compose up -d --no-deps api frontend
 
 echo ""
 echo "===================================================="

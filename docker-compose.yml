@@ -26,13 +26,16 @@ x-backend-env: &backend-env
   FAST_INGEST_MODE: "${FAST_INGEST_MODE:-true}"
   DEACTIVATE_LLM: "${DEACTIVATE_LLM:-true}"
 
+networks:
+  default:
+    driver: bridge
+
 services:
   qdrant:
     image: "qdrant/qdrant:${QDRANT_TAG}"
     restart: unless-stopped
     volumes:
-      - qdrant-data:/qdrant/storage
-    # Nur freigeben, wenn du vom Host drauf willst
+      - ./.data/qdrant:/qdrant/storage
     ports:
       - "6333:6333"
       - "6334:6334"
@@ -51,7 +54,7 @@ services:
       retries: 5
       start_period: 20s
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - ./.data/postgres:/var/lib/postgresql/data
     ports:
       - "5432:5432"
 
@@ -62,14 +65,14 @@ services:
       WHISPER_MODEL: "${WHISPER_MODEL}"
       WHISPER_MODEL_QUANTIZATION: "${WHISPER_MODEL_QUANTIZATION}"
     volumes:
-      - whisper-models:/app/models
+      - ./.data/whisper/models:/app/models
     <<: *gpu
 
   ollama:
     image: "ollama/ollama:${OLLAMA_TAG}"
     restart: unless-stopped
     volumes:
-      - ollama-data:/root/.ollama
+      - ./.data/ollama:/root/.ollama
     ports:
       - "8884:11434"
     <<: *gpu
@@ -93,7 +96,7 @@ services:
     ports:
       - "8880:8880"
     volumes:
-      - backend-audios:/app/downloaded_audios
+      - ./.data/backend/downloaded_audios:/app/downloaded_audios
 
   frontend:
     build:
@@ -113,12 +116,4 @@ services:
     ports:
       - "7860:7860"
     volumes:
-      - frontend-data:/app/data
-
-volumes:
-  qdrant-data:
-  postgres-data:
-  whisper-models:
-  ollama-data:
-  backend-audios:
-  frontend-data:
+      - ./.data/frontend:/app/data

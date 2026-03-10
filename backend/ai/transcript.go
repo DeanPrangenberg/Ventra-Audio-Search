@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"time"
 
@@ -154,17 +155,20 @@ func (wa *WhisperWorker) transcribeRaw(ctx context.Context, filePath string) ([]
 
 func SplitSentences(text string) ([]Segment, error) {
 	var out []Segment
-	segments := strings.Split(text, "\n\n")
+	re := regexp.MustCompile(`(?s).*?[a-z]\.\n`)
+	segments := re.FindAllString(text, -1)
 
 	for idx, seg := range segments {
-		trimmed := strings.TrimSpace(seg)
-		if trimmed == "" {
+		cleaned := strings.TrimSpace(seg)
+		cleaned = strings.Replace(cleaned, "\n", " ", -1)
+
+		if cleaned == "" {
 			continue
 		}
 		out = append(out,
 			Segment{
 				SentenceIndex: idx,
-				Transcript:    seg,
+				Transcript:    cleaned,
 			})
 
 	}

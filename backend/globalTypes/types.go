@@ -67,8 +67,7 @@ func (s *AudioDataElement) UpdateToNextStage() {
 type SegmentElement struct {
 	SegmentHash             string    `json:"-"`
 	AudiofileHash           string    `json:"audiofile_hash"`
-	StartInSec              float32   `json:"start_in_sec"`
-	EndInSec                float32   `json:"end_in_sec"`
+	SentenceIndex           int       `json:"sentence_index"`
 	Transcript              string    `json:"transcript"`
 	TranscriptEmbedding     []float32 `json:"-"`
 	SegmentInDB             bool      `json:"-"`

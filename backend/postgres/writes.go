@@ -305,7 +305,7 @@ func (s *Worker) UpsertSegments(ctx context.Context, audioHash string, segs *[]g
 	defer func() { _ = tx.Rollback() }()
 
 	const q = `
-INSERT INTO segments (segment_hash, audiofile_hash, start_sec, end_sec, transcript)
+INSERT INTO segments (segment_hash, audiofile_hash, sentence_index, transcript)
 VALUES ($1, $2, $3, $4, $5)
 ON CONFLICT(segment_hash) DO UPDATE SET
   audiofile_hash = EXCLUDED.audiofile_hash,
@@ -331,8 +331,7 @@ ON CONFLICT(segment_hash) DO UPDATE SET
 		if _, err := stmt.ExecContext(ctx,
 			sgm.SegmentHash,
 			sgm.AudiofileHash,
-			sgm.StartInSec,
-			sgm.EndInSec,
+			sgm.SentenceIndex,
 			sgm.Transcript,
 		); err != nil {
 			return err

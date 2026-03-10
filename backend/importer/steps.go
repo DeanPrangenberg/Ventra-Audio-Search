@@ -62,12 +62,11 @@ func (w *Worker) transcribeAudio(workerIdx uint, audioDataElement *globalTypes.A
 	audioDataElement.SegmentElements = []globalTypes.SegmentElement{}
 
 	for _, segment := range result.Segments {
-		hashInput := fmt.Sprintf("%s-%f-%f-%s", audioDataElement.AudiofileHash, segment.Start, segment.End, segment.Transcript)
+		hashInput := fmt.Sprintf("%s-%d-%s", audioDataElement.AudiofileHash, segment.SentenceIndex, segment.Transcript)
 
 		builtSegment := globalTypes.SegmentElement{
 			AudiofileHash: audioDataElement.AudiofileHash,
-			StartInSec:    segment.Start,
-			EndInSec:      segment.End,
+			SentenceIndex: segment.SentenceIndex,
 			Transcript:    segment.Transcript,
 			SegmentHash:   globalUtils.StringSha256Hex(hashInput),
 		}

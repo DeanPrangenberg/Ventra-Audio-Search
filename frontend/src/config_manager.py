@@ -88,8 +88,6 @@ class ConfigManager:
         if not cat:
             cat = ["Standard"]
 
-        cat_set = set(cat)
-
         category_list_backend = self.fetch_categories()
 
         cat.extend(category_list_backend)

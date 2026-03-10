@@ -49,10 +49,10 @@ WHERE audiofile_hash = $1;
 
 func (s *Worker) GetAllSegmentsByAudioHash(ctx context.Context, audioHash string) ([]globalTypes.SegmentElement, error) {
 	const q = `
-SELECT segment_hash, start_sec, end_sec, transcript
+SELECT segment_hash, sentence_index, transcript
 FROM segments
 WHERE audiofile_hash = $1
-ORDER BY start_sec ASC;
+ORDER BY sentence_index ASC;
 `
 
 	rows, err := s.db.QueryContext(ctx, q, audioHash)
@@ -64,20 +64,16 @@ ORDER BY start_sec ASC;
 	var out []globalTypes.SegmentElement
 	for rows.Next() {
 		var segment globalTypes.SegmentElement
-		var start, end float64
 
 		if err := rows.Scan(
 			&segment.SegmentHash,
-			&start,
-			&end,
+			&segment.SentenceIndex,
 			&segment.Transcript,
 		); err != nil {
 			return nil, err
 		}
 
 		segment.AudiofileHash = audioHash
-		segment.StartInSec = float32(start)
-		segment.EndInSec = float32(end)
 		out = append(out, segment)
 	}
 
@@ -231,8 +227,7 @@ WITH search_query AS (
 SELECT
   s.segment_hash,
   s.audiofile_hash,
-  s.start_sec,
-  s.end_sec,
+  s.sentence_index,
   s.transcript,
   ts_rank_cd(s.transcript_tsv, search_query.query, 2) AS score
 FROM segments s
@@ -255,21 +250,17 @@ LIMIT $5;
 	out := make([]globalTypes.SegmentElement, 0, k)
 	for rows.Next() {
 		var segment globalTypes.SegmentElement
-		var start, end float64
 
 		if err := rows.Scan(
 			&segment.SegmentHash,
 			&segment.AudiofileHash,
-			&start,
-			&end,
+			&segment.SentenceIndex,
 			&segment.Transcript,
 			&segment.TsScore, // Feldname bleibt, Inhalt ist jetzt Postgres-Rank
 		); err != nil {
 			return nil, err
 		}
 
-		segment.StartInSec = float32(start)
-		segment.EndInSec = float32(end)
 		out = append(out, segment)
 	}
 

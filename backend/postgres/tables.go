@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS audiofiles (
   user_summary_text     text,
   ai_keywords           jsonb,
   ai_summary            text,
-  last_successful_stage  bigint,
+  last_successful_stage  integer,
   retry_counter         integer NOT NULL DEFAULT 0,
   gets_processed        boolean NOT NULL DEFAULT false,
   created_at            timestamptz NOT NULL DEFAULT now(),
@@ -43,8 +43,7 @@ EXECUTE FUNCTION set_audiofiles_updated_at();`,
 CREATE TABLE IF NOT EXISTS segments (
   segment_hash    text PRIMARY KEY,
   audiofile_hash  text NOT NULL,
-  start_sec       double precision NOT NULL,
-  end_sec         double precision NOT NULL,
+  sentence_index       integer NOT NULL,
   transcript      text NOT NULL,
   created_at      timestamptz NOT NULL DEFAULT now(),
   transcript_tsv  tsvector GENERATED ALWAYS AS (
@@ -55,7 +54,7 @@ CREATE TABLE IF NOT EXISTS segments (
     REFERENCES audiofiles(audiofile_hash)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT uq_segments_audio_range UNIQUE(audiofile_hash, start_sec, end_sec)
+  CONSTRAINT uq_segments_audio_range UNIQUE(audiofile_hash, sentence_index)
 );`,
 		`CREATE INDEX IF NOT EXISTS idx_segments_audiofile ON segments(audiofile_hash);`,
 		`CREATE INDEX IF NOT EXISTS idx_audiofiles_recording_date ON audiofiles(recording_date);`,

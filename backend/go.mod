@@ -3,6 +3,7 @@ go 1.25
 module go_audio_search_api_server
 
 require (
+	github.com/clipperhouse/uax29 v1.16.0
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.8.0
 	github.com/qdrant/go-client v1.16.2

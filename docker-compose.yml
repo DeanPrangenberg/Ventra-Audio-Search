@@ -1,116 +1,126 @@
-networks:
-  default:
-    driver: bridge
+name: audio-transcript
+
+x-gpu: &gpu
+  deploy:
+    resources:
+      reservations:
+        devices:
+          - driver: nvidia
+            count: all
+            capabilities: [gpu]
+
+x-backend-env: &backend-env
+  WHISPER_API_URL: "http://whisper:9000"
+  OLLAMA_API_URL: "http://ollama:11434"
+  QDRANT_API_HOST: "qdrant"
+  QDRANT_API_PORT_GRPC: "6334"
+  POSTGRES_URL: "postgres:5432"
+  POSTGRES_USER: "${POSTGRES_USER}"
+  POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+  POSTGRES_DB: "${POSTGRES_DB}"
+  LLM_MODEL: "${LLM_MODEL}"
+  EMBEDDING_MODEL: "${EMBEDDING_MODEL}"
+  EMBEDDING_MODEL_DIM: "${EMBEDDING_MODEL_DIM}"
+  LOG_LEVEL: "${LOG_LEVEL:-info}"
+  FAST_INGEST_MODE: "${FAST_INGEST_MODE:-true}"
+  DEACTIVATE_LLM: "${DEACTIVATE_LLM:-true}"
 
 services:
   qdrant:
-    container_name: qdrant
-    image: qdrant/qdrant:latest
+    image: "qdrant/qdrant:${QDRANT_TAG}"
     restart: unless-stopped
-    ports:
-      - "6333:6333" # REST API + WEB UI /dashboard
-      - "6334:6334" # gRPC API
     volumes:
-      - ./.data/qdrant:/qdrant/storage
+      - qdrant-data:/qdrant/storage
+    # Nur freigeben, wenn du vom Host drauf willst
+    ports:
+      - "6333:6333"
+      - "6334:6334"
 
   postgres:
-    container_name: postgres
-    image: postgres:latest
+    image: "postgres:${POSTGRES_TAG}"
     restart: unless-stopped
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: audio_transcript_db
+      POSTGRES_USER: "${POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+      POSTGRES_DB: "${POSTGRES_DB}"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
-    volumes:
-      - ./.data/postgres:/var/lib/postgresql/data
 
-  whisper-nvidia:
-    container_name: whisper-server
-    image: evilfreelancer/whisper-server:latest
+  whisper:
+    image: "evilfreelancer/whisper-server:${WHISPER_TAG}"
     restart: unless-stopped
-    ports:
-      - "9001:9000" # Rest api
-      - "9002:8080" # API Docs
-    volumes:
-      - ./.data/whisper/models:/app/models
     environment:
-      WHISPER_MODEL: large-v3-turbo
-      WHISPER_MODEL_QUANTIZATION: q4_0
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [ gpu ]
+      WHISPER_MODEL: "${WHISPER_MODEL}"
+      WHISPER_MODEL_QUANTIZATION: "${WHISPER_MODEL_QUANTIZATION}"
+    volumes:
+      - whisper-models:/app/models
+    ports:
+      - "9001:9000"
+      - "9002:8080"
+    <<: *gpu
 
   ollama:
-    container_name: ollama
-    image: ollama/ollama:latest
+    image: "ollama/ollama:${OLLAMA_TAG}"
     restart: unless-stopped
-    ports:
-      - "8884:11434" # Ollama api
     volumes:
-      - ./.data/ollama:/root/.ollama
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [ gpu ]
+      - ollama-data:/root/.ollama
+    ports:
+      - "8884:11434"
+    <<: *gpu
 
-  audio_transcript_server:
-    container_name: audio-transcript-server
-    restart: unless-stopped
+  api:
     build:
-      context: backend
+      context: ./backend
       dockerfile: Dockerfile
+    restart: unless-stopped
     depends_on:
-      - whisper-nvidia
-      - ollama
-      - qdrant
-      - postgres
-    ports:
-      - "8880:8880" # Rest api
-    volumes:
-      - ./.data/backend/postgres:/app/postgres
-      - ./.data/backend/downloaded_audios:/app/downloaded_audios
+      postgres:
+        condition: service_healthy
+      qdrant:
+        condition: service_started
+      ollama:
+        condition: service_started
+      whisper:
+        condition: service_started
     environment:
-      WHISPER_API_URL: "http://whisper-nvidia:9000"
-      OLLAMA_API_URL: "http://ollama:11434"
-      QDRANT_API_HOST: "qdrant"
-      QDRANT_API_PORT_GRPC: "6334"
-      POSTGRES_URL: "postgres:5432"
-      POSTGRES_USER: "user"
-      POSTGRES_PASSWORD: "password"
-      POSTGRES_DB: "audio_transcript_db"
-      LLM_MODEL: "dolphin-mistral:7b"
-      EMBEDDING_MODEL: "nomic-embed-text"
-      EMBEDDING_MODEL_DIM: "768"
-      LOG_LEVEL: "debug" # debug, info, warning, error
+      <<: *backend-env
+    ports:
+      - "8880:8880"
+    volumes:
+      - backend-audios:/app/downloaded_audios
 
-  audio_transcript_frontend:
-    container_name: audio-transcript-frontend
-    restart: unless-stopped
+  frontend:
     build:
-      context: frontend
+      context: ./frontend
       dockerfile: Dockerfile
+    restart: unless-stopped
     depends_on:
-      - audio_transcript_server
+      api:
+        condition: service_started
+    environment:
+      PORT: "7860"
+      AUDIO_TRANSCRIPT_SERVER_URL: "http://api:8880"
+      FRONTEND_SERVER_URL: "http://frontend:7860"
+      POSTGRES_URL: "${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}"
+      DATA_DIR: "/app/data"
+      FILE_CLEAN_UP: "${FILE_CLEAN_UP:-300}"
     ports:
       - "7860:7860"
-    environment:
-      PORT: 7860
-      AUDIO_TRANSCRIPT_SERVER_URL: "http://audio-transcript-server:8880"
-      FRONTEND_SERVER_URL: "http://audio-transcript-frontend:7860"
-      POSTGRES_URL: "user:password@postgres:5432/audio_transcript_db"
-      POSTGRES_USER: "user"
-      POSTGRES_PASSWORD: "password"
-      POSTGRES_DB: "audio_transcript_db"
-      DATA_DIR: "/app/data"
-      FILE_CLEAN_UP: 300 # 5 min
     volumes:
-      - ./.data/frontend/:/app/data
+      - frontend-data:/app/data
+
+volumes:
+  qdrant-data:
+  postgres-data:
+  whisper-models:
+  ollama-data:
+  backend-audios:
+  frontend-data:

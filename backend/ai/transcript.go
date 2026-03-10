@@ -12,8 +12,11 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
+
+	"github.com/clipperhouse/uax29/sentences"
 )
 
 type WhisperWorker struct {
@@ -28,15 +31,13 @@ type WhisperWorker struct {
 }
 
 type Segment struct {
-	ID         int     `json:"id"`
-	Start      float32 `json:"start"`
-	End        float32 `json:"end"`
-	Transcript string  `json:"text"`
+	SentenceIndex int
+	Transcript    string `json:"text"`
 }
 
 type TranscriptionResult struct {
-	Transcript string    `json:"text"`
-	Segments   []Segment `json:"segments"`
+	Transcript string `json:"text"`
+	Segments   []Segment
 }
 
 func New(minSegSec float32) *WhisperWorker {
@@ -45,7 +46,7 @@ func New(minSegSec float32) *WhisperWorker {
 		Timeout:   30 * time.Minute,
 		Temp:      "0.0",
 		TempInc:   "0.2",
-		Format:    "verbose_json",
+		Format:    "json",
 		Language:  "de",
 		MinSegSec: minSegSec,
 	}
@@ -73,15 +74,7 @@ func (wa *WhisperWorker) Transcribe(ctx context.Context, filePath string) (*Tran
 		return nil, fmt.Errorf("unmarshal whisper response failed: %w (snippet: %q)", err, snippet)
 	}
 
-	if len(out.Segments) == 0 {
-		return nil, fmt.Errorf("whisper returned no segments (raw: %s)", string(raw))
-	}
-
-	out.Segments = wa.mergeSegmentsMinLen(out.Segments)
-	// optional: transcript aus segments neu bauen (falls server text leer lässt)
-	if out.Transcript == "" {
-		out.Transcript = joinSegments(out.Segments)
-	}
+	out.Segments, err = SplitSentences(out.Transcript)
 
 	slog.Info("whisper transcription completed",
 		"file", filePath,
@@ -154,60 +147,26 @@ func (wa *WhisperWorker) transcribeRaw(ctx context.Context, filePath string) ([]
 	return respBody, nil
 }
 
-func (wa *WhisperWorker) mergeSegmentsMinLen(in []Segment) []Segment {
-	out := make([]Segment, 0, len(in))
-	if len(in) == 0 {
-		return out
+func SplitSentences(text string) ([]Segment, error) {
+	seg := sentences.NewStringSegmenter(text)
+
+	var out []Segment
+	var idx int
+	for seg.Next() {
+		s := strings.TrimSpace(seg.Text())
+		if s != "" {
+
+			out = append(out,
+				Segment{
+					SentenceIndex: idx,
+					Transcript:    s,
+				})
+		}
 	}
 
-	if wa.MinSegSec <= 0 {
-		for i := range in {
-			in[i].ID = i
-			out = append(out, in[i])
-		}
-		return out
+	if err := seg.Err(); err != nil {
+		return nil, err
 	}
 
-	id := 0
-	i := 0
-	for i < len(in) {
-		seg := in[i]
-		i++
-
-		// solange Segment-Dauer zu kurz: an nächste dranhängen
-		for (seg.End-seg.Start) < wa.MinSegSec && i < len(in) {
-			next := in[i]
-			i++
-
-			// End erweitern
-			if next.End > seg.End {
-				seg.End = next.End
-			}
-			// Text anfügen (mit Leerzeichen)
-			if seg.Transcript != "" && next.Transcript != "" {
-				seg.Transcript += " "
-			}
-			seg.Transcript += next.Transcript
-		}
-
-		seg.ID = id
-		id++
-		out = append(out, seg)
-	}
-
-	return out
-}
-
-func joinSegments(segs []Segment) string {
-	var b bytes.Buffer
-	for _, s := range segs {
-		if s.Transcript == "" {
-			continue
-		}
-		if b.Len() > 0 {
-			b.WriteByte(' ')
-		}
-		b.WriteString(s.Transcript)
-	}
-	return b.String()
+	return out, nil
 }

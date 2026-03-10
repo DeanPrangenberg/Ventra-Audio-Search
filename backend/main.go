@@ -75,7 +75,7 @@ func main() {
 	poolRefillSignal := globalUtils.NewSignal()
 	embedder := ai.NewEmbeddingsWorker()
 
-	importer.NewWorker(ctx, &wg, qdrantWorker, db, embedder, 10, poolRefillSignal)
+	importer.NewWorker(ctx, &wg, qdrantWorker, db, embedder, poolRefillSignal)
 	searchWorker := searcher.NewWorker(ctx, &wg, qdrantWorker, db, embedder)
 
 	srv := api.NewRestServer(ctx, "8880", db, searchWorker, poolRefillSignal)

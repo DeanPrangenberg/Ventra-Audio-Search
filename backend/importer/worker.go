@@ -33,19 +33,20 @@ type Worker struct {
 	llm        *ai.LlmWorker
 }
 
-func NewWorker(ctx context.Context, wg *sync.WaitGroup, qdrant *qdrant.Worker, postgres *postgres.Worker, embedder *ai.EmbeddingWorker, workerAmount uint, poolRefillSignal *globalUtils.NoneStackingEvent) *Worker {
+func NewWorker(ctx context.Context, wg *sync.WaitGroup, qdrant *qdrant.Worker, postgres *postgres.Worker, embedder *ai.EmbeddingWorker, poolRefillSignal *globalUtils.NoneStackingEvent) *Worker {
 
-	if workerAmount < 10 {
-		panic("workerAmount must be >= 10")
+	whisperReplicas := globalUtils.LoadEnvInt("WHISPER_REPLICAS")
+	if globalUtils.LoadEnvStr("FAST_INGEST_MODE") != "true" {
+		whisperReplicas = 1
 	}
 
 	worker := Worker{
 		PoolRefillSignal:       poolRefillSignal,
 		StopCtx:                ctx,
-		persistFileBuffer:      make(chan *globalTypes.AudioDataElement, int(workerAmount-6)*2),
-		transcriptAudioBuffer:  make(chan *globalTypes.AudioDataElement, int(workerAmount)*2),
-		createEmbeddingsBuffer: make(chan *globalTypes.AudioDataElement, int(workerAmount)*2),
-		genAiDataBuffer:        make(chan *globalTypes.AudioDataElement, int(workerAmount)*2),
+		persistFileBuffer:      make(chan *globalTypes.AudioDataElement, 20),
+		transcriptAudioBuffer:  make(chan *globalTypes.AudioDataElement, whisperReplicas*2),
+		createEmbeddingsBuffer: make(chan *globalTypes.AudioDataElement, 4),
+		genAiDataBuffer:        make(chan *globalTypes.AudioDataElement, 4),
 		whisper:                ai.New(45.0),
 		postgres:               postgres,
 		embeddings:             embedder,
@@ -62,8 +63,8 @@ func NewWorker(ctx context.Context, wg *sync.WaitGroup, qdrant *qdrant.Worker, p
 		slog.Error("Error resetting processing claims in DB: " + err.Error())
 	}
 
-	worker.startPersistFilePool(workerAmount - 6)
-	worker.startTranscriptAudioPool(2)
+	worker.startPersistFilePool(10)
+	worker.startTranscriptAudioPool(uint(2 * whisperReplicas))
 	worker.startCreateEmbeddingsPool(2)
 	worker.startGenerateAiDataPool(2)
 

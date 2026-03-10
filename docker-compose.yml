@@ -63,9 +63,6 @@ services:
       WHISPER_MODEL_QUANTIZATION: "${WHISPER_MODEL_QUANTIZATION}"
     volumes:
       - whisper-models:/app/models
-    expose:
-      - "9000"
-      - "8080"
     <<: *gpu
 
   ollama:

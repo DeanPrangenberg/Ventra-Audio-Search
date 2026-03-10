@@ -16,7 +16,7 @@ def mount_config_routes(app: gr.Blocks):
 
         backend_url = gr.Text(
             label="Backend Url (with port)",
-            placeholder="http://audio-transcript-server:8880",
+            placeholder="http://api:8880",
             value=cfg.get_api_base_url(),
             interactive=True,
         )

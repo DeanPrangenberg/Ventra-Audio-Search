@@ -182,19 +182,17 @@ RETURNING
 
 func (s *Worker) GetSegmentByHash(ctx context.Context, segmentHash string) (*globalTypes.SearchSegmentData, error) {
 	const q = `
-SELECT segment_hash, audiofile_hash, start_sec, end_sec, transcript
+SELECT segment_hash, audiofile_hash, sentence_index, transcript
 FROM segments
 WHERE segment_hash = $1;
 `
 
 	var r globalTypes.SearchSegmentData
-	var start, end float64
 
 	err := s.db.QueryRowContext(ctx, q, segmentHash).Scan(
 		&r.SegmentHash,
 		&r.AudiofileHash,
-		&start,
-		&end,
+		&r.SentenceIndex,
 		&r.Transcript,
 	)
 	if errors.Is(err, sql.ErrNoRows) {
@@ -203,9 +201,6 @@ WHERE segment_hash = $1;
 	if err != nil {
 		return nil, err
 	}
-
-	r.StartInSec = float32(start)
-	r.EndInSec = float32(end)
 
 	return &r, nil
 }

@@ -15,7 +15,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/clipperhouse/uax29/sentences"
 	"golang.org/x/sync/semaphore"
 )
 
@@ -154,26 +153,16 @@ func (wa *WhisperWorker) transcribeRaw(ctx context.Context, filePath string) ([]
 }
 
 func SplitSentences(text string) ([]Segment, error) {
-	seg := sentences.NewStringSegmenter(text)
-
 	var out []Segment
-	var idx = 1
-	for seg.Next() {
-		s := strings.TrimSpace(seg.Text())
-		if s != "" {
+	segments := strings.Split(text, "\n")
 
-			out = append(out,
-				Segment{
-					SentenceIndex: idx,
-					Transcript:    s,
-				})
+	for idx, seg := range segments {
+		out = append(out,
+			Segment{
+				SentenceIndex: idx,
+				Transcript:    seg,
+			})
 
-			idx++
-		}
-	}
-
-	if err := seg.Err(); err != nil {
-		return nil, err
 	}
 
 	return out, nil

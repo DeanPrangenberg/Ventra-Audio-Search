@@ -159,7 +159,7 @@ func SplitSentences(text string) ([]Segment, error) {
 	seg := sentences.NewStringSegmenter(text)
 
 	var out []Segment
-	var idx int
+	var idx = 1
 	for seg.Next() {
 		s := strings.TrimSpace(seg.Text())
 		if s != "" {
@@ -169,6 +169,8 @@ func SplitSentences(text string) ([]Segment, error) {
 					SentenceIndex: idx,
 					Transcript:    s,
 				})
+
+			idx++
 		}
 	}
 

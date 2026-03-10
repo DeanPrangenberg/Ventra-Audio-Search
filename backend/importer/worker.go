@@ -36,9 +36,6 @@ type Worker struct {
 func NewWorker(ctx context.Context, wg *sync.WaitGroup, qdrant *qdrant.Worker, postgres *postgres.Worker, embedder *ai.EmbeddingWorker, poolRefillSignal *globalUtils.NoneStackingEvent) *Worker {
 
 	whisperReplicas := globalUtils.LoadEnvInt("WHISPER_REPLICAS")
-	if globalUtils.LoadEnvStr("FAST_INGEST_MODE") != "true" {
-		whisperReplicas = 1
-	}
 
 	worker := Worker{
 		PoolRefillSignal:       poolRefillSignal,
@@ -91,8 +88,7 @@ func (w *Worker) startImportJobDispatcher() {
 			w.refillBuffer(w.transcriptAudioBuffer, globalTypes.StageFilePersisted)
 			w.refillBuffer(w.createEmbeddingsBuffer, globalTypes.StageTranscribed)
 
-			if globalUtils.LoadEnvStr("DEACTIVATE_LLM") != "true" ||
-				globalUtils.LoadEnvStr("FAST_INGEST_MODE") != "true" {
+			if globalUtils.LoadEnvStr("DEACTIVATE_LLM") != "true" {
 				w.refillBuffer(w.genAiDataBuffer, globalTypes.StageEmbedded)
 			}
 		}

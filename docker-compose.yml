@@ -23,7 +23,6 @@ x-backend-env: &backend-env
   EMBEDDING_MODEL: "${EMBEDDING_MODEL}"
   EMBEDDING_MODEL_DIM: "${EMBEDDING_MODEL_DIM}"
   LOG_LEVEL: "${LOG_LEVEL:-info}"
-  FAST_INGEST_MODE: "${FAST_INGEST_MODE:-true}"
   DEACTIVATE_LLM: "${DEACTIVATE_LLM:-true}"
 
 networks:

@@ -42,9 +42,7 @@ type TranscriptionResult struct {
 
 func New(minSegSec float32) *WhisperWorker {
 	whisperReplicas := globalUtils.LoadEnvInt("WHISPER_REPLICAS")
-	if globalUtils.LoadEnvStr("FAST_INGEST_MODE") != "true" {
-		whisperReplicas = 1
-	}
+
 	return &WhisperWorker{
 		BaseURL:   globalUtils.LoadEnvStr("WHISPER_API_URL"),
 		Timeout:   30 * time.Minute,

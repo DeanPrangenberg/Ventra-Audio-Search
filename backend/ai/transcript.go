@@ -154,9 +154,13 @@ func (wa *WhisperWorker) transcribeRaw(ctx context.Context, filePath string) ([]
 
 func SplitSentences(text string) ([]Segment, error) {
 	var out []Segment
-	segments := strings.Split(text, "\n")
+	segments := strings.Split(text, "\n\n")
 
 	for idx, seg := range segments {
+		trimmed := strings.TrimSpace(seg)
+		if trimmed == "" {
+			continue
+		}
 		out = append(out,
 			Segment{
 				SentenceIndex: idx,

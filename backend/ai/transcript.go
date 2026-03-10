@@ -17,6 +17,7 @@ import (
 	"time"
 
 	"github.com/clipperhouse/uax29/sentences"
+	"golang.org/x/sync/semaphore"
 )
 
 type WhisperWorker struct {
@@ -27,7 +28,7 @@ type WhisperWorker struct {
 	Format    string
 	Language  string
 	MinSegSec float32
-	lock      sync.Mutex
+	sem       *semaphore.Weighted
 }
 
 type Segment struct {
@@ -41,6 +42,7 @@ type TranscriptionResult struct {
 }
 
 func New(minSegSec float32) *WhisperWorker {
+	whisperReplicas := globalUtils.LoadEnvInt("WHISPER_REPLICAS")
 	return &WhisperWorker{
 		BaseURL:   globalUtils.LoadEnvStr("WHISPER_API_URL"),
 		Timeout:   30 * time.Minute,
@@ -49,6 +51,7 @@ func New(minSegSec float32) *WhisperWorker {
 		Format:    "json",
 		Language:  "de",
 		MinSegSec: minSegSec,
+		sem:       semaphore.NewWeighted(int64(whisperReplicas)),
 	}
 }
 
@@ -121,9 +124,12 @@ func (wa *WhisperWorker) transcribeRaw(ctx context.Context, filePath string) ([]
 		return nil, fmt.Errorf("close multipart writer: %w", err)
 	}
 
-	wa.lock.Lock()
+	if err := wa.sem.Acquire(ctx, 1); err != nil {
+		return nil, err
+	}
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, wa.BaseURL+"/inference", &body)
-	wa.lock.Unlock()
+	wa.sem.Release(1)
+
 	if err != nil {
 		return nil, fmt.Errorf("new request: %w", err)
 	}

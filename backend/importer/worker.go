@@ -89,7 +89,11 @@ func (w *Worker) startImportJobDispatcher() {
 			w.refillBuffer(w.persistFileBuffer, globalTypes.StageQueued)
 			w.refillBuffer(w.transcriptAudioBuffer, globalTypes.StageFilePersisted)
 			w.refillBuffer(w.createEmbeddingsBuffer, globalTypes.StageTranscribed)
-			w.refillBuffer(w.genAiDataBuffer, globalTypes.StageEmbedded)
+
+			if globalUtils.LoadEnvStr("DEACTIVATE_LLM") != "true" ||
+				globalUtils.LoadEnvStr("FAST_INGEST_MODE") != "true" {
+				w.refillBuffer(w.genAiDataBuffer, globalTypes.StageEmbedded)
+			}
 		}
 	}
 }

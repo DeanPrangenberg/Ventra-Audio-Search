@@ -22,7 +22,7 @@ def file_sha256(path: str, chunk_size: int = 1024 * 1024) -> str:
 
 def cleanup_upload_dir_ttl() -> None:
     upload_dir = Path(os.environ.get("DATA_DIR", "/app/data")).resolve() / "uploads"
-    ttl_seconds = int(os.environ.get("FILE_CLEAN_UP", 30 * 60))
+    ttl_seconds = int(os.environ.get("FILE_CLEAN_UP_AFTER_SEC", 30 * 60))
 
     now = time.time()
     if not upload_dir.exists():

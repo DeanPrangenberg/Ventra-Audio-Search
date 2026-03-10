@@ -11,6 +11,7 @@ x-gpu: &gpu
 
 x-backend-env: &backend-env
   WHISPER_API_URL: "http://whisper:9000"
+  WHISPER_REPLICAS: "${WHISPER_REPLICAS:-1}"
   OLLAMA_API_URL: "http://ollama:11434"
   QDRANT_API_HOST: "qdrant"
   QDRANT_API_PORT_GRPC: "6334"
@@ -62,9 +63,9 @@ services:
       WHISPER_MODEL_QUANTIZATION: "${WHISPER_MODEL_QUANTIZATION}"
     volumes:
       - whisper-models:/app/models
-    ports:
-      - "9001:9000"
-      - "9002:8080"
+    expose:
+      - "9000"
+      - "8080"
     <<: *gpu
 
   ollama:
@@ -111,7 +112,7 @@ services:
       FRONTEND_SERVER_URL: "http://frontend:7860"
       POSTGRES_URL: "${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}"
       DATA_DIR: "/app/data"
-      FILE_CLEAN_UP: "${FILE_CLEAN_UP:-300}"
+      FILE_CLEAN_UP_AFTER_SEC: "${FILE_CLEAN_UP_AFTER_SEC:-300}"
     ports:
       - "7860:7860"
     volumes:

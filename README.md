@@ -157,7 +157,7 @@ Key frontend variables:
 - `FRONTEND_SERVER_URL`
 - `POSTGRES_URL`
 - `DATA_DIR`
-- `FILE_CLEAN_UP`
+- `FILE_CLEAN_UP_AFTER_SEC`
 
 ## Repository Structure
 

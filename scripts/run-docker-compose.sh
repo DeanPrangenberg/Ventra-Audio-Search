@@ -1,17 +1,18 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-LOCAL_BUILD_SERVICES=(
-  "audio_transcript_server"
-  "audio_transcript_frontend"
-)
+set -a
+source .env
+set +a
 
-CONTAINERS=(
-  "ollama"
-  "whisper-server"
-  "qdrant"
-  "audio-transcript-server"
-  "audio-transcript-frontend"
+: "${WHISPER_REPLICAS:=1}"
+: "${EMBEDDING_MODEL:=nomic-embed-text-v2-moe}"
+: "${LLM_MODEL:=dolphin-mistral:7b}"
+: "${DEACTIVATE_LLM:=true}"
+
+LOCAL_BUILD_SERVICES=(
+  "api"
+  "frontend"
 )
 
 echo "Stopping and removing existing Docker Compose services..."
@@ -21,31 +22,27 @@ echo "Rebuilding local Docker images without cache..."
 docker compose build --no-cache --pull "${LOCAL_BUILD_SERVICES[@]}"
 
 echo "Starting Docker Compose services with forced recreation..."
-docker compose up -d --force-recreate --remove-orphans
+docker compose up -d \
+  --force-recreate \
+  --remove-orphans \
+  --scale whisper="${WHISPER_REPLICAS}"
 
-echo "Docker Compose services started."
-
-echo "Waiting for containers to be running..."
-for C in "${CONTAINERS[@]}"; do
-  while true; do
-    STATUS="$(docker inspect -f '{{.State.Status}}' "$C" 2>/dev/null || true)"
-    if [[ "$STATUS" == "running" ]]; then
-      echo "$C is running."
-      break
-    fi
-    echo "Waiting for $C to start..."
-    sleep 2
-  done
-done
+echo "Checking running whisper replicas..."
+ACTUAL_WHISPER_REPLICAS="$(docker compose ps -q whisper | wc -l | tr -d ' ')"
+if [[ "${ACTUAL_WHISPER_REPLICAS}" != "${WHISPER_REPLICAS}" ]]; then
+  echo "ERROR: Expected ${WHISPER_REPLICAS} whisper replicas, but found ${ACTUAL_WHISPER_REPLICAS}."
+  docker compose ps
+  exit 1
+fi
 
 echo "Waiting for Ollama to be ready..."
 for i in {1..600}; do
-  if docker exec ollama sh -lc 'ollama list >/dev/null 2>&1'; then
+  if docker compose exec -T ollama ollama list >/dev/null 2>&1; then
     echo "Ollama is ready."
     break
   fi
 
-  echo "Waiting for Ollama (this can take a while)..."
+  echo "Waiting for Ollama..."
   sleep 2
 
   if [[ "$i" -eq 600 ]]; then
@@ -54,9 +51,15 @@ for i in {1..600}; do
   fi
 done
 
-echo "Downloading necessary Ollama models..."
-docker exec ollama sh -lc 'ollama pull nomic-embed-text && ollama pull dolphin-mistral:7b'
-echo "Ollama models downloaded."
+echo "Downloading required Ollama embedding model..."
+docker compose exec -T ollama ollama pull "${EMBEDDING_MODEL}"
+
+if [[ "${DEACTIVATE_LLM,,}" != "true" ]]; then
+  echo "Downloading LLM model..."
+  docker compose exec -T ollama ollama pull "${LLM_MODEL}"
+else
+  echo "Skipping LLM model pull because DEACTIVATE_LLM=true"
+fi
 
 echo ""
 echo "===================================================="

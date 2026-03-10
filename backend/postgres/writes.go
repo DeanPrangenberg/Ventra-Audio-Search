@@ -309,8 +309,7 @@ INSERT INTO segments (segment_hash, audiofile_hash, sentence_index, transcript)
 VALUES ($1, $2, $3, $4)
 ON CONFLICT(segment_hash) DO UPDATE SET
   audiofile_hash = EXCLUDED.audiofile_hash,
-  start_sec      = EXCLUDED.start_sec,
-  end_sec        = EXCLUDED.end_sec,
+  sentence_index      = EXCLUDED.sentence_index,
   transcript     = EXCLUDED.transcript;
 `
 

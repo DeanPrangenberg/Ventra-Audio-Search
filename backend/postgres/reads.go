@@ -232,7 +232,7 @@ WHERE s.transcript_tsv @@ search_query.query
   AND a.recording_date >= COALESCE(NULLIF($2, '')::date, DATE '0001-01-01')
   AND a.recording_date <  COALESCE(NULLIF($3, '')::date, DATE '9999-12-31')
   AND a.category IS NOT DISTINCT FROM $4
-ORDER BY score DESC, s.start_sec ASC
+ORDER BY score DESC, s.sentence_index ASC
 LIMIT $5;
 `
 

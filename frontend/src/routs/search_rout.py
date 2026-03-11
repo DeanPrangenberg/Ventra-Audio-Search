@@ -75,7 +75,7 @@ def mount_search_routes(app: gr.Blocks):
             "Search by exact keywords, semantic meaning, category, and date range."
         )
 
-        choices = config_manager.ConfigManager().fetch_categories()
+        choices = config_manager.ConfigManager().get_category_list()
         default_category = choices[0] if choices else "Standard"
 
         with gr.Row():

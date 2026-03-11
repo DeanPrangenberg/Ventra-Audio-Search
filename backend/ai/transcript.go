@@ -77,7 +77,7 @@ func (wa *WhisperWorker) Transcribe(ctx context.Context, filePath string) (*Tran
 		return nil, fmt.Errorf("unmarshal whisper response failed: %w (snippet: %q)", err, snippet)
 	}
 
-	out.Segments, err = SplitSentences(out.Transcript)
+	out.Segments, err = SplitSentences(out.Transcript, 3, 2)
 
 	slog.Info("whisper transcription completed",
 		"file", filePath,
@@ -153,25 +153,55 @@ func (wa *WhisperWorker) transcribeRaw(ctx context.Context, filePath string) ([]
 	return respBody, nil
 }
 
-func SplitSentences(text string) ([]Segment, error) {
-	var out []Segment
-	re := regexp.MustCompile(`(?s).*?[a-z]\.\n`)
-	segments := re.FindAllString(text, -1)
-
-	for idx, seg := range segments {
-		cleaned := strings.TrimSpace(seg)
-		cleaned = strings.Replace(cleaned, "\n", " ", -1)
-
-		if cleaned == "" {
-			continue
-		}
-		out = append(out,
-			Segment{
-				SentenceIndex: idx,
-				Transcript:    cleaned,
-			})
-
+func SplitSentences(text string, chunkSize int, overlap int) ([]Segment, error) {
+	if chunkSize <= 0 {
+		return nil, fmt.Errorf("chunk size must be greater than zero")
 	}
 
-	return out, nil
+	if overlap < 0 {
+		return nil, fmt.Errorf("overlap must not be negative")
+	}
+
+	if overlap >= chunkSize {
+		return nil, fmt.Errorf("overlap must be smaller than chunk size")
+	}
+
+	re := regexp.MustCompile(`(?s).*?[.!?](?:\s+|$)`)
+	sentences := re.FindAllString(text, -1)
+
+	var cleanedSentences []string
+	for _, sentence := range sentences {
+		cleaned := strings.TrimSpace(sentence)
+		cleaned = strings.ReplaceAll(cleaned, "\n", " ")
+		if cleaned != "" {
+			cleanedSentences = append(cleanedSentences, cleaned)
+		}
+	}
+
+	if len(cleanedSentences) == 0 {
+		return nil, nil
+	}
+
+	step := chunkSize - overlap
+	var segments []Segment
+
+	for start := 0; start < len(cleanedSentences); start += step {
+		end := start + chunkSize
+		if end > len(cleanedSentences) {
+			end = len(cleanedSentences)
+		}
+
+		chunk := strings.Join(cleanedSentences[start:end], " ")
+
+		segments = append(segments, Segment{
+			SentenceIndex: start,
+			Transcript:    chunk,
+		})
+
+		if end == len(cleanedSentences) {
+			break
+		}
+	}
+
+	return segments, nil
 }

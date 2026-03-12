@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-const opTimeout = 5 * time.Minute
+const opTimeout = 10 * time.Minute
 const maxRetryCount = 10
 
 type Worker struct {

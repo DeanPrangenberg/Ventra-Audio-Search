@@ -70,7 +70,7 @@ def mount_search_routes(app: gr.Blocks):
     oldest, now = get_default_date_range()
 
     with app.route("Search"):
-        gr.Markdown("# Search Audio Files")
+        gr.HTML("<h1>Hybrid <b>Context</b> Search Engine</h1>", elem_classes=["page-header"])
         gr.Markdown(
             "Search by exact keywords, semantic meaning, category, and date range."
         )
@@ -79,12 +79,13 @@ def mount_search_routes(app: gr.Blocks):
         default_category = choices[0] if choices else "Standard"
 
         with gr.Row():
-            with gr.Column(scale=2):
+            with gr.Column(scale=2, elem_classes="no-bg"):
                 ts_query = gr.Textbox(
                     label="Keyword Search",
                     placeholder="e.g. keyword (names, persons, etc.)",
                     value="",
                     interactive=True,
+                    elem_classes="no-bg",
                 )
 
                 semantic_search_query = gr.Textbox(
@@ -92,6 +93,7 @@ def mount_search_routes(app: gr.Blocks):
                     placeholder="e.g. When is the release deadline?",
                     value="",
                     interactive=True,
+                    elem_classes="no-bg",
                 )
 
                 category = gr.Dropdown(
@@ -99,19 +101,22 @@ def mount_search_routes(app: gr.Blocks):
                     choices=choices,
                     value=default_category,
                     interactive=True,
+                    elem_classes="no-bg",
                 )
 
-            with gr.Column(scale=1):
+            with gr.Column(scale=1, elem_classes="no-bg"):
                 start_time_period = gr.DateTime(
                     label="Start Date",
                     value=oldest,
                     interactive=True,
+                    elem_classes="no-bg",
                 )
 
                 end_time_period = gr.DateTime(
                     label="End Date",
                     value=now,
                     interactive=True,
+                    elem_classes="no-bg",
                 )
 
                 max_segment_return = gr.Number(
@@ -120,11 +125,12 @@ def mount_search_routes(app: gr.Blocks):
                     minimum=1,
                     precision=0,
                     interactive=True,
+                    elem_classes="no-bg",
                 )
 
         with gr.Row():
             send_btn = gr.Button("Search", variant="primary")
-            reset_btn = gr.Button("Reset")
+            reset_btn = gr.Button("Reset", variant="secondary")
 
         status = gr.Markdown(visible=False)
         json_view = gr.JSON(visible=False)

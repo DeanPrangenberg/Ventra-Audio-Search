@@ -11,6 +11,7 @@ RUN pip install "psycopg[binary]"
 
 # code
 COPY src/ /app/src/
+COPY res/ /app/res/
 
 ENV PYTHONPATH=/app
 

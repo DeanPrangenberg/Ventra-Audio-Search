@@ -84,7 +84,7 @@ def do_backend_request(files_state: list[dict[str, Any]]):
 
     lines = ["**Some files are Invalid:**", ""]
 
-    # Display Errors return from backend
+    # Display Errors return from restApi
     for i, f in enumerate(files_state):
         if i in err_by_idx:
             f2 = dict(f)

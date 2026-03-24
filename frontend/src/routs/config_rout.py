@@ -5,7 +5,7 @@ import src.config_manager as config_manager
 
 def mount_config_routes(app: gr.Blocks):
     with app.route("Config"):
-        gr.Markdown("# Frontend Config / Settings")
+        gr.HTML("<h1>Frontend <b>Config</b> Data</h1>", elem_classes=["page-header"])
         gr.Markdown(
             "This page displays and lets you edit settings for the frontend of **Ventra Audio Search**"
         )
@@ -19,6 +19,7 @@ def mount_config_routes(app: gr.Blocks):
             placeholder="http://api:8880",
             value=cfg.get_api_base_url(),
             interactive=True,
+            elem_classes = "no-bg"
         )
 
         category_input = gr.Text(
@@ -26,6 +27,7 @@ def mount_config_routes(app: gr.Blocks):
             placeholder="Team Name, Meeting Type",
             value=cfg.get_category_csv(),
             interactive=True,
+            elem_classes="no-bg"
         )
 
         with gr.Row():

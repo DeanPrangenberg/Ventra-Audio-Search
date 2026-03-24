@@ -1,0 +1,1554 @@
+[
+    {
+        "id": "UNFASSBAR_a_1_002",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "In welchem Viertel steht das Hauptgebäude der Steuerbehörde?",
+        "expected_excerpt": "Im Rusafah-Viertel steht das Hauptgebäude der Steuerbehörde.",
+        "ts_query": "Hauptgebäude",
+        "difficulty": 3
+    },
+    {
+        "id": "UNFASSBAR_a_1_003",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Welche Bankfiliale befindet sich im Erdgeschoss des Gebäudes?",
+        "expected_excerpt": "Unten im Erdgeschoss ist eine kleine, unscheinbare Filiale der Rafidain-Bank, der größten Staatsbank im Irak.",
+        "ts_query": "Erdgeschoss",
+        "difficulty": 2
+    },
+    {
+        "id": "UNFASSBAR_a_1_005",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Was macht diesen Raub ungewöhnlich im Vergleich zu typischen Banküberfällen?",
+        "expected_excerpt": "Dieser Raub wird komplett ohne Waffen ablaufen. Es wird kein Safe gesprengt. Es werden keine Geiseln genommen. Es wird keine Verfolgungsjagd geben. Es wird nicht mal irgendein Finanzsystem gehackt.",
+        "ts_query": "Raub",
+        "difficulty": 5
+    },
+    {
+        "id": "UNFASSBAR_a_1_008",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Warum gilt Kanber aus Sicht des Finanzministers als guter Ermittler?",
+        "expected_excerpt": "Aber, und das ist wichtig, Kahnber ist ein politischer Outsider. Er hat viele Jahre seines Lebens im Ausland verbracht. Das macht ihn aus Sicht des Finanzministers zum perfekten Ermittler.",
+        "ts_query": "Sicht Finanzministers",
+        "difficulty": 5
+    },
+    {
+        "id": "UNFASSBAR_a_1_009",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Auf welches Konto richtet sich die Untersuchung?",
+        "expected_excerpt": "Es stellt sich heraus, es gibt da ein Konto in der Rafidain Bank. Konto 60032.",
+        "ts_query": "Konto",
+        "difficulty": 2
+    },
+    {
+        "id": "UNFASSBAR_a_1_011",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "An wie viele Firmen wurde Geld von Konto 60032 überwiesen?",
+        "expected_excerpt": "Kannbar und sein Team finden heraus, dass Geld vom Konto 60032 an fünf Firmen überwiesen wurde.",
+        "ts_query": "Firmen Geld Konto",
+        "difficulty": 3
+    },
+    {
+        "id": "UNFASSBAR_a_1_014",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wie viel Geld wurde laut den Überweisungsdokumenten an die fünf Firmen ausgezahlt?",
+        "expected_excerpt": "Es ist wie befürchtet. Insgesamt 2,5 Milliarden Dollar wurden an die fünf Firmen überwiesen.",
+        "ts_query": "Firmen",
+        "difficulty": 2
+    },
+    {
+        "id": "UNFASSBAR_a_1_017",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wie nennt man den Fall im Irak bald?",
+        "expected_excerpt": "Im Irak spricht man bald vom: Der Bankraub des Jahrhunderts.",
+        "ts_query": "Irak",
+        "difficulty": 3
+    },
+    {
+        "id": "UNFASSBAR_a_1_018",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wer wird schnell als Verdächtiger identifiziert?",
+        "expected_excerpt": "Und schnell wird ein Verdächtiger gefunden. Laut Kanbars Bericht gehören zwei der fünf Firmen einem Mann namens: Nur Zaheer.",
+        "ts_query": "Verdächtiger",
+        "difficulty": 2
+    },
+    {
+        "id": "UNFASSBAR_a_1_019",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wie wird Nur Zaheer Jassim charakterisiert?",
+        "expected_excerpt": "Nur Zaheer Jassim ist ein irakischer Geschäftsmann. Er trägt einen Schnurrbart, hat ein bisschen was von Pablo Escobar. Ein windiger Typ, der immer wieder versucht, Leute für seine Zwecke zu vereinnahmen. Und er hat Verbindungen zur Steuerbehörde im Irak.",
+        "ts_query": "Jassim",
+        "difficulty": 4
+    },
+    {
+        "id": "UNFASSBAR_a_1_020",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Was brauchte Nur Zaheer im Büro des Generaldirektors?",
+        "expected_excerpt": "Sein Ziel ist klar. Das Büro des Generaldirektors. Er braucht Unterschriften für die angeblichen Steuerrückzahlungen.",
+        "ts_query": "Büro",
+        "difficulty": 4
+    },
+    {
+        "id": "UNFASSBAR_a_1_021",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Warum konnte der Raub bürokratisch so leicht durchgezogen werden?",
+        "expected_excerpt": "Eigentlich muss der Rechnungshof im Irak solche riesigen Zahlungen genehmigen. Die weitere wurde aber kurz vor dem Raub abgeschafft, um Bürokratie zu vermeiden. Das macht die Sache einfach.",
+        "ts_query": "Raub",
+        "difficulty": 5
+    },
+    {
+        "id": "UNFASSBAR_a_1_022",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wie wurde das Geld direkt aus der Bank geholt?",
+        "expected_excerpt": "Nur Zaheer und die Mitarbeiter lösen Checks direkt im Erdgeschoss in der Bankfiliale ein. Das Geld bekommen sie in Stapeln von Baren scheinen.",
+        "ts_query": "Geld",
+        "difficulty": 3
+    },
+    {
+        "id": "UNFASSBAR_a_1_023",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wie wurde das Bargeld durch Bagdad transportiert?",
+        "expected_excerpt": "In Trucks, unzähligen Trucks, fahren sie das Geld quer durch Bagdad am helllichten Tag.",
+        "ts_query": "Bagdad",
+        "difficulty": 3
+    },
+    {
+        "id": "UNFASSBAR_a_1_026",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wohin wurde offenbar viel von dem Geld ins Ausland gebracht?",
+        "expected_excerpt": "20 Mal bringt er so Geld aus dem Land, offenbar viel davon nach Jordanien.",
+        "ts_query": "Geld",
+        "difficulty": 3
+    },
+    {
+        "id": "UNFASSBAR_a_1_029",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Warum kommt Nur Soheer laut Regierung wieder frei?",
+        "expected_excerpt": "The government's response was, well, we need him to go and find the money. Die Regierung sagt also, wir müssen ihn freilassen, damit er für uns das Geld findet.",
+        "ts_query": "Regierung",
+        "difficulty": 5
+    },
+    {
+        "id": "UNFASSBAR_a_1_030",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Was geben die Gerichte im April 2023 zusätzlich frei?",
+        "expected_excerpt": "Im April 2023 geben die Gerichte sogar Soheers Vermögen frei.",
+        "ts_query": "Gerichte April 2023",
+        "difficulty": 3
+    },
+    {
+        "id": "UNFASSBAR_a_1_034",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Welche problematische Verbindung zu einem früheren Betrugsfall wird bei Kanber erwähnt?",
+        "expected_excerpt": "Und ein Mann, der an einem früheren Betrugsfall bei der Rafidain Bank beteiligt war, sei Kanbars Cousin. Mit ihm hat Kanba laut eigener Aussage sogar schon einmal Geschäfte gemacht.",
+        "ts_query": "Betrugsfall",
+        "difficulty": 4
+    },
+    {
+        "id": "UNFASSBAR_a_1_037",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wie beschreibt eine Quelle Kanber trotzdem?",
+        "expected_excerpt": "Eine Quelle bezeichnet ihn als einen der wenigen ehrlichen Menschen im irakischen System.",
+        "ts_query": "Quelle",
+        "difficulty": 5
+    },
+    {
+        "id": "UNFASSBAR_a_1_039",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Auf welchem Platz liegt der Irak im Korruptionsindex laut Transcript?",
+        "expected_excerpt": "Tatsächlich belegt das Land Platz 157 von 180 auf dem Korruptionsindex.",
+        "ts_query": "Platz",
+        "difficulty": 2
+    },
+    {
+        "id": "UNFASSBAR_a_1_040",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Warum gingen laut Renad viele Menschen nach Saddam Husseins Sturz in die Politik?",
+        "expected_excerpt": "Renat sagt, dass genau deshalb viele nach dem Sturz von Saddam Hussein in die Politik gegangen seien. Um Einfluss auf Bankdirektoren und andere Minister auszuüben und damit reich zu werden.",
+        "ts_query": "Saddam Sturz",
+        "difficulty": 5
+    },
+    {
+        "id": "UNFASSBAR_a_1_041",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Warum war Konto 60032 laut Renad ein perfektes Schlupfloch?",
+        "expected_excerpt": "Und mit Konto 60032 habe dieses Netzwerk ein perfektes Schlupfloch gefunden. Von diesem Konto, auf dem Milliarden von Steuereinnahmen lagen, konnten sie das Geld nehmen.",
+        "ts_query": "Konto",
+        "difficulty": 5
+    },
+    {
+        "id": "UNFASSBAR_a_1_042",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wie bewertet Renad die Chancen, dass Interpol die Täter fasst?",
+        "expected_excerpt": "Renat glaubt aber nicht, dass die Täter so gefasst werden. Denn die Verantwortlichen sitzen mit hoher Wahrscheinlichkeit immer noch in der Regierung.",
+        "ts_query": "Täter",
+        "difficulty": 5
+    },
+    {
+        "id": "UNFASSBAR_a_1_043",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Warum glaubt das Transcript, dass das Geld vermutlich nicht wieder auftaucht?",
+        "expected_excerpt": "Es ist also ganz schön unwahrscheinlich, dass das Geld jemals wieder auftaucht oder dass die Verantwortlichen irgendwann hinter Gitter kommen.",
+        "ts_query": "Geld",
+        "difficulty": 4
+    },
+    {
+        "id": "UNFASSBAR_a_2_001",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "In welchem Jahr spielt die Eingangsszene mit dem Handelsschiff auf dem Atlantik?",
+        "expected_excerpt": "Das Jahr 1710.",
+        "ts_query": "Jahr",
+        "difficulty": 1
+    },
+    {
+        "id": "UNFASSBAR_a_2_004",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Mit welchem Mittel machen die Piraten klar, dass Widerstand zwecklos ist?",
+        "expected_excerpt": "Und außerdem haben sie noch das hier. Ein Warnschuss. Keine Frage. Widerstand ist zwecklos.",
+        "ts_query": "Widerstand",
+        "difficulty": 4
+    },
+    {
+        "id": "UNFASSBAR_a_2_006",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Welches Jahrhundert gilt als das goldene Zeitalter der Piraterie?",
+        "expected_excerpt": "Das frühe 18. Jahrhundert gilt als das goldene Zeitalter der Piraterie.",
+        "ts_query": "Jahrhundert Zeitalter",
+        "difficulty": 2
+    },
+    {
+        "id": "UNFASSBAR_a_2_007",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Welcher Ort war der Dreh- und Angelpunkt der Freibeuter?",
+        "expected_excerpt": "Dreh- und Angelpunkt der Freibeuter war der Hafenort Nassau in den Bahamas.",
+        "ts_query": "Angelpunkt",
+        "difficulty": 2
+    },
+    {
+        "id": "UNFASSBAR_a_2_008",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Auf welcher Insel lag Nassau?",
+        "expected_excerpt": "Er lag auf der kleinen Insel New Providence.",
+        "ts_query": "Insel",
+        "difficulty": 3
+    },
+    {
+        "id": "UNFASSBAR_a_2_009",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Zu welcher Kolonie gehörten die Bahamas damals?",
+        "expected_excerpt": "Damals waren die Bahamas eine britische Kolonie.",
+        "ts_query": "Bahamas",
+        "difficulty": 3
+    },
+    {
+        "id": "UNFASSBAR_a_2_012",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wie lebten die Schiffsjungen auf den Schiffen der Royal Navy?",
+        "expected_excerpt": "Zwischen Ratten, Mäuse und Kakerlaken kauern die Schiffsjungen in dicke Wolldecken gewickelt. Trotzdem frieren sie. Ihre Kabine befindet sich nämlich ganz vorn, im Bug des Schiffes.",
+        "ts_query": "Schiffsjungen",
+        "difficulty": 4
+    },
+    {
+        "id": "UNFASSBAR_a_2_014",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wie wurden Schiffsjungen und Matrosen auf Navy-Schiffen bestraft?",
+        "expected_excerpt": "Die Schiffsjungen werden von ihrem Kapitän herumkommandiert und für kleinste Vergehen hart bestraft. Wem auch nur ein Paddel aus der Hand fällt, drohen Prügel und Peitschenhebe.",
+        "ts_query": "Schiffsjungen",
+        "difficulty": 4
+    },
+    {
+        "id": "UNFASSBAR_a_2_015",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wie hoch war die Überlebenschance auf einem Kriegsschiff im 17. Jahrhundert?",
+        "expected_excerpt": "Die Chance von so einem Kriegsschiff wieder lebend zu Hause anzukommen, die war im 17. Jahrhundert so ziemlich genau 50-50.",
+        "ts_query": "Kriegsschiff",
+        "difficulty": 2
+    },
+    {
+        "id": "UNFASSBAR_a_2_016",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wie zwang die Royal Navy Männer in den Dienst?",
+        "expected_excerpt": "Um trotzdem neue Matrosen zu finden, schickte die Navy Pressgangs durch die armen Viertel von London. Brutale Trupps, die Männer zum Marinendienst zwangen.",
+        "ts_query": "Männer",
+        "difficulty": 3
+    },
+    {
+        "id": "UNFASSBAR_a_2_021",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Was war an Averys Ernennung zum Kapitän ungewöhnlich?",
+        "expected_excerpt": "Die Crew ernennt ihn daraufhin zu ihrem Kapitän. Schon allein, das ist ein ungewöhnlicher Vorgang. Keiner der Männer hat je einen Kapitän wählen dürfen.",
+        "ts_query": "Kapitän",
+        "difficulty": 4
+    },
+    {
+        "id": "UNFASSBAR_a_2_022",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wie unterschieden sich die Beuteregeln bei Avery von normalen Handelsschiffen?",
+        "expected_excerpt": "Darüber hinaus soll Avery als Kapitän auch nur einen geringen zusätzlichen Anteil der Beute bekommen. Die Kapitäne auf Handelsschiffen heimsten meist das Sechs- bis vierzehnfache eines einfachen Matrosenheim.",
+        "ts_query": "Avery",
+        "difficulty": 4
+    },
+    {
+        "id": "UNFASSBAR_a_2_023",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wann hatte Avery allein das Kommando?",
+        "expected_excerpt": "Es gibt nur eine einzige Situation, in der Avery das alleinige Kommando hat. Während einer Kampfhandlung.",
+        "ts_query": "Avery",
+        "difficulty": 2
+    },
+    {
+        "id": "UNFASSBAR_a_2_025",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wo kaperten Avery und seine Crew ihre ersten drei Handelsschiffe?",
+        "expected_excerpt": "Avery und seine Crew segeln von Spanien Richtung Afrika. Am Cap Verde kapern sie ihre ersten drei Handelsschiffe.",
+        "ts_query": "Crew",
+        "difficulty": 2
+    },
+    {
+        "id": "UNFASSBAR_a_2_027",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wie bringt Avery den Gouverneur von Nassau dazu, die Piraten in Ruhe zu lassen?",
+        "expected_excerpt": "Avery bietet ihm Schätze im Wert des dreifachen seines Jahresgehalts an. Und tada, im Gegenzug lässt er die Piraten unbehelligt in Nassau einkehren.",
+        "ts_query": "Nassau Piraten",
+        "difficulty": 3
+    },
+    {
+        "id": "UNFASSBAR_a_2_028",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Warum wird dieser bestechliche Gouverneur später so wichtig für die Piratenrepublik?",
+        "expected_excerpt": "Der bestechliche Gouverneur weiß nicht, dass er damit den Grundstein für die Republik der Piraten gelegt hat.",
+        "ts_query": "Gouverneur",
+        "difficulty": 4
+    },
+    {
+        "id": "UNFASSBAR_a_2_029",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wie wurde Avery in den Legenden dargestellt?",
+        "expected_excerpt": "In den Legenden, die man sich erzählt, ist Avery eine Art maritimer Robin Hood. Seine Untergebenen behandelt er edel und fair. Ebenso die Besatzungen der Schiffe, die er überfällt.",
+        "ts_query": "Avery",
+        "difficulty": 4
+    },
+    {
+        "id": "UNFASSBAR_a_2_031",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wie behandelte Avery schwarze Menschen laut Transcript?",
+        "expected_excerpt": "Fielen ihm etwa schwarze Menschen in die Hände, nahm er sie gefangen und verkaufte sie als Sklave.",
+        "ts_query": "Menschen",
+        "difficulty": 3
+    },
+    {
+        "id": "UNFASSBAR_a_2_035",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Was erlaubte Queen Anne 1708 englischen Privatleuten?",
+        "expected_excerpt": "1708 erlässt die britische Königin Queen Anne ein Dekret. Englischen Privatleuten wird offiziell erlaubt, französische und spanische Schiffe zu plündern. Die Beute dürfen sie für sich behalten.",
+        "ts_query": "Queen",
+        "difficulty": 4
+    },
+    {
+        "id": "UNFASSBAR_a_2_036",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wer war Edward Thatchers Kapitän und Mentor?",
+        "expected_excerpt": "Ihr Kapitän ist Benjamin Hornigold. Ein englischer Patriot und kluger Stratege auf See. Die beiden verbindet eine ganz besondere Beziehung. Thatcher ist sein Stellvertreter.",
+        "ts_query": "Kapitän",
+        "difficulty": 4
+    },
+    {
+        "id": "UNFASSBAR_a_2_039",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Warum ist Nassau als Heimathafen für Piraten so attraktiv?",
+        "expected_excerpt": "Der Hafen von Nassau befindet sich unweit der Florida-Straße. Das ist eine Meeresroute, durch die damals unzählige Handelsschiffe der europäischen Mächte gesegelt sind.",
+        "ts_query": "Nassau",
+        "difficulty": 5
+    },
+    {
+        "id": "UNFASSBAR_a_2_040",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Warum konnte der britische Gouverneur den Piraten in Nassau wenig entgegensetzen?",
+        "expected_excerpt": "Unter denen zwar auch ein britischer Gouverneur, doch der hat weder Macht noch Mittel, den Piraten irgendwas entgegenzusetzen.",
+        "ts_query": "Piraten",
+        "difficulty": 4
+    },
+    {
+        "id": "UNFASSBAR_a_2_043",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wie hieß das neue Schiff, das Hornigold und Thatch 1715 erbeuteten?",
+        "expected_excerpt": "Im November 1715 ergattern Hornigold und Thatch ein neues Schiff, das sie Mary taufen.",
+        "ts_query": "Hornigold Thatch 1715",
+        "difficulty": 3
+    },
+    {
+        "id": "UNFASSBAR_a_2_046",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wie viele Seeräuber tummeln sich zu Hochzeiten in Nassau?",
+        "expected_excerpt": "Zu Hochzeiten tummeln sich so schätzungsweise 2000 Seeräuber in Nassau.",
+        "ts_query": "Seeräuber Hochzeiten",
+        "difficulty": 2
+    },
+    {
+        "id": "UNFASSBAR_a_2_047",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Was für politische Ordnung hatte die Piratenrepublik laut Transcript nicht?",
+        "expected_excerpt": "Trotzdem ist die Piratenrepublik kein richtiger Staat. Es gibt keine Verfassung und keine öffentlichen Institutionen.",
+        "ts_query": "Piratenrepublik",
+        "difficulty": 3
+    },
+    {
+        "id": "UNFASSBAR_a_2_050",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Welche Beuteziele waren unter Hornigold tabu?",
+        "expected_excerpt": "Britische Schiffe sind als Beuteziele tabu. Diese Regel hat Hornigold höchstpersönlich aufgestellt.",
+        "ts_query": "Beuteziele Hornigold",
+        "difficulty": 2
+    },
+    {
+        "id": "UNFASSBAR_a_2_051",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Warum wird Hornigold schließlich als Kapitän abgewählt?",
+        "expected_excerpt": "Doch jetzt drängen immer mehr Piraten auf einen Kurswechsel. Der Gegenwind ist so groß, dass Hornigold sogar von seiner eigenen Crew als Kapitän abgewählt wird.",
+        "ts_query": "Hornigold Kapitän",
+        "difficulty": 4
+    },
+    {
+        "id": "UNFASSBAR_a_2_052",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Welcher Fehler bringt London endgültig gegen die Piraten auf?",
+        "expected_excerpt": "Sie erobern sogar ein Kriegsschiff der Royal Navy. Ein riesiger Fehler. Denn damit rufen sie dann doch noch das mächtige London auf den Plan.",
+        "ts_query": "London",
+        "difficulty": 4
+    },
+    {
+        "id": "UNFASSBAR_a_2_053",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wer wird von König George I. zum neuen Gouverneur der Bahamas gemacht?",
+        "expected_excerpt": "George I. Er nennt Rogers also zum neuen Gouverneur der Bahamas.",
+        "ts_query": "Gouverneur",
+        "difficulty": 2
+    },
+    {
+        "id": "UNFASSBAR_a_2_057",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Welcher Gründer der Republik nimmt den Gnadenakt an?",
+        "expected_excerpt": "Nach und nach nehmen immer mehr Piraten den Gnadenakt an. Darunter auch der Gründer der Republik, Benjamin Hornigold.",
+        "ts_query": "Gründer Gnadenakt",
+        "difficulty": 2
+    },
+    {
+        "id": "UNFASSBAR_a_2_058",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wie fällt die Piratenrepublik Nassau letztlich?",
+        "expected_excerpt": "Als Woods Rogers schließlich selbst in Nassau eintrifft, ist die Piratenrepublik bereits gefallen. Ohne, dass er eine einzige Kanonenkugel abschießen musste.",
+        "ts_query": "Piratenrepublik",
+        "difficulty": 4
+    },
+    {
+        "id": "UNFASSBAR_a_2_060",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wie viele ehemalige Kameraden liefert Hornigold an Rogers aus?",
+        "expected_excerpt": "Er bekommt zehn seiner ehemaligen Kameraden zu fassen und liefert sie alle an Rogers aus.",
+        "ts_query": "Kameraden Rogers",
+        "difficulty": 2
+    },
+    {
+        "id": "UNFASSBAR_a_2_063",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Warum kommt der Gnadenakt für Blackbeard nicht infrage?",
+        "expected_excerpt": "Der Gnadenakt kommt für ihn allerdings nicht in Frage. Zumindest nicht aus den Händen von Rogers. Die beiden haben nämlich eine Vorgeschichte.",
+        "ts_query": "Gnadenakt",
+        "difficulty": 5
+    },
+    {
+        "id": "UNFASSBAR_a_2_064",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Welche Verbindung haben Rogers und Blackbeard zueinander?",
+        "expected_excerpt": "Sowohl Rogers als auch Blackbeard stammen aus Bristol. Sie sind sogar in derselben Nachbarschaft aufgewachsen.",
+        "ts_query": "Rogers Blackbeard",
+        "difficulty": 2
+    },
+    {
+        "id": "UNFASSBAR_a_2_067",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wie schwer verwundet stirbt Blackbeard laut Bericht des Gouverneurs?",
+        "expected_excerpt": "Laut dem Bericht des Gouverneurs stirbt er mit fünf Schuss und 20 Stichwunden.",
+        "ts_query": "Bericht",
+        "difficulty": 3
+    },
+    {
+        "id": "UNFASSBAR_a_2_070",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Warum wird die Crew dieses Piraten im Epilog so leicht gefasst?",
+        "expected_excerpt": "Die gesamte Crew ist betrunken. Also wirklich hackedicht, lattenstramm, sternhagelvoll. Sie ist völlig unfähig, Widerstand zu leisten.",
+        "ts_query": "Crew",
+        "difficulty": 5
+    },
+    {
+        "id": "UNFASSBAR_a_2_072",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wie konnten Anne Bonny und Mary Reed der Hinrichtung entgehen?",
+        "expected_excerpt": "In Gefangenschaft geben sie an, schwanger zu sein. So können sie die Hinrichtung umgehen.",
+        "ts_query": "Hinrichtung",
+        "difficulty": 3
+    },
+    {
+        "id": "UNFASSBAR_a_2_073",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wie stellt das Transcript die Piratenrepublik insgesamt dar: freiheitlich oder staatlich geordnet?",
+        "expected_excerpt": "Trotzdem ist die Piratenrepublik kein richtiger Staat. Es gibt keine Verfassung und keine öffentlichen Institutionen. Aber immerhin ein Piratenkodex.",
+        "ts_query": "Piratenrepublik",
+        "difficulty": 5
+    },
+    {
+        "id": "UNFASSBAR_a_3_005",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Warum bestraft der Lehrer das Mädchen?",
+        "expected_excerpt": "Ein Mädchen hatte sie bei sich. Der Lehrer ist außer sich.",
+        "ts_query": "Lehrer",
+        "difficulty": 4
+    },
+    {
+        "id": "UNFASSBAR_a_3_007",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wer sitzt an diesem Tag ebenfalls im Klassenzimmer?",
+        "expected_excerpt": "Shin Don-yak sitzt an diesem Tag auch im Klassenzimmer.",
+        "ts_query": "Tag",
+        "difficulty": 1
+    },
+    {
+        "id": "UNFASSBAR_a_3_008",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Warum zweifelt Shin als Kind nicht daran, dass die Strafe gerecht war?",
+        "expected_excerpt": "Damals als kleiner Junge besteht für ihn kein Zweifel, dass das Mädchen die Strafe verdient hat. Sie hat gegen die Regeln verstoßen. Und Shin kennt nichts anderes als die Regeln der Klasse.",
+        "ts_query": "Shin Strafe",
+        "difficulty": 5
+    },
+    {
+        "id": "UNFASSBAR_a_3_010",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Was macht Shin Don-yaks Geschichte außergewöhnlich?",
+        "expected_excerpt": "Doch Shin wird aus Lager 14 entkommen. Als einer von nur zwei Menschen jemals.",
+        "ts_query": "Shin",
+        "difficulty": 3
+    },
+    {
+        "id": "UNFASSBAR_a_3_011",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wann erscheint ein Interview mit Shin Don-yak?",
+        "expected_excerpt": "2012 erscheint ein Interview mit Shin Don-yak, einem der zwei ehemaligen Insassen.",
+        "ts_query": "Interview Shin",
+        "difficulty": 2
+    },
+    {
+        "id": "UNFASSBAR_a_3_014",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Warum fällt es Shin schwer, über das Lager zu sprechen?",
+        "expected_excerpt": "Als das Interview erscheint, ist Shins Flucht schon sieben Jahre her. Oder erst sieben Jahre. Es fällt ihm schwer, über die Zeit im Lager zu sprechen. Er lässt lange Pausen, schaut ins Leere.",
+        "ts_query": "Lager",
+        "difficulty": 5
+    },
+    {
+        "id": "UNFASSBAR_a_3_016",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Warum wächst Shin nicht in einer normalen Familie auf?",
+        "expected_excerpt": "Aber er wächst nicht in einer richtigen Familie auf. Denn so etwas wie ein normales Familienleben gibt es dort nicht. Familien werden getrennt, wenn sie ins Lager verschleppt werden.",
+        "ts_query": "Familie",
+        "difficulty": 5
+    },
+    {
+        "id": "UNFASSBAR_a_3_019",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Warum sieht Shin seinen Vater und seinen Bruder nur selten?",
+        "expected_excerpt": "Sein Vater und seinen großen Bruder, der ebenfalls im Lager zur Welt gekommen ist, sieht Shins daher nur selten. Denn das Lager ist riesig.",
+        "ts_query": "Vater",
+        "difficulty": 4
+    },
+    {
+        "id": "UNFASSBAR_a_3_020",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Mit welcher NGO wurde für die Folge gesprochen?",
+        "expected_excerpt": "Für diese Folge haben wir mit Greg Skalatoujo gesprochen. Er ist Präsident und CEO des Committee for Human Rights in North Korea. Kurz HRNK.",
+        "ts_query": "Folge",
+        "difficulty": 4
+    },
+    {
+        "id": "UNFASSBAR_a_3_021",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Seit wann veröffentlicht das HRNK Berichte über Menschenrechtsverletzungen in Nordkorea?",
+        "expected_excerpt": "Seit 2001 veröffentlicht das HRNK regelmäßig Berichte über Menschenrechtsverletzungen in Nordkorea.",
+        "ts_query": "HRNK Menschenrechtsverletzungen",
+        "difficulty": 2
+    },
+    {
+        "id": "UNFASSBAR_a_3_022",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wie heißen die Internierungslager für politische Gefangene in Nordkorea?",
+        "expected_excerpt": "Und über die Kuali-So. So heißen die Internierungslager für politische Gefangene, die es bis heute in Nordkorea gibt.",
+        "ts_query": "Internierungslager",
+        "difficulty": 3
+    },
+    {
+        "id": "UNFASSBAR_a_3_025",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wie lebt Shin mit seiner Mutter im Lager?",
+        "expected_excerpt": "Shin und seine Mutter sind in einem einstöckigen Gebäude untergebracht. Betten, Stühle, Tische, fließendes Wasser, all das gibt es nicht. Auch kein Bad und keine Dusche.",
+        "ts_query": "Mutter",
+        "difficulty": 4
+    },
+    {
+        "id": "UNFASSBAR_a_3_027",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wo schlafen Shin und seine Mutter nachts?",
+        "expected_excerpt": "Nachts schlafen Shin und seine Mutter gemeinsam auf dem Betonboden.",
+        "ts_query": "Shin Mutter",
+        "difficulty": 1
+    },
+    {
+        "id": "UNFASSBAR_a_3_028",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Was gehört laut Transcript bis heute zum Alltag in diesen Gefangenenlagern?",
+        "expected_excerpt": "Sklavenarbeit gehört bis heute, Stand 2025, zum Alltag in diesen Gefangenenlagern.",
+        "ts_query": "Alltag",
+        "difficulty": 3
+    },
+    {
+        "id": "UNFASSBAR_a_3_029",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Seit mindestens wie vielen Jahren gibt es Lager 14 laut HRNK-Analyse?",
+        "expected_excerpt": "Nach den Analysen von Craig und seinem Team gibt es Lager 14 seit mindestens 60 Jahren.",
+        "ts_query": "Lager",
+        "difficulty": 3
+    },
+    {
+        "id": "UNFASSBAR_a_3_031",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wie lange dauern die Arbeitstage von Shins Mutter auf den Feldern?",
+        "expected_excerpt": "Die Arbeitstage sind zwischen 10 und 15 Stunden lang.",
+        "ts_query": "Arbeitstage",
+        "difficulty": 3
+    },
+    {
+        "id": "UNFASSBAR_a_3_032",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Ab wann müssen auch Kinder im Lager arbeiten?",
+        "expected_excerpt": "Auch die Kinder müssen ab dem Schulalter unter schwersten Bedingungen arbeiten.",
+        "ts_query": "Kinder",
+        "difficulty": 3
+    },
+    {
+        "id": "UNFASSBAR_a_3_033",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Was musste Shin als Kind in den Minen tun?",
+        "expected_excerpt": "Wir Kinder gingen in die Minen hinein und schoben die Lohren nach draußen. Die Erwachsenen hatten sie mit Kohlen beladen.",
+        "ts_query": "Minen",
+        "difficulty": 3
+    },
+    {
+        "id": "UNFASSBAR_a_3_034",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wie beschreibt Shin sein Verhältnis zu seiner Mutter in Bezug auf Essen?",
+        "expected_excerpt": "Er sieht sie damals nicht als Mutter, die man liebt und die Fürsorge spendet. Für Shin ist sie eine Konkurrentin. Um jede, noch so spärliche Mahlzeit.",
+        "ts_query": "Shin",
+        "difficulty": 5
+    },
+    {
+        "id": "UNFASSBAR_a_3_035",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Was gab es im Lager normalerweise zu essen?",
+        "expected_excerpt": "Im Lager gab es nur Mais zu essen. Dazu als Beilage Chinakohlsuppe. Dreimal am Tag, zwölf Monate im Jahr, immer dieses Essen.",
+        "ts_query": "Lager",
+        "difficulty": 4
+    },
+    {
+        "id": "UNFASSBAR_a_3_036",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Welche zusätzliche Strafe gab es für Fehler neben anderer Bestrafung?",
+        "expected_excerpt": "Wenn man aber einen Fehler gemacht hatte, dann bekamst du als Strafe nur die halbe Portion.",
+        "ts_query": "Strafe Fehler",
+        "difficulty": 2
+    },
+    {
+        "id": "UNFASSBAR_a_3_038",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Welche doppelte Rolle hat Shins Lehrer in der Schule?",
+        "expected_excerpt": "Auch Shins Lehrer ist im Grunde ein Wärter in anderer Funktion. Uniform und Waffe trägt er trotzdem.",
+        "ts_query": "Shins",
+        "difficulty": 2
+    },
+    {
+        "id": "UNFASSBAR_a_3_042",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wie wird sexuellem Kontakt ohne Erlaubnis begegnet?",
+        "expected_excerpt": "Sollte es ohne vorherige Erlaubnis zu sexuellem Kontakt kommen, werden die Täter auf der Stelle erschossen.",
+        "ts_query": "Kontakt Erlaubnis",
+        "difficulty": 3
+    },
+    {
+        "id": "UNFASSBAR_a_3_044",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Warum sind die Wärter im Lager praktisch allmächtig?",
+        "expected_excerpt": "Sie sind praktisch allmächtig im Lager und angewiesen, kein Mitgefühl zu zeigen. Sie bestimmen über Essensrationen und Strafen und überwachen jede Bewegung der Gefangenen.",
+        "ts_query": "Lager",
+        "difficulty": 5
+    },
+    {
+        "id": "UNFASSBAR_a_3_046",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Welche Macht über Leben und Tod beschreibt Kwoniak für sich als Wärter?",
+        "expected_excerpt": "Mit den Gefangenen konnte ich alles machen, wonach mir zumute war. Ob ich sie umbringe oder am Leben lasse, war allein mir überlassen.",
+        "ts_query": "Leben",
+        "difficulty": 3
+    },
+    {
+        "id": "UNFASSBAR_a_3_047",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wie wird laut Kwoniak Gehorsam im Lager erzwungen?",
+        "expected_excerpt": "Die Drohung, sie umzubringen, hält sie bestens unter Kontrolle. Mit einfachen Worten, wenn man im Lager überleben will, muss man gehorchen. Ansonsten wird man umgebracht.",
+        "ts_query": "Lager",
+        "difficulty": 4
+    },
+    {
+        "id": "UNFASSBAR_a_3_048",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wie heißt der zweite bekannte Überlebende aus Lager 14?",
+        "expected_excerpt": "Der zweite Überlebende, der aus Lager 14 fliehen und davon erzählen konnte, heißt Kim Jong.",
+        "ts_query": "Lager",
+        "difficulty": 2
+    },
+    {
+        "id": "UNFASSBAR_a_3_050",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Warum wird Kim Jong nach dem Sippenhaftprinzip mitbestraft?",
+        "expected_excerpt": "Bis herauskommt, dass sein Vater und älterer Bruder wegen Spionage hingerichtet worden waren, als Kim noch ein Kind war. Nach dem Sippenhaftprinzip in Nordkorea ist er damit mitschuldig.",
+        "ts_query": "Kim Sippenhaftprinzip",
+        "difficulty": 5
+    },
+    {
+        "id": "UNFASSBAR_a_3_051",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wann kommt Kim Jong ins Lager 14?",
+        "expected_excerpt": "Er wird 1995 ins Lager gebracht.",
+        "ts_query": "Lager",
+        "difficulty": 1
+    },
+    {
+        "id": "UNFASSBAR_a_3_052",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Was galt Kim Jong zufolge als das Schlimmste an Lager 14?",
+        "expected_excerpt": "Geht man nach den unmenschlichen Zuständen, die in den nordkoreanischen Camps herrschen, So war Nummer 14 das Schlimmste von allen.",
+        "ts_query": "Schlimmste",
+        "difficulty": 3
+    },
+    {
+        "id": "UNFASSBAR_a_3_055",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wie viele Stunden Schlaf bleiben Kim oft nur?",
+        "expected_excerpt": "Dann 4 Stunden Schlaf, bevor alles wieder von vorn beginnt.",
+        "ts_query": "Stunden",
+        "difficulty": 1
+    },
+    {
+        "id": "UNFASSBAR_a_3_057",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Warum litten die Minenarbeiter an Vitaminmangel?",
+        "expected_excerpt": "Die Minenarbeiter litten an Vitaminmangel, weil sie kein Sonnenlicht bekamen.",
+        "ts_query": "Minenarbeiter",
+        "difficulty": 4
+    },
+    {
+        "id": "UNFASSBAR_a_3_061",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wie knapp war das Essen im Lager tatsächlich?",
+        "expected_excerpt": "Schon das war so unergiebig, dass Gefangene, die nur das rationierte Essen zu sich nahmen, verhungerten.",
+        "ts_query": "Essen",
+        "difficulty": 3
+    },
+    {
+        "id": "UNFASSBAR_a_3_062",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wer hilft Kim trotz eigener Not mit Essen?",
+        "expected_excerpt": "Kims älterer Vorarbeiter versorgt den verletzten und hungernden Kim und teilt seine Ration mit ihm.",
+        "ts_query": "Kim",
+        "difficulty": 2
+    },
+    {
+        "id": "UNFASSBAR_a_3_064",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wie oft pro Woche müssen die Gefangenen Selbstkritik aufschreiben?",
+        "expected_excerpt": "Viermal pro Woche müssen sie aufschreiben, was sie falsch gemacht haben.",
+        "ts_query": "Woche",
+        "difficulty": 3
+    },
+    {
+        "id": "UNFASSBAR_a_3_066",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wie viele Hinrichtungen hat Kim Jong in seinem Abschnitt von Lager 14 miterlebt?",
+        "expected_excerpt": "Kim Jong berichtet von 25 Hinrichtungen, die er in seinem Abschnitt von Lager 14 mitbekommen hat.",
+        "ts_query": "Abschnitt Lager",
+        "difficulty": 2
+    },
+    {
+        "id": "UNFASSBAR_a_3_068",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Warum erschien eine Flucht aus Lager 14 unmöglich?",
+        "expected_excerpt": "Es gab einfach keine Möglichkeit, aus Lager 14 zu fliehen. Es lag in einem Tal, umgeben von hohen Bergen.",
+        "ts_query": "Lager",
+        "difficulty": 4
+    },
+    {
+        "id": "UNFASSBAR_a_3_069",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Warum kann Kim Jong schließlich doch aus Lager 14 herauskommen?",
+        "expected_excerpt": "In Freiheit hat er einen hohen Posten bei der Staatssicherheit, was ihm nach zwei Jahren in Lager 14 zugute kommt. Er wird begnadigt, wenn auch nicht freigelassen. Ihm wird schnell klar, dass er weiter lebenslang in Haft bleiben wird. Aber er wird von Nummer 14 nach Nummer 18 gebracht.",
+        "ts_query": "Lager",
+        "difficulty": 5
+    },
+    {
+        "id": "UNFASSBAR_a_3_071",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Warum fühlt sich Lager 18 für Kim Jong im Vergleich zu Lager 14 fast wie der Himmel an?",
+        "expected_excerpt": "Im Vergleich zu Lager 14 habe sich Lager 18 für Kim Jong trotzdem wie der Himmel angefühlt. Weil die Arbeitszeiten hier etwas erträglicher gewesen seien und die Familien zusammenleben durften.",
+        "ts_query": "Lager Kim Vergleich Lager Himmel",
+        "difficulty": 5
+    },
+    {
+        "id": "UNFASSBAR_a_3_077",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Was passiert 2015 mit Shins Aussagen zu Lager 14?",
+        "expected_excerpt": "Denn als er 2015 schon lange frei ist, nimmt er einige Aussagen zu seiner Zeit in Lager 14 zurück.",
+        "ts_query": "Lager 2015",
+        "difficulty": 3
+    },
+    {
+        "id": "UNFASSBAR_a_3_080",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wie bewertet Greg Skalatoujo Shin trotz seiner zurückgenommenen Aussagen?",
+        "expected_excerpt": "Für Greg Skalatouju bleibt Shin Dong-yak ein wertvoller Zeuge.",
+        "ts_query": "Greg Shin",
+        "difficulty": 5
+    },
+    {
+        "id": "UNFASSBAR_a_3_081",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Welche Grundzüge von Shins Geschichte hält Greg weiterhin für glaubwürdig?",
+        "expected_excerpt": "Er habe zwar einige Aussagen zurückgenommen, aber die Grundzüge seiner Erzählungen seien immer gleich geblieben. Er sei in einem Lager geboren worden, habe die Hinrichtung seiner Mutter und seines Bruders mit ansehen müssen und habe schließlich fliehen können.",
+        "ts_query": "Grundzüge",
+        "difficulty": 4
+    },
+    {
+        "id": "UNFASSBAR_a_3_082",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Warum lässt sich Shins Geschichte nicht abschließend überprüfen?",
+        "expected_excerpt": "Es ist unmöglich, Shins Zeugenaussagen abschließend zu überprüfen. Nur die Opfer und die nordkoreanische Regierung kennen die Fakten. Und das Regime leugnet die Existenz der Lager komplett.",
+        "ts_query": "Shins",
+        "difficulty": 5
+    },
+    {
+        "id": "UNFASSBAR_a_3_084",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Welcher Lagerbezirk wurde später in Lager 18 überführt?",
+        "expected_excerpt": "Nordkoreanische Unterlagen zeigen, dass dieser Lagerbezirk später in das Lager 18 überführt wurde.",
+        "ts_query": "Lagerbezirk Lager",
+        "difficulty": 2
+    },
+    {
+        "id": "UNFASSBAR_a_3_085",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wann soll Shin die Flucht gelungen sein?",
+        "expected_excerpt": "Hier soll Shin seine Jugend verbracht haben, bis ihm 2005 die Flucht gelingt.",
+        "ts_query": "Shin Flucht",
+        "difficulty": 2
+    },
+    {
+        "id": "UNFASSBAR_a_3_086",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wie viele Internierungslager für politische Gefangene sind laut HRNK im Frühjahr 2025 noch in Betrieb?",
+        "expected_excerpt": "Im Frühjahr 2025 geht das HRNK davon aus, dass in Nordkorea aktuell noch 5 Internierungslager für politische Gefangene in Betrieb sind.",
+        "ts_query": "Internierungslager Gefangene HRNK Frühjahr 2025",
+        "difficulty": 3
+    },
+    {
+        "id": "UNFASSBAR_a_3_088",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wie viele politische Lager soll es insgesamt seit Ende der 1940er Jahre gegeben haben?",
+        "expected_excerpt": "Zwischen Ende der 1940er Jahre bis heute habe es Craig zufolge insgesamt 19 Lager gegeben.",
+        "ts_query": "Lager Ende Jahre",
+        "difficulty": 3
+    },
+    {
+        "id": "UNFASSBAR_a_3_090",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Worauf setzt das Regime seit Kim Il-sungs Herrschaft ab 1948?",
+        "expected_excerpt": "Seit Kim Il-sungs Herrschaft ab 1948 setzt das Regime auf Indoktrination, Überwachung und Bestrafung zur Kontrolle des eigenen Volkes.",
+        "ts_query": "Regime Kim Herrschaft",
+        "difficulty": 3
+    },
+    {
+        "id": "UNFASSBAR_a_3_092",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wie beschreibt Barbara Demick die Vielfalt der nordkoreanischen Haftanstalten?",
+        "expected_excerpt": "Oder wie Barbara Demick in ihrem Buch Im Land des Flüsterns schreibt, so wie die Inuit für Schnee, haben die Nordkoreaner eine Vielzahl von Wörtern für Gefängnis.",
+        "ts_query": "Barbara",
+        "difficulty": 5
+    },
+    {
+        "id": "UNFASSBAR_a_3_093",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Was sind laut Greg die Kuali-so im Vergleich zu anderen Haftanstalten?",
+        "expected_excerpt": "Laut Greg seien es aber die Quali so, die die ultimative Bestrafung darstellten.",
+        "ts_query": "Greg",
+        "difficulty": 5
+    },
+    {
+        "id": "UNFASSBAR_a_3_095",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Was durften die Verhafteten bei ihrer Verschleppung mitnehmen?",
+        "expected_excerpt": "Die Verhafteten durften nichts mitnehmen.",
+        "ts_query": "Verhafteten",
+        "difficulty": 3
+    },
+    {
+        "id": "UNFASSBAR_a_3_096",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Was ist die oberste Regel, wenn eine ganze Familie in ein Straflager gebracht wird?",
+        "expected_excerpt": "Die verhaftete Familie findet nie wieder zusammen. Das ist die oberste Regel.",
+        "ts_query": "Familie",
+        "difficulty": 3
+    },
+    {
+        "id": "UNFASSBAR_a_3_099",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Welche Chancen hat man laut Greg in den Total Control Zones, jemals freizukommen?",
+        "expected_excerpt": "Vor allem in den Total Control Zones habe man kaum eine Chance, je wieder freizukommen, sagt uns Greg Skalatoujo.",
+        "ts_query": "Greg Total",
+        "difficulty": 2
+    },
+    {
+        "id": "UNFASSBAR_a_3_100",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Welches historische Vorbild nennt das Transcript für das nordkoreanische Lagersystem?",
+        "expected_excerpt": "Die Strafe und Arbeitslager der Sowjets hätten als Vorbild gedient. Kim Il-sung habe das Gulag-Prinzip dann auf seine Ideologie umgemünzt und eigene Lager errichtet.",
+        "ts_query": "Vorbild",
+        "difficulty": 4
+    },
+    {
+        "id": "UNFASSBAR_a_3_102",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Was löst Anfang der 1990er Jahre eine neue Fluchtbewegung aus Nordkorea aus?",
+        "expected_excerpt": "Aber Anfang der 90er bricht eine massive Hungersnot aus.",
+        "ts_query": "Anfang",
+        "difficulty": 3
+    },
+    {
+        "id": "UNFASSBAR_a_3_104",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wie viele Menschen fallen der Hungersnot laut Transcript zum Opfer?",
+        "expected_excerpt": "Die Wirtschaftskrise, Überflutungen und Dürre befeuern eine Hungersnot, der bis zu eine Million Menschen zum Opfer fallen.",
+        "ts_query": "Menschen",
+        "difficulty": 2
+    },
+    {
+        "id": "UNFASSBAR_a_3_107",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Was veröffentlicht der Menschenrechtsrat der Vereinten Nationen 2014 zu Nordkorea?",
+        "expected_excerpt": "2014 veröffentlicht der Menschenrechtsrat der Vereinten Nationen schließlich einen Bericht zu den Menschenrechten in Nordkorea.",
+        "ts_query": "Menschenrechtsrat Vereinten",
+        "difficulty": 3
+    },
+    {
+        "id": "UNFASSBAR_a_3_108",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Was sagt der UN-Bericht über die Leugnung der Lager durch Nordkorea?",
+        "expected_excerpt": "Obwohl die Behörden der Demokratischen Volksrepublik Korea die Existenz der Lager leugnen, haben die Aussagen ehemaliger Wächter, Insassen und Nachbarn diese Behauptung widerlegt. Satellitenbilder beweisen, dass das Lagersystem weiterhin in Betrieb ist.",
+        "ts_query": "Lager",
+        "difficulty": 4
+    },
+    {
+        "id": "UNFASSBAR_a_3_111",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Warum wirkt es so, als sei es in den letzten Jahren stiller um Nordkoreas Straflager geworden?",
+        "expected_excerpt": "Uns kommt es so vor, dass es in den letzten zehn Jahren wieder stiller geworden ist um die Straflager Nordkoreas. Weniger Dokus, Bücher, News-Meldungen.",
+        "ts_query": "Jahren",
+        "difficulty": 4
+    },
+    {
+        "id": "UNFASSBAR_a_3_113",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Welche zusätzliche Krise hat das Regime laut Transcript ebenfalls überstanden?",
+        "expected_excerpt": "Man könnte höchstens ergänzen, dass das Regime auch Covid-19 überstanden hat und weitere Flutkatastrophen. Die letzte war 2024.",
+        "ts_query": "Regime",
+        "difficulty": 2
+    },
+    {
+        "id": "UNFASSBAR_a_3_114",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wie beschreibt das Transcript Kim Jong-uns öffentliche Auftritte in den Flutgebieten?",
+        "expected_excerpt": "Es sind diese inszenierten Auftritte eines vor Kompetenz- und kraftstrotzenden Führers, die fast auf Meme-Level deutlich machen, wie wenig sich seit seinem Großvater Kim Il-sung getan hat.",
+        "ts_query": "Auftritte",
+        "difficulty": 5
+    },
+    {
+        "id": "UNFASSBAR_a_3_115",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Was hat sich laut Greg an den Zuständen in den Lagern bis heute nicht verbessert?",
+        "expected_excerpt": "Über andere Quellen wissen wir, dass sich nichts an den Zuständen verbessert habe. Und das Regime scheint nach wie vor Profit aus Sklavenarbeit seiner politischen Gefangenen zu schlagen.",
+        "ts_query": "Zuständen",
+        "difficulty": 4
+    },
+    {
+        "id": "UNFASSBAR_a_3_117",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Was soll seit Kim Jong-uns Machtübernahme zugenommen haben?",
+        "expected_excerpt": "Seit Kim Jong-uns Machtübernahme soll die Ausbeutung sogar zugenommen haben.",
+        "ts_query": "Kim Machtübernahme",
+        "difficulty": 3
+    },
+    {
+        "id": "UNFASSBAR_a_3_118",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Was zeigen Satellitenaufnahmen laut Greg heute in den Lagern?",
+        "expected_excerpt": "Laut Greg würden Satellitenaufnahmen zeigen, dass heute mehr Kohle in den Lagern gefördert wird.",
+        "ts_query": "Satellitenaufnahmen Greg",
+        "difficulty": 3
+    },
+    {
+        "id": "UNFASSBAR_a_3_119",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Welche Maßnahme schlägt Greg gegenüber Nordkorea vor, weil Sanktionen nicht greifen?",
+        "expected_excerpt": "Eine Maßnahme dagegen könne sein, Nordkorea aus der Generalversammlung der Vereinten Nationen zu suspendieren. Auch weil Sanktionen gerade nichts bringen würden.",
+        "ts_query": "Maßnahme Nordkorea Sanktionen",
+        "difficulty": 4
+    },
+    {
+        "id": "UNFASSBAR_a_3_120",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Womit verdient Nordkorea laut Transcript aktuell Milliarden?",
+        "expected_excerpt": "Schließlich verdiene Nordkorea Milliarden mit Waffenexporten nach Russland.",
+        "ts_query": "Nordkorea",
+        "difficulty": 3
+    },
+    {
+        "id": "UNFASSBAR_a_3_121",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Warum sei es laut Greg wichtig, das Thema Straflager präsent zu halten?",
+        "expected_excerpt": "Es sei laut Greg jedoch wichtig, das Thema präsent zu halten. Gerade wenn es wieder ein Dialog geben und Nordkorea Interesse an ausländischen Investitionen zeigen sollte.",
+        "ts_query": "Greg Thema",
+        "difficulty": 5
+    },
+    {
+        "id": "UNFASSBAR_a_3_122",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Warum würden westliche Unternehmen laut Greg nicht in Nordkorea investieren?",
+        "expected_excerpt": "Denn Greg ist sich sicher, kein amerikanisches oder deutsches Unternehmen würde in Nordkorea investieren. Ein Land, das Menschen in Lager steckt, foltert, vergewaltigt und tötet.",
+        "ts_query": "Unternehmen Greg Nordkorea",
+        "difficulty": 5
+    },
+    {
+        "id": "UNFASSBAR_a_3_123",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Warum kann Nordkorea an den Lagern nicht festhalten, wenn es sich der demokratischen Welt öffnen will?",
+        "expected_excerpt": "Sollte sich Nordkorea jemals der demokratischen Welt öffnen wollen, kann es also unmöglich an den Lagern festhalten.",
+        "ts_query": "Nordkorea Lagern Welt",
+        "difficulty": 4
+    },
+    {
+        "id": "UNFASSBAR_a_3_124",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Was zeigt laut Transcript, dass Nordkorea aktuell kein Interesse an Öffnung hat?",
+        "expected_excerpt": "Kim Jong-un verdient an Putins Krieg in der Ukraine, schickt Müllballons nach Südkorea und hat kein Interesse an einer Wiedervereinigung mit dem Nachbarland. Gleichzeitig testet er weiter Raketen und droht mit Nordkoreas nuklearer Schlagkraft.",
+        "ts_query": "Interesse",
+        "difficulty": 4
+    },
+    {
+        "id": "UNFASSBAR_a_3_125",
+        "category": "UNFASSBAR – ein Simplicissimus Podcast",
+        "semantic_query": "Wie bewertet das Transcript die Wahrscheinlichkeit, dass Nordkorea seine Straflager selbst schließt?",
+        "expected_excerpt": "Dass Nordkorea von sich aus seine Straflager schließt, scheint daher so unwahrscheinlich wie eh und je.",
+        "ts_query": "Nordkorea Straflager",
+        "difficulty": 4
+    },
+    {
+        "id": "EDELTALK_a_1_004",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Mit welcher Kamera hat Laurens 2013 angefangen zu filmen?",
+        "expected_excerpt": "Ich hab 2013 angefangen mit einer GoPro damals.",
+        "ts_query": "2013",
+        "difficulty": 1
+    },
+    {
+        "id": "EDELTALK_a_1_007",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Wie viele Aufrufe hatte dieses Video laut Laurens ein halbes Jahr später?",
+        "expected_excerpt": "Halbes Jahr später, eine Million Aufrufe.",
+        "ts_query": "Jahr",
+        "difficulty": 1
+    },
+    {
+        "id": "EDELTALK_a_1_011",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Was hatte Laurens ein halbes Jahr vor dem Anruf zu The Race gekauft und umgebaut?",
+        "expected_excerpt": "Ich hab ein halbes Jahr vorher mir einen Land Rover gekauft, hab den umgebaut zu einem Camper",
+        "ts_query": "Jahr",
+        "difficulty": 2
+    },
+    {
+        "id": "EDELTALK_a_1_013",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Warum gehen laut Laurens viele Leute im Winter nach Marokko?",
+        "expected_excerpt": "viele gehen da jetzt so hin, um einfach so den Winter auch ein bisschen zu skippen.",
+        "ts_query": "Winter",
+        "difficulty": 2
+    },
+    {
+        "id": "EDELTALK_a_1_016",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Welche YouTube-Serie von Ryan Trahan hatte Laurens sich vor The Race als Technik-Inspiration angesehen?",
+        "expected_excerpt": "Ich hatte vorher mir so ganz viele andere Videos angeschaut, so Penny Series von Ryan Trahan.",
+        "ts_query": "Ryan",
+        "difficulty": 2
+    },
+    {
+        "id": "EDELTALK_a_1_017",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "In welcher Stadt hing Laurens an Tag 4 laut eigener Aussage noch fest?",
+        "expected_excerpt": "okay, ich bin jetzt Tag 4 immer noch in scheiß Malaga.",
+        "ts_query": "Tag",
+        "difficulty": 2
+    },
+    {
+        "id": "EDELTALK_a_1_018",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Wie viel Geld hatte Laurens auf der Straße verdient, um sich Tickets bis Köln kaufen zu können?",
+        "expected_excerpt": "Ich habe zwar 180 Euro auf der Straße verdient, um dann alle Tickets bis nach Köln mir kaufen zu können.",
+        "ts_query": "Straße Tickets Köln",
+        "difficulty": 3
+    },
+    {
+        "id": "EDELTALK_a_1_021",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Wo war Laurens' Freundin während der Woche, in der er The Race gemacht hat?",
+        "expected_excerpt": "Und sie war die komplette Woche, wo ich The Race gemacht habe, in einem Airbnb in Malaga.",
+        "ts_query": "The",
+        "difficulty": 2
+    },
+    {
+        "id": "EDELTALK_a_1_030",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Welche Art von Unternehmen half Laurens anfangs mit Social-Media-Content, obwohl sie damit überfordert waren?",
+        "expected_excerpt": "Und dann habe ich sehr viel am Anfang mit sehr vielen so sehr altbacken Unternehmen dann irgendwie geholfen, denen coolen Social Media-Content zu machen.",
+        "ts_query": "Unternehmen",
+        "difficulty": 3
+    },
+    {
+        "id": "EDELTALK_a_1_034",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Welche fünfte und letzte Person landet bei den 'Edeln 5' automatisch auf Platz 1?",
+        "expected_excerpt": "Und zwar ist die letzte Person Drachenlord.",
+        "ts_query": "Person",
+        "difficulty": 2
+    },
+    {
+        "id": "EDELTALK_a_1_038",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Was ist Laurens' Empfehlung der Woche?",
+        "expected_excerpt": "Meine Empfehlung ist einfach mal irgendein Gespräch mit einer fremden Person.",
+        "ts_query": "Empfehlung",
+        "difficulty": 1
+    },
+    {
+        "id": "EDELTALK_a_2_001",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Wer ist in dieser Folge erneut als Gast dabei?",
+        "expected_excerpt": "denn wir haben wieder Arne zu Gast von Schwarze Akte und Wild Crimes in der ARD-Audiothek.",
+        "ts_query": "Gast",
+        "difficulty": 1
+    },
+    {
+        "id": "EDELTALK_a_2_006",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Mit wem lebt Joe in dem Haus zusammen, in dem Robert übernachtet?",
+        "expected_excerpt": "Dieser Freund Joe, der wohnt zusammen mit seinem Partner, der heißt Victor, die wohnt zusammen in einem Haus und es gibt noch einen Untermieter, der heißt Dylan.",
+        "ts_query": "Haus",
+        "difficulty": 2
+    },
+    {
+        "id": "EDELTALK_a_2_008",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Was liegt auf dem Nachttisch des Toten und macht einen natürlichen Tod unwahrscheinlich?",
+        "expected_excerpt": "weil auf dem Nachttisch des Toten liegt ein blutiges Messer.",
+        "ts_query": "Nachttisch Toten",
+        "difficulty": 1
+    },
+    {
+        "id": "EDELTALK_a_2_010",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Wie alt war Robert zum Zeitpunkt seines Todes?",
+        "expected_excerpt": "Robert, der ist zum Zeitpunkt seines Todes 32 Jahre alt.",
+        "ts_query": "Zeitpunkt",
+        "difficulty": 1
+    },
+    {
+        "id": "EDELTALK_a_2_012",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Wie hieß der Geheimbund, in dem Robert und Joe am College waren?",
+        "expected_excerpt": "Die beiden waren am College in einem Geheimbund. Der heißt 13er Club.",
+        "ts_query": "College",
+        "difficulty": 1
+    },
+    {
+        "id": "EDELTALK_a_2_014",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Wie wird Robert von Freunden und Familie beschrieben?",
+        "expected_excerpt": "und wird von Freunden und Familie als freundlich, als witzig, als zurückhaltenden Typ beschrieben.",
+        "ts_query": "Freunden Familie",
+        "difficulty": 1
+    },
+    {
+        "id": "EDELTALK_a_2_017",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Wann und wo sehen sich Robert und seine Frau am Tattag zum letzten Mal persönlich?",
+        "expected_excerpt": "Da fahren nämlich Robert und seine Frau Kathy gemeinsam zur Arbeit, diese 40 Minuten, in die Stadt rein. Und sie verabschieden sich um 8.45 Uhr am Morgen. Das wird das letzte Mal sein, dass Kathy oder Katie ihren Ehemann lebend sehen wird.",
+        "ts_query": "Robert Frau Mal",
+        "difficulty": 3
+    },
+    {
+        "id": "EDELTALK_a_2_019",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "In welcher Straße befindet sich das Haus von Joe und Victor?",
+        "expected_excerpt": "und macht sich dann auf den Weg in die Swan Street. Da befindet sich das Haus von Joe und Victor.",
+        "ts_query": "Haus Joe",
+        "difficulty": 1
+    },
+    {
+        "id": "EDELTALK_a_2_020",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Um wie viel Uhr kommt Robert im Haus an?",
+        "expected_excerpt": "hier kommt Robert um 22.30 Uhr an.",
+        "ts_query": "Uhr Robert",
+        "difficulty": 1
+    },
+    {
+        "id": "EDELTALK_a_2_022",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Was möchte Robert noch tun, bevor er schlafen geht?",
+        "expected_excerpt": "Und Robert fühlt sich von diesem warmen Tag so ein bisschen schwitzig und will noch duschen, bevor er ins Bett geht.",
+        "ts_query": "Robert",
+        "difficulty": 1
+    },
+    {
+        "id": "EDELTALK_a_2_023",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Welches Geräusch weckt Joe und Victor in der Nacht?",
+        "expected_excerpt": "Bis Joe und Victor ganz oben von einem Geräusch geweckt werden. Und zwar einem Klangspiel, was an der Hintertür bei der Küche hängt.",
+        "ts_query": "Geräusch Joe Victor",
+        "difficulty": 1
+    },
+    {
+        "id": "EDELTALK_a_2_024",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Was macht Joe unmittelbar, nachdem er Robert im Bett liegen sieht?",
+        "expected_excerpt": "Und Joe, der nimmt noch das Messer, was auf dem Bauch von Robert liegt, nimmt es und packt es auf den Nachttisch",
+        "ts_query": "Robert",
+        "difficulty": 2
+    },
+    {
+        "id": "EDELTALK_a_2_025",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Um wie viel Uhr geht der 911-Notruf ein und wer setzt ihn ab?",
+        "expected_excerpt": "Um 23.49 Uhr setzt Victor diesen Notruf-Call ab.",
+        "ts_query": "Uhr",
+        "difficulty": 1
+    },
+    {
+        "id": "EDELTALK_a_2_026",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Von wem wird Dylan in der Nacht wach?",
+        "expected_excerpt": "Und von diesem Rumgeschreie wird Dylan wach.",
+        "ts_query": "Dylan",
+        "difficulty": 1
+    },
+    {
+        "id": "EDELTALK_a_2_027",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Welche Theorie äußern die drei Männer direkt nach dem Fund von Robert?",
+        "expected_excerpt": "Und alle drei Männer sind sich sehr schnell einig, ey, hier muss ein Einbrecher sein.",
+        "ts_query": "Männer",
+        "difficulty": 1
+    },
+    {
+        "id": "EDELTALK_a_2_029",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Wie beschreiben die Ermittler die Rolle von Joe in der Gruppe?",
+        "expected_excerpt": "Also die Ermittler stellen im Verhör fest, dass Joe der Anführer ist der Gruppe. Der ist lautstark und redet sehr viel.",
+        "ts_query": "Ermittler Joe",
+        "difficulty": 2
+    },
+    {
+        "id": "EDELTALK_a_2_030",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Welchen Abschluss hat Dylan laut den Ermittlern?",
+        "expected_excerpt": "Der hat einen Abschluss in Kinderliteratur",
+        "ts_query": "Abschluss",
+        "difficulty": 1
+    },
+    {
+        "id": "EDELTALK_a_2_033",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Wie schildern die Rettungssanitäter die drei Männer am Tatort?",
+        "expected_excerpt": "die Stimmung der Männer irgendwie ein bisschen komisch. Also, die haben auch gesagt, irgendwie wirkten die drei so ein bisschen zu ruhig für das, was da passiert ist. Und die Männer hatten wohl auch Bademäntel an und sahen relativ frisch geduscht aus.",
+        "ts_query": "Männer",
+        "difficulty": 3
+    },
+    {
+        "id": "EDELTALK_a_2_040",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "An welchen zwei Orten schlagen die Spürhunde im Haus bzw. am Haus an?",
+        "expected_excerpt": "Und die schlagen auch an zwei Orten im Haus tatsächlich an. Und zwar einmal beim Trockner und beim Abfluss im Hinterhof.",
+        "ts_query": "Orten Haus Haus",
+        "difficulty": 2
+    },
+    {
+        "id": "EDELTALK_a_2_041",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Warum halten die Ermittler das auf dem Nachttisch gefundene Messer für problematisch als Tatwaffe?",
+        "expected_excerpt": "Dieses Messer ist aber viel zu lang für die Einstichwunden im Oberkörper. Die passen nicht zu den Wunden",
+        "ts_query": "Messer",
+        "difficulty": 2
+    },
+    {
+        "id": "EDELTALK_a_2_042",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Was fehlt in dem Messerset aus Dylans Zimmer?",
+        "expected_excerpt": "Und in diesem Messerset ist ein Tranchiermesser, eine große Gabel und ein kleines Messer. Und surprise, surprise, das kleine Messer fehlt.",
+        "ts_query": "Messerset",
+        "difficulty": 2
+    },
+    {
+        "id": "EDELTALK_a_2_048",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Welches Detail an der Haustür nutzt die Verteidigung, um doch einen Einbrecher durch die Vordertür für möglich zu halten?",
+        "expected_excerpt": "Es ist möglich, dass jemand die Hand durch den Briefkasten steckt und dann von innen die Haustür öffnen könnte.",
+        "ts_query": "Haustür",
+        "difficulty": 2
+    },
+    {
+        "id": "EDELTALK_a_2_050",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Wie erklärt Dylans Mutter das fehlende kleine Messer aus dem Set?",
+        "expected_excerpt": "Und Dillans Mutter sagt, dieses Messerset, das hat sie ihrem Sohn geschenkt, aber bevor sie ihm das geschenkt hat, hat sie sich das kleine Messer rausgenommen und für sich behalten.",
+        "ts_query": "Messer",
+        "difficulty": 2
+    },
+    {
+        "id": "EDELTALK_a_2_051",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Wie lautet am Ende das Urteil gegen Joe, Victor und Dylan?",
+        "expected_excerpt": "Das Urteil lautet, Joe, Viktor und Dylan sind nicht schuldig.",
+        "ts_query": "Urteil",
+        "difficulty": 1
+    },
+    {
+        "id": "EDELTALK_a_3_004",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Seit wie vielen Jahren macht Anne laut eigener Aussage schon True Crime?",
+        "expected_excerpt": "Ich mache jetzt seit fast fünf Jahren schon True Crime.",
+        "ts_query": "Jahren True",
+        "difficulty": 1
+    },
+    {
+        "id": "EDELTALK_a_3_008",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Wie heißt die Hauptperson des Falls, den Anne vorstellt?",
+        "expected_excerpt": "Aber die Hauptperson heißt Anni Borjessen.",
+        "ts_query": "Hauptperson",
+        "difficulty": 1
+    },
+    {
+        "id": "EDELTALK_a_3_014",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Welche musikalische Eigenschaft wird über Anni erzählt?",
+        "expected_excerpt": "Und Anni ist eine begeisterte Musikerin. Also sie singt gerne selber, hat auch eine eigene Band.",
+        "ts_query": "Anni",
+        "difficulty": 2
+    },
+    {
+        "id": "EDELTALK_a_3_017",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Welchen potenziell problematischen Charakterzug hebt Anne bei Anni zusätzlich hervor?",
+        "expected_excerpt": "Und es ist vielleicht noch ganz wichtig zu wissen, dass Anni sehr vertrauensselig ist",
+        "ts_query": "Anni",
+        "difficulty": 2
+    },
+    {
+        "id": "EDELTALK_a_3_020",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Von welchem Flughafen will Anni fliegen und wie weit ist dieser von Edinburgh entfernt?",
+        "expected_excerpt": "Sie geht aber nicht in Edinburgh zum Flughafen, sondern in Glasgow. Also, in einer anderen Stadt, was ungefähr so anderthalb Stunden mit dem Zug entfernt ist.",
+        "ts_query": "Edinburgh",
+        "difficulty": 2
+    },
+    {
+        "id": "EDELTALK_a_3_021",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Was passiert mit dem Flugzeug, das Anni eigentlich nach Schweden bringen soll?",
+        "expected_excerpt": "Und dieses Flugzeug, das sie besteigen möchte, das hebt auch ab planmäßig. Alles cool, fliegt nach Schweden, aber Anni sitzt nicht im Flugzeug.",
+        "ts_query": "Anni",
+        "difficulty": 2
+    },
+    {
+        "id": "EDELTALK_a_3_024",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "In welcher Körperhaltung liegt die tote Person am Strand?",
+        "expected_excerpt": "Und er sieht, dass die Beine der Person in Richtung Meer ausgestreckt sind und der Kopf Richtung Mauer. Und die Person hat alle Viere von sich gestreckt. Das Gesicht liegt im Sand.",
+        "ts_query": "Person",
+        "difficulty": 2
+    },
+    {
+        "id": "EDELTALK_a_3_025",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Warum müssen sich die Beamten am Fundort beeilen?",
+        "expected_excerpt": "Aber die Beamten müssen sich beeilen, weil, anders als auf dem Bild, ist gerade Ebbe und die Flut droht zurückzukommen.",
+        "ts_query": "Beamten",
+        "difficulty": 2
+    },
+    {
+        "id": "EDELTALK_a_3_027",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Wen besucht Anni am Freitagabend vor ihrem Tod noch auf der Arbeit?",
+        "expected_excerpt": "Also Freitagabend besucht Anni eine Kollegin auf der Arbeit. Die heißt Kat",
+        "ts_query": "Anni Freitagabend",
+        "difficulty": 1
+    },
+    {
+        "id": "EDELTALK_a_3_030",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Um wie viel Uhr wird Anni im Fußgängertunnel vom Bahnhof ins Flughafengebäude aufgenommen?",
+        "expected_excerpt": "Um 15.14 Uhr gibt es eine Aufnahme von einer Videoüberwachung in diesem Fußgängertunnel vom Bahnhof ins Flughafengebäude rein.",
+        "ts_query": "Uhr Fußgängertunnel Bahnhof Flughafengebäude",
+        "difficulty": 1
+    },
+    {
+        "id": "EDELTALK_a_3_033",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Wie wirkt Anni laut Maria auf dem späteren Kamerabild nach den drei Minuten auf dem Parkplatz?",
+        "expected_excerpt": "Und ihre beste Freundin Maria aus Schweden, die hat auch gesagt, wenn Anni so guckt, dann war sie genervt und irgendwie sauer auf jemanden oder auf etwas.",
+        "ts_query": "Anni Maria",
+        "difficulty": 3
+    },
+    {
+        "id": "EDELTALK_a_3_036",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Wie schnell stuft die schottische Polizei den Fall in einem Schreiben an Schweden als Suizid ein?",
+        "expected_excerpt": "Und das wurde ihr abgelehnt mit der Begründung, dass die Informationen, die da drin stehen, die Beziehung vom Land Schweden zu anderen Ländern beeinträchtigen würde.",
+        "ts_query": "Schweden",
+        "difficulty": 5
+    },
+    {
+        "id": "EDELTALK_a_3_037",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Was wundert Annis Mutter an den mitgeschickten Gegenständen aus Schottland?",
+        "expected_excerpt": "Die Sachen, die am Strand ja gefunden wurden, die auch mitgeschickt wurden, das findet Annis Mutter zum Beispiel auch schon merkwürdig. So, warum werden diese Sachen so schnell schon nach Schweden geschickt?",
+        "ts_query": "Annis",
+        "difficulty": 3
+    },
+    {
+        "id": "EDELTALK_a_3_043",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Wie weit vom Fundort entfernt sieht eine Zeugin eine Person am Wasser stehen?",
+        "expected_excerpt": "weil die Person stand ungefähr 400 Meter vom Fundort der Leiche entfernt.",
+        "ts_query": "Fundort Person",
+        "difficulty": 2
+    },
+    {
+        "id": "EDELTALK_a_3_044",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Wie weit müsste eine 1,72 Meter große Person laut Nachstellung ins Wasser gehen, um dort nicht mehr stehen zu können?",
+        "expected_excerpt": "Und er muss ziemlich weit ins Wasser gehen, 800 Meter, das finde ich schon viel, fast ein Kilometer ins Wasser",
+        "ts_query": "Wasser",
+        "difficulty": 2
+    },
+    {
+        "id": "EDELTALK_a_3_046",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Welche Verletzung entdeckt die schwedische Bestatterin bzw. Gerichtsmedizinerin an Annis Körper, die im schottischen Bericht fehlt?",
+        "expected_excerpt": "Denn die kann sehen, dass Annis Körper voller blauer Flecken ist. Und das steht nicht im schottischen Obduktionsbericht.",
+        "ts_query": "Annis",
+        "difficulty": 2
+    },
+    {
+        "id": "EDELTALK_a_3_051",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Was erzählt Anni ihrem Bruder aus der Telefonzelle?",
+        "expected_excerpt": "Und Anni hat Sorgen geäußert bei ihrem Bruder. So von wegen, ey, ich fühle mich irgendwie verfolgt. Kann man mich tracken mit meinem Telefon?",
+        "ts_query": "Anni",
+        "difficulty": 2
+    },
+    {
+        "id": "EDELTALK_a_3_054",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Was findet das Labor im Gewebe, das die Familie später untersuchen lässt?",
+        "expected_excerpt": "haben die Gewebe ins Labor schicken lassen. Und dort wurde ein Test gemacht und das Labor konnte Kiesel-Algen nachweisen.",
+        "ts_query": "Labor",
+        "difficulty": 2
+    },
+    {
+        "id": "EDELTALK_a_3_055",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Welche Form haben die Kieselalgen aus Meerwasser laut Anne?",
+        "expected_excerpt": "Und Meerwasser-Kiesel-Algen haben eine ganz spezielle Form und zwar sind die rund.",
+        "ts_query": "Form",
+        "difficulty": 1
+    },
+    {
+        "id": "EDELTALK_a_3_060",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Wie lautet laut Anne bis heute die offizielle Erklärung für Annis Tod?",
+        "expected_excerpt": "Also offiziell ist nach wie vor die Theorie oder die Erklärung Suizid.",
+        "ts_query": "Erklärung",
+        "difficulty": 1
+    },
+    {
+        "id": "EDELTALK_a_4_001",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Warum ist Berlin für Marley attraktiver als kleinere Städte?",
+        "expected_excerpt": "Das ist auch eine Sache, was ich an Berlin so feier. In Berlin ist halt so, du gehst so in der Masse einfach unter. Du bist einfach so frei.",
+        "ts_query": "Berlin",
+        "difficulty": 4
+    },
+    {
+        "id": "EDELTALK_a_4_005",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Warum sieht Marley die Auszeichnung als Newcomer des Jahres eher als schlechtes Omen?",
+        "expected_excerpt": "Ich war viermal nominiert. Newcomer des Jahres. Und ich hab nichts gewonnen.",
+        "ts_query": "Newcomer",
+        "difficulty": 4
+    },
+    {
+        "id": "EDELTALK_a_10_007",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Warum wollte Hugo beim Kennenlernen am Anfang nicht sagen, dass er Twitch und YouTube macht?",
+        "expected_excerpt": "Die sollen nicht wissen am Anfang, dass ich Twitch und YouTube mache.",
+        "ts_query": "Twitch YouTube",
+        "difficulty": 4
+    },
+    {
+        "id": "EDELTALK_a_12_005",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Welche Plattform nennt Mirko trotz Kritik weiterhin einen guten Indikator für gerade virulente Themen?",
+        "expected_excerpt": "Es ist immer noch, auch wenn ich die Plattform inzwischen nicht mehr so mag, wie ich sie früher mal mochte, Ex, also früher Twitter.",
+        "ts_query": "Plattform",
+        "difficulty": 4
+    },
+    {
+        "id": "EDELTALK_a_12_104",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Warum hält Mirko die Langsamkeit der Demokratie zugleich für eine Stärke?",
+        "expected_excerpt": "Natürlich hat in der Demokratie Schwachstellen. Manches geht langsamer. Aber das sind gleichzeitig oft auch die Stärken von der Demokratie, weil nicht einer willkürlich jetzt einfach mal sagen kann.",
+        "ts_query": "Demokratie",
+        "difficulty": 5
+    },
+    {
+        "id": "EDELTALK_a_10_108",
+        "category": "Edeltalk - mit Dominik & Kevin",
+        "semantic_query": "Warum wirkt Köln für Hugos Kennenlernen sinnvoller als Luxemburg?",
+        "expected_excerpt": "Ich glaube, würdest du es eher feiern, wenn du jemanden so im Real Life kennenlernst, so mäßig. Ja, das ist ja besser, glaube ich. Aber wenn du nach Köln ziehst, dann macht es ja wirklich mehr Sinn, dann hier zu warten, bis du hier bist, Bro.",
+        "ts_query": "Köln",
+        "difficulty": 5
+    }
+]

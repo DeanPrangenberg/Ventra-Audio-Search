@@ -78,7 +78,7 @@ services:
 
   api:
     build:
-      context: ./backend
+      context: api
       dockerfile: Dockerfile
     restart: unless-stopped
     depends_on:
@@ -95,7 +95,7 @@ services:
     ports:
       - "8880:8880"
     volumes:
-      - ./.data/backend/downloaded_audios:/app/downloaded_audios
+      - ./.data/restApi/downloaded_audios:/app/downloaded_audios
 
   frontend:
     build:

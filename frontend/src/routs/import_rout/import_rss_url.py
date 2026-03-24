@@ -32,7 +32,8 @@ def mount_rss_renderer():
     rss_feed_input = gr.Text(
         label="Podcast RSS Feed URL",
         placeholder="https://podcast.feed.rss",
-        interactive=True
+        interactive=True,
+        elem_classes="no-bg",
     )
 
     input_error = gr.Markdown()
@@ -53,31 +54,35 @@ def mount_rss_renderer():
             if not f.get("category") in config_manager.ConfigManager().get_category_list():
                 config_manager.ConfigManager().extend_categories(f.get("category"))
 
-            with gr.Accordion(label=label, open=False):
+            with gr.Accordion(label=label, open=False, elem_classes="almost-no-bg"):
                 if f.get("error"):
                     gr.Markdown(f"**Error:** {f['error']}", elem_id="error-markdown")
 
-                title = gr.Textbox(label="Set a Title", value=f.get("title", ""))
+                title = gr.Textbox(label="Set a Title", value=f.get("title", ""), elem_classes="almost-no-bg")
                 record_time = gr.DateTime(
                     label="Enter Recording date & time",
                     value=f.get("time", None),
+                    elem_classes="almost-no-bg"
                 )
                 category = gr.Dropdown(
                     label="Choose a Category",
                     choices=config_manager.ConfigManager().get_category_list(),
                     value=f.get("category", None),
                     interactive=True,
+                    elem_classes="almost-no-bg"
                 )
                 audio_type = gr.Dropdown(
                     label="Choose an Audio Type",
                     value=f.get("audio_type", "Media"),
                     choices=["Meeting", "Media", "Generic"],
                     interactive=True,
+                    elem_classes="almost-no-bg"
                 )
                 summary = gr.Textbox(
                     label="Write a little summary",
                     value=f.get("summary", ""),
-                    lines=3,
+                    lines=5,
+                    elem_classes="almost-no-bg"
                 )
 
                 title.change(
@@ -117,7 +122,7 @@ def mount_rss_renderer():
                 )
 
         if state:
-            send_btn = gr.Button("Send configured episodes to backend", variant="primary")
+            send_btn = gr.Button("Send configured episodes to Backend", variant="primary")
             send_btn.click(
                 fn=do_backend_request,
                 inputs=[found_episodes_state],

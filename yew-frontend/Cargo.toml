@@ -1,0 +1,12 @@
+[package]
+name = "yew-frontend"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+yew = { version = "0.23", features = ["csr"] }
+yew-router = "0.20.0"
+reqwest = { version = "0.12", default-features = false, features = ["json"] }
+wasm-bindgen-futures = "0.4"
+serde = { version = "1", features = ["derive"] }
+web-sys = "0.3.91"

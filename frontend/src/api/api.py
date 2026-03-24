@@ -67,7 +67,7 @@ class API:
         errs = invalid.get("errors") or []
 
         if all_invalid and not idxs:
-            return [{"index": i, "error": "invalid (backend returned 422 without per-item details)"} for i in
+            return [{"index": i, "error": "invalid (restApi returned 422 without per-item details)"} for i in
                     range(len(payload_list))]
 
         result: list[dict] = []

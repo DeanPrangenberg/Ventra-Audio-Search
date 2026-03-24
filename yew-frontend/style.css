@@ -1,0 +1,498 @@
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&display=swap');
+
+@font-face {
+  font-family: "Junicode";
+  src: url("/Junicode.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Junicode";
+  src: url("/Junicode-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Junicode";
+  src: url("/Junicode-BoldItalic.woff2") format("woff2");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Junicode Condensed";
+  src: url("/Junicode-RegularCondensed.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Junicode Condensed";
+  src: url("/Junicode-ItalicCondensed.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Junicode Condensed";
+  src: url("/Junicode-BoldItalicCondensed.woff2") format("woff2");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+:root {
+  --dark-primary-bg: #1F1F1F;
+  --dark-secondary-bg: #373737;
+  --dark-primary-object: #D1CFC0;
+  --dark-secondary-object: #373737;
+  --dark-primary-text: #D1CFC0;
+  --dark-secondary-text: #1F1F1F;
+  --dark-contrast-text: #F77053;
+
+  --light-primary-bg: #F2EFE3;
+  --light-secondary-bg: #E7E4D7;
+  --light-primary-object: #2E2E2E;
+  --light-secondary-object: #E7E4D7;
+  --light-primary-text: #2E2E2E;
+  --light-secondary-text: #F2EFE3;
+  --light-contrast-text: #F77053;
+}
+
+body {
+  margin: 0;
+  background: var(--dark-primary-bg);
+  color: var(--dark-primary-text);
+  font-family: "Bricolage Grotesque", ui-sans-serif, sans-serif;
+}
+
+button {
+  margin: 10px;
+  padding: 10px 25px;
+  background: var(--dark-primary-object);
+  color: var(--dark-secondary-text);
+  border-radius: 10px;
+  font-size: 16px;
+  transform: scale(1);
+  transition: transform 0.2s;
+  border: none;
+}
+
+.alt-button {
+  background: var(--dark-secondary-object);
+  color: var(--dark-primary-text);
+}
+
+button:hover {
+  transform: scale(1.02);
+}
+
+button:active {
+  transform: scale(0.95);
+  filter: brightness(0.85);
+}
+
+input {
+  margin: 10px;
+  padding: 10px 25px;
+  outline: none;
+  overflow: hidden;
+  background-color: var(--dark-secondary-object);
+  color: var(--dark-primary-text);
+  border-radius: 10px;
+  transition: all 0.5s;
+  border: none;
+}
+
+input:hover {
+  transform: scale(1.0125);
+}
+
+input:focus {
+  transform: scale(1.0125);
+  filter: brightness(1.1);
+}
+
+.page-header {
+  font-size: clamp(3rem, 10vw, 2rem);
+  text-align: center;
+  letter-spacing: -0.005em;
+  text-wrap: balance;
+  font-family: "Junicode";
+  margin: 0;
+  padding-left: 0;
+  line-height: 0.9;
+  font-weight: 100;
+}
+
+.page-header h1 {
+  color: var(--dark-primary-text);
+}
+
+.page-header b {
+  color: var(--dark-contrast-text);
+}
+
+/* ------ */
+/* Navbar */
+/* ------ */
+
+/* Logo */
+.navbar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 16px 24px;
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.navbar img {
+  width: 25px;
+  height: 25px;
+  margin-right: 10px;
+  display: block;
+}
+
+.brand {
+  font-weight: 700;
+  font-size: 25px;
+  font-family: "Junicode";
+}
+
+/* Rout Links */
+.nav-links {
+  display: flex;
+  gap: 16px;
+  justify-self: center;
+}
+
+.nav-link {
+  color: var(--dark-primary-text);
+  background-color: var(--dark-primary-bg);
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: background 0.15s ease;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.nav-link:hover {
+  filter: brightness(1.15);
+  transform: scale(1.02);
+}
+
+.page-content {
+  padding: 24px;
+}
+
+/* Github Link */
+.nav-control {
+  display: flex;
+  justify-self: end;
+}
+
+.github-button-icon {
+  width: 25px;
+  height: 25px;
+  background-color: var(--dark-primary-object);
+
+  -webkit-mask: url("/github-icon.png") no-repeat center;
+  -webkit-mask-size: contain;
+  mask: url("/github-icon.png") no-repeat center;
+  mask-size: contain;
+  transform: scale(1);
+  transition: transform 0.2s;
+}
+
+.github-button-icon:hover {
+  filter: brightness(1.15);
+  transform: scale(1.02);
+}
+
+/* ---- */
+/* Home */
+/* ---- */
+
+.zen-hero {
+  padding: 72px 24px 56px 24px;
+}
+
+.zen-hero-inner {
+  max-width: 760px;
+  margin: 0 auto;
+  display: grid;
+}
+
+.zen-title {
+  margin: 0;
+  font-size: clamp(3.2rem, 7vw, 6.8rem);
+  line-height: 0.92;
+  font-weight: 700;
+  letter-spacing: -0.05em;
+  color: #f3efe5;
+  text-wrap: balance;
+  text-align: center;
+}
+
+.zen-copy {
+  margin-top: 24px;
+  font-size: clamp(1.05rem, 1.5vw, 1.28rem);
+  line-height: 1.55;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: #bdb8ad;
+  text-align: center;
+}
+
+.zen-hero h1 {
+  margin: 0;
+  padding-left: 0;
+  font-size: clamp(5rem, 10vw, 4rem);
+  line-height: 0.9;
+  font-weight: normal;
+  letter-spacing: -0.005em;
+  color: var(--dark-primary-text);
+  text-wrap: balance;
+  font-family: "Junicode";
+  text-align: center;
+}
+
+.zen-hero b {
+  margin: 0;
+  padding-left: 0;
+  line-height: 0.9;
+  font-size: clamp(5rem, 10vw, 4rem);
+  font-weight: normal;
+
+  letter-spacing: -0.005em;
+  color: var(--dark-contrast-text);
+  text-wrap: balance;
+  font-family: "Junicode";
+  text-align: center;
+}
+
+/* ------ */
+/* Search */
+/* ------ */
+
+.search-input-container {
+  display: grid;
+}
+
+.search-ui-container {
+  margin-top: 50px;
+}
+
+/* From Uiverse.io by mobinkakei */
+#wifi-loader {
+  --background: #62abff;
+  --front-color: #4f29f0;
+  --back-color: #c3c8de;
+  --text-color: #414856;
+  width: 64px;
+  height: 64px;
+  border-radius: 50px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#wifi-loader svg {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#wifi-loader svg circle {
+  position: absolute;
+  fill: none;
+  stroke-width: 6px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transform: rotate(-100deg);
+  transform-origin: center;
+}
+
+#wifi-loader svg circle.back {
+  stroke: var(--back-color);
+}
+
+#wifi-loader svg circle.front {
+  stroke: var(--front-color);
+}
+
+#wifi-loader svg.circle-outer {
+  height: 86px;
+  width: 86px;
+}
+
+#wifi-loader svg.circle-outer circle {
+  stroke-dasharray: 62.75 188.25;
+}
+
+#wifi-loader svg.circle-outer circle.back {
+  animation: circle-outer135 1.8s ease infinite 0.3s;
+}
+
+#wifi-loader svg.circle-outer circle.front {
+  animation: circle-outer135 1.8s ease infinite 0.15s;
+}
+
+#wifi-loader svg.circle-middle {
+  height: 60px;
+  width: 60px;
+}
+
+#wifi-loader svg.circle-middle circle {
+  stroke-dasharray: 42.5 127.5;
+}
+
+#wifi-loader svg.circle-middle circle.back {
+  animation: circle-middle6123 1.8s ease infinite 0.25s;
+}
+
+#wifi-loader svg.circle-middle circle.front {
+  animation: circle-middle6123 1.8s ease infinite 0.1s;
+}
+
+#wifi-loader svg.circle-inner {
+  height: 34px;
+  width: 34px;
+}
+
+#wifi-loader svg.circle-inner circle {
+  stroke-dasharray: 22 66;
+}
+
+#wifi-loader svg.circle-inner circle.back {
+  animation: circle-inner162 1.8s ease infinite 0.2s;
+}
+
+#wifi-loader svg.circle-inner circle.front {
+  animation: circle-inner162 1.8s ease infinite 0.05s;
+}
+
+#wifi-loader .text {
+  position: absolute;
+  bottom: -40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-transform: lowercase;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.2px;
+}
+
+#wifi-loader .text::before, #wifi-loader .text::after {
+  content: attr(data-text);
+}
+
+#wifi-loader .text::before {
+  color: var(--text-color);
+}
+
+#wifi-loader .text::after {
+  color: var(--dark-contrast-text);
+  animation: text-animation76 3.6s ease infinite;
+  position: absolute;
+  left: 0;
+}
+
+@keyframes circle-outer135 {
+  0% {
+    stroke-dashoffset: 25;
+  }
+
+  25% {
+    stroke-dashoffset: 0;
+  }
+
+  65% {
+    stroke-dashoffset: 301;
+  }
+
+  80% {
+    stroke-dashoffset: 276;
+  }
+
+  100% {
+    stroke-dashoffset: 276;
+  }
+}
+
+@keyframes circle-middle6123 {
+  0% {
+    stroke-dashoffset: 17;
+  }
+
+  25% {
+    stroke-dashoffset: 0;
+  }
+
+  65% {
+    stroke-dashoffset: 204;
+  }
+
+  80% {
+    stroke-dashoffset: 187;
+  }
+
+  100% {
+    stroke-dashoffset: 187;
+  }
+}
+
+@keyframes circle-inner162 {
+  0% {
+    stroke-dashoffset: 9;
+  }
+
+  25% {
+    stroke-dashoffset: 0;
+  }
+
+  65% {
+    stroke-dashoffset: 106;
+  }
+
+  80% {
+    stroke-dashoffset: 97;
+  }
+
+  100% {
+    stroke-dashoffset: 97;
+  }
+}
+
+@keyframes text-animation76 {
+  0% {
+    clip-path: inset(0 100% 0 0);
+  }
+
+  50% {
+    clip-path: inset(0);
+  }
+
+  100% {
+    clip-path: inset(0 0 0 100%);
+  }
+}
+

@@ -1,7 +1,126 @@
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&display=swap');
+
+@font-face {
+    font-family: "Junicode";
+    src: url("__FONT_JUNICODE_REGULAR__") format("woff2");
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Junicode";
+    src: url("__FONT_JUNICODE_BOLD__") format("woff2");
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Junicode";
+    src: url("__FONT_JUNICODE_ITALIC__") format("woff2");
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Junicode";
+    src: url("__FONT_JUNICODE_BOLD_ITALIC__") format("woff2");
+    font-style: italic;
+    font-weight: 700;
+    font-display: swap;
+}
+
+.block {
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.form {
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.gradio-container {
+    background: #1f1f1f !important;
+    color: #D1CFC0 !important;
+    font-family: "Bricolage Grotesque", ui-sans-serif, sans-serif !important;
+}
+
+.no-bg {
+    background: #1f1f1f !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.almost-no-bg {
+    background: #202020 !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.gradio-container button {
+    transform: scale(1) !important;
+    transition: transform 0.2s ease !important;
+}
+
+.gradio-container button:hover {
+    transform: scale(1.005) !important;
+}
+
+.gradio-container button.primary {
+    background: #D1CFC0 !important;
+    border-color: #848E7B !important;
+    color: #1F1F1F !important;
+}
+
+.gradio-container button.secondary {
+    background: #373737 !important;
+    border-color: #4a4a57 !important;
+    color: #CBC9BB !important;
+}
+
+.page-header {
+    margin: 0 !important;
+    padding-left: 0 !important;
+}
+
+.page-header h1 {
+    margin: 0 !important;
+    padding-left: 0 !important;
+    font-family: "Junicode", Georgia, serif !important;
+    font-size: clamp(5rem, 10vw, 4rem) !important;
+    line-height: 0.9 !important;
+    font-weight: normal !important;
+    letter-spacing: -0.005em !important;
+    color: #f3efe5 !important;
+    text-wrap: balance !important;
+}
+
+.page-header b {
+    margin: 0 !important;
+    padding-left: 0 !important;
+    font-family: "Junicode", Georgia, serif !important;
+    font-size: clamp(5rem, 10vw, 4rem) !important;
+    line-height: 0.9 !important;
+    font-weight: normal !important;
+    font-style: italic !important;
+    letter-spacing: -0.005em !important;
+    color: #F77053 !important;
+    text-wrap: balance !important;
+    transform: scale(1) !important;
+    transition: transform 0.2s ease !important;
+}
+
+.page-header b:hover {
+    transform: scale(1.05) !important;
+}
+
 #error-markdown {
-    background-color: #FF3442 !important;
-    color: #7a1f1f !important;
-    border: 1px solid #f3b5b5 !important;
+    color: #f8532f !important;
     border-radius: 8px !important;
     padding: 8px 10px !important;
 }
@@ -13,33 +132,33 @@
 }
 
 .status.ok {
-    background: #42BB72 !important;
-    color: #1f5c38 !important;
-    border-color: #b7e4c7 !important;
+    background: #688c47 !important;
 }
 
 .status.err {
-    background: #FF3442 !important;
-    color: #7a1f1f !important;
-    border-color: #f3b5b5 !important;
+    background: #f8532f !important;
 }
 
 .section-shell {
-    background: #202024;
-    border: 1px solid #31313a;
-    border-radius: 18px;
+    background-color: #ffffff !important;
+    background: #ffffff !important;
     padding: 16px;
     margin-top: 10px;
 }
 
 .stat-card {
     position: relative;
-    background: #27272A;
-    border: 1px solid #3A3A44;
+    background: #202020;
     border-radius: 14px;
     padding: 16px 16px 14px 16px;
     min-height: 110px;
     box-sizing: border-box;
+    transform: scale(1) !important;
+    transition: transform 0.2s ease !important;
+}
+
+.stat-card:hover {
+    transform: scale(1.01) !important;
 }
 
 .stat-card-accent {
@@ -51,7 +170,7 @@
 }
 
 .stat-ok .stat-card-accent {
-    background: #22c55e;
+    background: #688c47 !important;
 }
 
 .stat-warn .stat-card-accent {
@@ -59,26 +178,26 @@
 }
 
 .stat-err .stat-card-accent {
-    background: #ef4444;
+    background: #f8532f !important;
 }
 
 .stat-title {
     font-size: 0.86rem;
-    color: #b4b4b8;
     margin-bottom: 8px;
+    color: #D1CFC0;
 }
 
 .stat-value {
     font-size: 1.9rem;
     font-weight: 700;
-    color: #ffffff;
+    color: #F3EEE5;
     line-height: 1.05;
 }
 
 .stat-sub {
     margin-top: 8px;
     font-size: 0.82rem;
-    color: #8f8f99;
+    color: #D1CFC0;
 }
 
 /* stage strip */
@@ -87,41 +206,80 @@
     align-items: center;
     justify-content: space-between;
     gap: 10px;
-    background: #27272A;
-    border: 1px solid #3A3A44;
-    border-radius: 14px;
-    padding: 14px;
+    padding: 0;
+    margin: 0;
     overflow-x: auto;
 }
 
 .stage-node {
     min-width: 120px;
     text-align: center;
-    padding: 8px 10px;
-    background: #2e2e34;
-    border: 1px solid #40404a;
+    padding: 10px 50px;
+    background: #202020;
     border-radius: 12px;
-    flex-shrink: 0;
+    transform: scale(1) !important;
+    transition: transform 0.2s ease !important;
+}
+
+.stage-node:hover {
+    transform: scale(1.01) !important;
 }
 
 .stage-label {
     font-size: 0.8rem;
-    color: #a1a1aa;
     margin-bottom: 6px;
+    color: #D1CFC0;
+
 }
 
 .stage-value {
     font-size: 1.3rem;
     font-weight: 700;
-    color: #ffffff;
+    color: #F3EEE5;
 }
 
 .stage-arrow {
-    color: #71717a;
-    font-size: 1.2rem;
+    color: #F77053;
+    font-size: 3rem;
     flex-shrink: 0;
 }
 
-h1, h2, h3 {
-    color: #ffffff !important;
+.zen-hero {
+    padding: 72px 24px 56px 24px;
+}
+
+.zen-hero-inner {
+    max-width: 760px;
+    margin: 0 auto;
+}
+
+.zen-title {
+    margin: 0;
+    font-size: clamp(3.2rem, 7vw, 6.8rem);
+    line-height: 0.92;
+    font-weight: 700;
+    letter-spacing: -0.05em;
+    color: #f3efe5;
+    text-wrap: balance;
+}
+
+.zen-copy {
+    margin-top: 24px;
+    max-width: 620px;
+    font-size: clamp(1.05rem, 1.5vw, 1.28rem);
+    line-height: 1.55;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: #bdb8ad;
+}
+
+@media (max-width: 768px) {
+    .zen-hero {
+        padding-top: 48px;
+    }
+
+    .zen-copy {
+        margin-top: 18px;
+        max-width: 100%;
+    }
 }

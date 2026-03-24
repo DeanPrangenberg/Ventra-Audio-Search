@@ -141,10 +141,10 @@ def load_stats():
         """
     )
 
-    imported_card = make_card("Successful Imports", str(successful_imports), "All Import steps Completed", "ok")
-    processed_card = make_card("In Queue", str(in_processing_queue), "Processing Item", "neutral")
-    waiting_card = make_card("Waiting", str(awaits_processing), "Waiting for Processing", "warn")
-    errors_card = make_card("Retries / Failed", str(failed_imports), "Steps failed 10 times", "err")
+    imported_card = make_card("Successful Audio Imports", str(successful_imports), "All Import steps Completed", "ok")
+    processed_card = make_card("Audio In Queue", str(in_processing_queue), "Processing Item", "neutral")
+    waiting_card = make_card("Audio Waiting", str(awaits_processing), "Waiting for Processing", "warn")
+    errors_card = make_card("Audio Failed", str(failed_imports), "Steps failed 10 times", "err")
 
     # -----------------------------
     # Pipeline aus realen Feldern
@@ -179,10 +179,10 @@ def load_stats():
     )
 
     stage_strip = make_stage_strip([
-        ("Persisting", stage_queued),
-        ("Transcribing", stage_persisted),
-        ("Embedding", stage_transcribed),
-        ("AI Generation", stage_embedded),
+        ("Import Stage Persisting", stage_queued),
+        ("Import Stage Transcribing", stage_persisted),
+        ("Import Stage Embedding", stage_transcribed),
+        ("Import Stage AI Generation", stage_embedded),
     ])
 
     # -----------------------------
@@ -206,39 +206,30 @@ def load_stats():
 
 def mount_statistics_routes(app: gr.Blocks):
     with app.route("Statistics") as rout:
-        gr.Markdown("# Statistics Dashboard")
-
-        with gr.Group(elem_classes=["section-shell"]):
-            gr.Markdown("### Server Statistics")
-            with gr.Row():
-                audio_files_display = gr.HTML()
-                audio_segments_display = gr.HTML()
-                search_requests_display = gr.HTML()
-                import_requests_display = gr.HTML()
+        gr.HTML("<h1>Backend <b>Statistic</b> Dashboard</h1>", elem_classes=["page-header"])
+        with gr.Row():
+            audio_files_display = gr.HTML()
+            audio_segments_display = gr.HTML()
+            search_requests_display = gr.HTML()
+            import_requests_display = gr.HTML()
 
         with gr.Row():
             with gr.Column(scale=7):
-                with gr.Group(elem_classes=["section-shell"]):
-                    gr.Markdown("### Import Overview")
-                    with gr.Row():
-                        imported_display = gr.HTML()
-                        processed_display = gr.HTML()
-                        waiting_display = gr.HTML()
-                        errors_display = gr.HTML()
+                with gr.Row():
+                    imported_display = gr.HTML()
+                    processed_display = gr.HTML()
+                    waiting_display = gr.HTML()
+                    errors_display = gr.HTML()
 
-                with gr.Group(elem_classes=["section-shell"]):
-                    gr.Markdown("### Import Processing Pipeline")
-                    stage_strip_display = gr.HTML()
+                stage_strip_display = gr.HTML()
 
         with gr.Column(scale=5):
-            with gr.Group(elem_classes=["section-shell"]):
-                gr.Markdown("### DB Operations")
-                with gr.Row():
-                    insertions_plot = gr.LinePlot(
-                        x="Time",
-                        y="Created",
-                        title="Created rows (last 24h)",
-                    )
+            with gr.Row():
+                insertions_plot = gr.LinePlot(
+                    x="Time",
+                    y="Created",
+                    title="Created rows (last 24h)",
+                )
 
         timer = gr.Timer(value=1.0, active=True)
 

@@ -4,3 +4,4 @@
 */__pycache__
 /PROJECT_CONTEXT.md
 /.env
+yew-frontend/target/

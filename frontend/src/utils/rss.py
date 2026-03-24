@@ -96,7 +96,6 @@ def rss_feed_to_import_payloads(url: str) -> list[dict[str, str]] | str:
                 continue
 
             cleaned["file_url"] = file_url
-            print(cleaned["file_url"])
             cleaned_entries.append(cleaned)
 
         if not cleaned_entries:

@@ -1,0 +1,148 @@
+package restApi
+
+import (
+	"fmt"
+	"go_audio_search_api_server/globalTypes"
+	"go_audio_search_api_server/postgres"
+	"log/slog"
+	"net/http"
+	"strings"
+)
+
+func (rs *Server) handleImport(w http.ResponseWriter, r *http.Request) {
+	slog.Info("Received request to /import")
+
+	// 1) Content-Type hart prüfen -> 415
+	ct := r.Header.Get("Content-Type")
+	if ct == "" || !strings.HasPrefix(ct, "application/json") && !strings.HasPrefix(ct, "application/json; charset=utf-8") {
+		rs.writeJsonWithCounter(w, http.StatusUnsupportedMediaType, postgres.ImportRequestsFailed, map[string]any{
+			"ok":    false,
+			"code":  "IMPORT_UNSUPPORTED_CONTENT_TYPE",
+			"error": "Content-Type must be application/json",
+			"got":   ct,
+		})
+		return
+	}
+
+	// 2) JSON lesen + limit -> 400/413
+	var req []globalTypes.AudioDataElement
+
+	// 1000 MiB
+	const maxBody = 1000 * (1 << 20)
+
+	if err := ReadJSON(r, &req, maxBody); err != nil {
+		// Wenn du ReadJSON nicht kontrollierst: wir mappen zumindest häufige Fälle.
+		// - zu groß -> 413
+		// - sonst -> 400
+		msg := err.Error()
+
+		// grobes Heuristik-Mapping (besser wäre: ReadJSON gibt sentinel error zurück)
+		if strings.Contains(strings.ToLower(msg), "too large") ||
+			strings.Contains(strings.ToLower(msg), "request body too large") ||
+			strings.Contains(strings.ToLower(msg), "http: request body too large") {
+			rs.writeJsonWithCounter(w, http.StatusRequestEntityTooLarge, postgres.ImportRequestsFailed, map[string]any{
+				"ok":    false,
+				"code":  "IMPORT_PAYLOAD_TOO_LARGE",
+				"error": "Request body too large",
+				"limit": maxBody,
+			})
+			return
+		}
+
+		rs.writeJsonWithCounter(w, http.StatusBadRequest, postgres.ImportRequestsFailed, map[string]any{
+			"ok":    false,
+			"code":  "IMPORT_BAD_JSON",
+			"error": msg,
+		})
+		return
+	}
+
+	// 3) Validieren -> 422 / 207 / 200
+	var validItems []*globalTypes.AudioDataElement
+	var invalidItemsIdx []int
+	var invalidItemsErr []string
+
+	for idx, item := range req {
+		if err := item.ValidateApiInput(); err != nil {
+			slog.Debug("Received invalid item via restApi: " + item.ToString())
+			invalidItemsIdx = append(invalidItemsIdx, idx)
+			invalidItemsErr = append(invalidItemsErr, err.Error())
+			continue
+		}
+		item.AudiofileHash = item.GetTmpHash()
+		item.LastSuccessfulStage = globalTypes.StageQueued
+		validItems = append(validItems, &item)
+	}
+
+	// alle invalid -> 422
+	if len(validItems) == 0 {
+		slog.Info("Received an import with no valid items to import")
+		rs.writeJsonWithCounter(w, http.StatusUnprocessableEntity, postgres.ImportRequestsFailed, map[string]any{
+			"ok":    false,
+			"code":  "IMPORT_VALIDATION_FAILED",
+			"error": "No valid items in request",
+			"invalid": map[string]any{
+				"count":   len(invalidItemsIdx),
+				"indexes": invalidItemsIdx,
+				"errors":  invalidItemsErr,
+			},
+		})
+		return
+	}
+
+	// mixed -> 422
+	if len(invalidItemsIdx) > 0 {
+		errMsg := fmt.Sprintf(
+			"Received an import request with %d valid and %d invalid items",
+			len(validItems),
+			len(invalidItemsIdx),
+		)
+		slog.Info(errMsg)
+
+		rs.writeJsonWithCounter(w, http.StatusUnprocessableEntity, postgres.ImportRequestsFailed, map[string]any{
+			"ok":    false,
+			"code":  "IMPORT_PARTIAL",
+			"error": "Some items were rejected",
+			"valid": map[string]any{
+				"count": len(validItems),
+			},
+			"invalid": map[string]any{
+				"count":   len(invalidItemsIdx),
+				"indexes": invalidItemsIdx,
+				"errors":  invalidItemsErr,
+			},
+		})
+
+		return
+	}
+
+	slog.Info("Queueing " + fmt.Sprintf("%d", len(validItems)) + " item for processing")
+
+	ctx, cancel := rs.opCtx()
+	err := rs.postgres.UpsertBaseBatch(ctx, validItems)
+	cancel()
+
+	if err != nil {
+		slog.Error("Error after Batch inserting audio files into DB: " + err.Error())
+		rs.writeJsonWithCounter(w, http.StatusInternalServerError, postgres.ImportRequestsFailed, map[string]any{
+			"ok":    false,
+			"code":  "COULD_NOT_QUEUE_IMPORT",
+			"error": "Internal Server Error: Failed to queue items for processing",
+			"got":   ct,
+		})
+
+		return
+	}
+
+	rs.PoolRefillSignal.Trigger()
+
+	slog.Debug("Finished handling import request, all items are valid and queued for processing")
+
+	// alles valid -> 200
+	rs.writeJsonWithCounter(w, http.StatusOK, postgres.ImportRequestsSuccessful, map[string]any{
+		"ok": true,
+		"imported": map[string]any{
+			"count": len(validItems),
+		},
+	})
+}
